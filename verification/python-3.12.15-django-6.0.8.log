@@ -1,24 +1,20 @@
-# Historical validation transcript; machine-specific root paths have been redacted.
+# Validation transcript; machine-specific root paths have been redacted.
 $ <RUNTIMES_ROOT>/cpython-3.12.15-linux-x86_64-gnu/bin/python3 -m venv <MATRIX_ROOT>/3.12.15-6.0.8/venv
-$ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m pip install --disable-pip-version-check Django==6.0.8 Pillow==12.2.0 asgiref==3.12.1 sqlparse==0.6.0 <PROJECT_ROOT>/dist/nova_slider_captcha-0.1.0-py3-none-any.whl
+$ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m pip install --disable-pip-version-check Django==6.0.8 Pillow==12.2.0 asgiref==3.12.1 sqlparse==0.6.0
 WARNING: The directory '<PIP_CACHE>' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Processing ./dist/nova_slider_captcha-0.1.0-py3-none-any.whl
-Collecting Django==6.0.8
-  Downloading django-6.0.8-py3-none-any.whl.metadata (3.9 kB)
-Collecting Pillow==12.2.0
-  Downloading pillow-12.2.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (8.8 kB)
-Collecting asgiref==3.12.1
-  Downloading asgiref-3.12.1-py3-none-any.whl.metadata (9.4 kB)
-Collecting sqlparse==0.6.0
-  Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)
-Downloading django-6.0.8-py3-none-any.whl (8.4 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 81.3 MB/s eta 0:00:00
-Downloading pillow-12.2.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 54.4 MB/s eta 0:00:00
-Downloading asgiref-3.12.1-py3-none-any.whl (25 kB)
-Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)
-Installing collected packages: sqlparse, Pillow, asgiref, Django, nova-slider-captcha
-Successfully installed Django-6.0.8 Pillow-12.2.0 asgiref-3.12.1 nova-slider-captcha-0.1.0 sqlparse-0.6.0
+Requirement already satisfied: Django==6.0.8 in <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages (6.0.8)
+Requirement already satisfied: Pillow==12.2.0 in <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages (12.2.0)
+Requirement already satisfied: asgiref==3.12.1 in <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages (3.12.1)
+Requirement already satisfied: sqlparse==0.6.0 in <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages (0.6.0)
+$ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m pip install --disable-pip-version-check --force-reinstall --no-deps <ARTIFACT_ROOT>/nova_slider_captcha-0.2.0-py3-none-any.whl
+WARNING: The directory '<PIP_CACHE>' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing <ARTIFACT_ROOT>/nova_slider_captcha-0.2.0-py3-none-any.whl
+Installing collected packages: nova-slider-captcha
+  Attempting uninstall: nova-slider-captcha
+    Found existing installation: nova-slider-captcha 0.2.0
+    Uninstalling nova-slider-captcha-0.2.0:
+      Successfully uninstalled nova-slider-captcha-0.2.0
+Successfully installed nova-slider-captcha-0.2.0
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m pip check
 WARNING: The directory '<PIP_CACHE>' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
 No broken requirements found.
@@ -33,13 +29,13 @@ No changes detected in app 'nova_slider_captcha'
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m django test tests --noinput -v 1
 Creating test database for alias 'default'...
 Destroying old test database for alias 'default'...
-...............................
+.............................................................
 ----------------------------------------------------------------------
-Ran 31 tests in 4.981s
+Ran 61 tests in 6.382s
 
 OK
 Destroying test database for alias 'default'...
-Found 31 test(s).
+Found 61 test(s).
 System check identified no issues (0 silenced).
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -c import nova_slider_captcha; from pathlib import Path; p=Path(nova_slider_captcha.__file__).resolve(); print(p); assert str(p).startswith('<PROJECT_ROOT>/src')
 <PROJECT_ROOT>/src/nova_slider_captcha/__init__.py
@@ -50,13 +46,13 @@ No changes detected in app 'nova_slider_captcha'
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m django test tests --noinput -v 1
 Creating test database for alias 'default'...
 Destroying old test database for alias 'default'...
-...............................
+.............................................................
 ----------------------------------------------------------------------
-Ran 31 tests in 4.807s
+Ran 61 tests in 6.447s
 
 OK
 Destroying test database for alias 'default'...
-Found 31 test(s).
+Found 61 test(s).
 System check identified no issues (0 silenced).
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -c import nova_slider_captcha; from pathlib import Path; p=Path(nova_slider_captcha.__file__).resolve(); print(p); assert str(p).startswith('<MATRIX_ROOT>/3.12.15-6.0.8/venv')
 <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages/nova_slider_captcha/__init__.py
@@ -67,13 +63,13 @@ No changes detected in app 'nova_slider_captcha'
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m django test tests --noinput -v 1
 Creating test database for alias 'default'...
 Destroying old test database for alias 'default'...
-...............................
+.............................................................
 ----------------------------------------------------------------------
-Ran 31 tests in 4.777s
+Ran 61 tests in 7.506s
 
 OK
 Destroying test database for alias 'default'...
-Found 31 test(s).
+Found 61 test(s).
 System check identified no issues (0 silenced).
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -c import nova_slider_captcha; from pathlib import Path; p=Path(nova_slider_captcha.__file__).resolve(); print(p); assert str(p).startswith('<MATRIX_ROOT>/3.12.15-6.0.8/venv')
 <MATRIX_ROOT>/3.12.15-6.0.8/venv/lib/python3.12/site-packages/nova_slider_captcha/__init__.py
@@ -84,41 +80,11 @@ No changes detected in app 'nova_slider_captcha'
 $ <MATRIX_ROOT>/3.12.15-6.0.8/venv/bin/python -m django test tests --noinput -v 1
 Creating test database for alias 'default'...
 Destroying old test database for alias 'default'...
-...............................
+.............................................................
 ----------------------------------------------------------------------
-Ran 31 tests in 4.888s
+Ran 61 tests in 6.840s
 
 OK
 Destroying test database for alias 'default'...
-Found 31 test(s).
-System check identified no issues (0 silenced).
-
-Final CSS-only wheel rebuild validation:
-WARNING: The directory '<PIP_CACHE>' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
-Processing ./dist/nova_slider_captcha-0.1.0-py3-none-any.whl
-Installing collected packages: nova-slider-captcha
-  Attempting uninstall: nova-slider-captcha
-    Found existing installation: nova-slider-captcha 0.1.0
-    Uninstalling nova-slider-captcha-0.1.0:
-      Successfully uninstalled nova-slider-captcha-0.1.0
-Successfully installed nova-slider-captcha-0.1.0
-Creating test database for alias 'default'...
-Destroying old test database for alias 'default'...
-...............................
-----------------------------------------------------------------------
-Ran 31 tests in 4.611s
-
-OK
-Destroying test database for alias 'default'...
-Found 31 test(s).
-System check identified no issues (0 silenced).
-Creating test database for alias 'default'...
-Destroying old test database for alias 'default'...
-...............................
-----------------------------------------------------------------------
-Ran 31 tests in 4.684s
-
-OK
-Destroying test database for alias 'default'...
-Found 31 test(s).
+Found 61 test(s).
 System check identified no issues (0 silenced).

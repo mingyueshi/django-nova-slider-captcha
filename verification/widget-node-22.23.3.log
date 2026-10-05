@@ -1,92 +1,182 @@
-(node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
 (Use `node --trace-warnings ...` to show where the warning was created)
 TAP version 13
-# (node:34) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (node:14) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
 # (Use `node --trace-warnings ...` to show where the warning was created)
 # Subtest: loads via init/challenge, no answer in DOM and single form field
 ok 1 - loads via init/challenge, no answer in DOM and single form field
   ---
-  duration_ms: 92.250539
+  duration_ms: 101.29287
   type: 'test'
   ...
 # Subtest: keyboard submission, duplicate verification gated, token/reset events
 ok 2 - keyboard submission, duplicate verification gated, token/reset events
   ---
-  duration_ms: 19.596926
+  duration_ms: 23.59414
   type: 'test'
   ...
 # Subtest: wrong answer is retryable and exhausting attempts requires refresh
 ok 3 - wrong answer is retryable and exhausting attempts requires refresh
   ---
-  duration_ms: 19.018686
+  duration_ms: 25.163352
   type: 'test'
   ...
 # Subtest: late verify success cannot overwrite refreshed challenge
 ok 4 - late verify success cannot overwrite refreshed challenge
   ---
-  duration_ms: 15.27237
+  duration_ms: 16.651632
   type: 'test'
   ...
 # Subtest: late challenge response cannot replace newer challenge
 ok 5 - late challenge response cannot replace newer challenge
   ---
-  duration_ms: 13.117979
+  duration_ms: 16.158208
   type: 'test'
   ...
 # Subtest: HTML CSRF rejection clears init cache and next refresh recovers
 ok 6 - HTML CSRF rejection clears init cache and next refresh recovers
   ---
-  duration_ms: 11.308866
+  duration_ms: 14.422657
   type: 'test'
   ...
 # Subtest: challenge expiry invalidates pending verification and clears proof
 ok 7 - challenge expiry invalidates pending verification and clears proof
   ---
-  duration_ms: 10.677987
+  duration_ms: 12.711511
   type: 'test'
   ...
 # Subtest: proof expiry clears hidden input and emits reset
 ok 8 - proof expiry clears hidden input and emits reset
   ---
-  duration_ms: 11.453733
+  duration_ms: 16.79715
   type: 'test'
   ...
 # Subtest: pointer release verifies, pointercancel does not
 ok 9 - pointer release verifies, pointercancel does not
   ---
-  duration_ms: 21.656947
+  duration_ms: 16.097568
   type: 'test'
   ...
 # Subtest: network failure is recoverable through refresh
 ok 10 - network failure is recoverable through refresh
   ---
-  duration_ms: 14.406256
+  duration_ms: 11.424794
   type: 'test'
   ...
 # Subtest: detach and reinsert keeps generation monotonic and one listener set
 ok 11 - detach and reinsert keeps generation monotonic and one listener set
   ---
-  duration_ms: 15.261463
+  duration_ms: 14.086881
   type: 'test'
   ...
 # Subtest: two simultaneous widgets share init but keep independent challenges and IDs
 ok 12 - two simultaneous widgets share init but keep independent challenges and IDs
   ---
-  duration_ms: 11.113152
+  duration_ms: 12.641666
   type: 'test'
   ...
 # Subtest: Django init_required response clears cached initialization
 ok 13 - Django init_required response clears cached initialization
   ---
-  duration_ms: 14.756323
+  duration_ms: 15.165384
   type: 'test'
   ...
-1..13
-# tests 13
+# Subtest: default remains Chinese regardless of document language, including ARIA
+ok 14 - default remains Chinese regardless of document language, including ARIA
+  ---
+  duration_ms: 9.164032
+  type: 'test'
+  ...
+# Subtest: locale aliases, invalid locales, and dynamic labels retain proof and requests
+ok 15 - locale aliases, invalid locales, and dynamic labels retain proof and requests
+  ---
+  duration_ms: 16.62383
+  type: 'test'
+  ...
+# Subtest: custom message merge is text-only, bounded, and supports pre-upgrade properties
+ok 16 - custom message merge is text-only, bounded, and supports pre-upgrade properties
+  ---
+  duration_ms: 18.236306
+  type: 'test'
+  ...
+# Subtest: known error codes localize and use actual rate-limit retryAfter safely
+ok 17 - known error codes localize and use actual rate-limit retryAfter safely
+  ---
+  duration_ms: 61.975595
+  type: 'test'
+  ...
+# Subtest: initialization, JSON, and network errors never display arbitrary error messages
+ok 18 - initialization, JSON, and network errors never display arbitrary error messages
+  ---
+  duration_ms: 39.711197
+  type: 'test'
+  ...
+# Subtest: verification retries, unknown errors, and server expiry are localized
+ok 19 - verification retries, unknown errors, and server expiry are localized
+  ---
+  duration_ms: 12.417258
+  type: 'test'
+  ...
+# Subtest: locale switches during pending verification preserve duplicate and late-response guards
+ok 20 - locale switches during pending verification preserve duplicate and late-response guards
+  ---
+  duration_ms: 11.653439
+  type: 'test'
+  ...
+# Subtest: invalid and cross-origin endpoints localize without making requests
+ok 21 - invalid and cross-origin endpoints localize without making requests
+  ---
+  duration_ms: 23.699629
+  type: 'test'
+  ...
+# Subtest: long translated text uses wrapping CSS rather than fixed track and button widths
+ok 22 - long translated text uses wrapping CSS rather than fixed track and button widths
+  ---
+  duration_ms: 57.32099
+  type: 'test'
+  ...
+# Subtest: demo success ignores server messages and dynamically localizes safe result
+ok 23 - demo success ignores server messages and dynamically localizes safe result
+  ---
+  duration_ms: 17.75324
+  type: 'test'
+  ...
+# Subtest: demo rejected and interrupted requests have localized messages
+ok 24 - demo rejected and interrupted requests have localized messages
+  ---
+  duration_ms: 23.898588
+  type: 'test'
+  ...
+# Subtest: refresh interrupts an old drag so its pointerup cannot submit the new puzzle
+ok 25 - refresh interrupts an old drag so its pointerup cannot submit the new puzzle
+  ---
+  duration_ms: 11.529612
+  type: 'test'
+  ...
+# Subtest: a stale pointer release or cancellation cannot submit or cancel a new drag
+ok 26 - a stale pointer release or cancellation cannot submit or cancel a new drag
+  ---
+  duration_ms: 11.324444
+  type: 'test'
+  ...
+# Subtest: concurrent pointers cannot replace the active drag and matching cancellation releases it
+ok 27 - concurrent pointers cannot replace the active drag and matching cancellation releases it
+  ---
+  duration_ms: 16.708737
+  type: 'test'
+  ...
+# Subtest: expiry, keyboard checking, and disconnect release active pointer capture
+ok 28 - expiry, keyboard checking, and disconnect release active pointer capture
+  ---
+  duration_ms: 16.031258
+  type: 'test'
+  ...
+1..28
+# tests 28
 # suites 0
-# pass 13
+# pass 28
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 595.950763
+# duration_ms 1060.990994

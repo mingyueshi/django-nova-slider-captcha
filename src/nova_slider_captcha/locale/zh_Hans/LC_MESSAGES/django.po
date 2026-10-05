@@ -1,0 +1,47 @@
+# Simplified Chinese translations for Nova Slider CAPTCHA.
+# Copyright (C) 2026 Nova Slider CAPTCHA contributors
+# This file is distributed under the same license as nova-slider-captcha.
+msgid ""
+msgstr ""
+"Project-Id-Version: nova-slider-captcha\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: forms.py templates/nova_slider_captcha/widget.html
+msgid "Security verification"
+msgstr "安全验证"
+
+#: forms.py
+msgid "Complete the security verification before signing in."
+msgstr "请先完成安全验证，再登录。"
+
+#: forms.py
+msgid "Security verification is missing, expired, or already used. Please try again."
+msgstr "安全验证缺失、已过期或已使用，请重新验证。"
+
+#: templates/nova_slider_captcha/widget.html
+msgid "JavaScript is required for this visual challenge. Use the site's equivalent secure nonvisual verification route or contact support."
+msgstr "此图形验证需要 JavaScript。请使用本站提供的同等安全的非视觉验证方式，或联系支持人员。"
+
+#: templates/nova_slider_captcha/demo.html
+msgid "Nova Slider CAPTCHA · Django demo"
+msgstr "Nova Slider CAPTCHA · Django 演示"
+
+#: templates/nova_slider_captcha/demo.html
+msgid "Self-hosted, server-verified puzzle challenge."
+msgstr "自托管、由服务端校验的滑块拼图验证码。"
+
+#: templates/nova_slider_captcha/demo.html
+msgid "Submit protected request"
+msgstr "提交受保护的请求"
+
+#: templates/nova_slider_captcha/demo.html
+msgid "This visual puzzle is not a complete bot-defense system. A production site must also provide an equivalent secure nonvisual route."
+msgstr "此图形拼图不是完整的机器人防护系统。生产站点还必须提供同等安全的非视觉验证方式。"
+
+#: templates/nova_slider_captcha/demo.html
+msgid "Try the protected Django Admin login"
+msgstr "体验受保护的 Django Admin 登录"

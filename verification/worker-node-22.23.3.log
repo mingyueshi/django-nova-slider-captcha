@@ -1,0 +1,166 @@
+(node:6) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:13) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:13) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# Subtest: contract: opaque challenge raster images and exact dimensions
+ok 1 - contract: opaque challenge raster images and exact dimensions
+  ---
+  duration_ms: 57.794914
+  type: 'test'
+  ...
+# Subtest: solve + purpose-bound single-use business consumption
+ok 2 - solve + purpose-bound single-use business consumption
+  ---
+  duration_ms: 28.815334
+  type: 'test'
+  ...
+# Subtest: five wrong attempts then challenge locked
+ok 3 - five wrong attempts then challenge locked
+  ---
+  duration_ms: 36.526088
+  type: 'test'
+  ...
+# Subtest: tolerance 4 inclusive and 5 exclusive
+ok 4 - tolerance 4 inclusive and 5 exclusive
+  ---
+  duration_ms: 24.345387
+  type: 'test'
+  ...
+# Subtest: session and CSRF boundaries
+ok 5 - session and CSRF boundaries
+  ---
+  duration_ms: 26.933291
+  type: 'test'
+  ...
+# Subtest: expiry of challenges, tokens and sessions
+ok 6 - expiry of challenges, tokens and sessions
+  ---
+  duration_ms: 61.626506
+  type: 'test'
+  ...
+# Subtest: parallel success issues a single proof; parallel submit consumes once
+ok 7 - parallel success issues a single proof; parallel submit consumes once
+  ---
+  duration_ms: 32.378616
+  type: 'test'
+  ...
+# Subtest: parallel wrong attempts never exceed five
+ok 8 - parallel wrong attempts never exceed five
+  ---
+  duration_ms: 30.646739
+  type: 'test'
+  ...
+# Subtest: challenge issuance rate limited per session
+ok 9 - challenge issuance rate limited per session
+  ---
+  duration_ms: 276.614552
+  type: 'test'
+  ...
+# Subtest: session creation rate limited by trusted edge IP
+ok 10 - session creation rate limited by trusted edge IP
+  ---
+  duration_ms: 17.838986
+  type: 'test'
+  ...
+# Subtest: malformed inputs, giant numbers and bounded bodies fail closed
+ok 11 - malformed inputs, giant numbers and bounded bodies fail closed
+  ---
+  duration_ms: 26.473659
+  type: 'test'
+  ...
+# Subtest: multiple challenges do not invalidate another tab
+ok 12 - multiple challenges do not invalidate another tab
+  ---
+  duration_ms: 48.433467
+  type: 'test'
+  ...
+# Subtest: PNG contains no plaintext answer metadata
+ok 13 - PNG contains no plaintext answer metadata
+  ---
+  duration_ms: 18.170655
+  type: 'test'
+  ...
+# Subtest: GCRA blocks minute-boundary double burst and admits exact refill
+ok 14 - GCRA blocks minute-boundary double burst and admits exact refill
+  ---
+  duration_ms: 1.418855
+  type: 'test'
+  ...
+# Subtest: GCRA concurrency claims at most configured capacity
+ok 15 - GCRA concurrency claims at most configured capacity
+  ---
+  duration_ms: 1.56842
+  type: 'test'
+  ...
+# Subtest: backwards clock cannot reset debt and rejected requests do not extend it
+ok 16 - backwards clock cannot reset debt and rejected requests do not extend it
+  ---
+  duration_ms: 1.044402
+  type: 'test'
+  ...
+# Subtest: fractional refill rounds toward stricter rate; invalid configs fail closed
+ok 17 - fractional refill rounds toward stricter rate; invalid configs fail closed
+  ---
+  duration_ms: 2.047111
+  type: 'test'
+  ...
+# Subtest: legacy active fixed window inherits cooldown without reopening quota
+ok 18 - legacy active fixed window inherits cooldown without reopening quota
+  ---
+  duration_ms: 1.076189
+  type: 'test'
+  ...
+# Subtest: stable IP quota is shared by new sessions; retry accounts for charged IP
+ok 19 - stable IP quota is shared by new sessions; retry accounts for charged IP
+  ---
+  duration_ms: 5.316831
+  type: 'test'
+  ...
+# Subtest: cleanup only removes fully replenished states; pruning never grants while debt remains
+ok 20 - cleanup only removes fully replenished states; pruning never grants while debt remains
+  ---
+  duration_ms: 0.815597
+  type: 'test'
+  ...
+# Subtest: HTTP rate-limited responses carry computed Retry-After and machine code
+ok 21 - HTTP rate-limited responses carry computed Retry-After and machine code
+  ---
+  duration_ms: 297.759558
+  type: 'test'
+  ...
+# Captcha operation unavailable
+# Subtest: database limiter failure returns stable unavailable response, never a challenge
+ok 22 - database limiter failure returns stable unavailable response, never a challenge
+  ---
+  duration_ms: 2.929439
+  type: 'test'
+  ...
+# Subtest: shared Django/Worker fixture agrees at each microsecond boundary
+ok 23 - shared Django/Worker fixture agrees at each microsecond boundary
+  ---
+  duration_ms: 1.635501
+  type: 'test'
+  ...
+# Subtest: changing purpose does not reset the shared issuance quota
+ok 24 - changing purpose does not reset the shared issuance quota
+  ---
+  duration_ms: 301.854239
+  type: 'test'
+  ...
+# Subtest: legacy lookup uses indexed exact-prefix range without long LIKE patterns
+ok 25 - legacy lookup uses indexed exact-prefix range without long LIKE patterns
+  ---
+  duration_ms: 1.029029
+  type: 'test'
+  ...
+1..25
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1400.257344

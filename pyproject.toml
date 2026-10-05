@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nova-slider-captcha"
-version = "0.1.0"
+version = "0.2.0"
 description = "Self-hosted puzzle slider CAPTCHA for Django forms and Django Admin"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -16,4 +16,4 @@ classifiers = ["Development Status :: 3 - Alpha", "Framework :: Django :: 5.2", 
 where = ["src"]
 
 [tool.setuptools.package-data]
-nova_slider_captcha = ["templates/nova_slider_captcha/*.html", "static/nova_slider_captcha/*.css", "static/nova_slider_captcha/*.js"]
+nova_slider_captcha = ["templates/nova_slider_captcha/*.html", "static/nova_slider_captcha/*.css", "static/nova_slider_captcha/*.js", "locale/*/LC_MESSAGES/*.po", "locale/*/LC_MESSAGES/*.mo"]

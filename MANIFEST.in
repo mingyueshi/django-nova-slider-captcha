@@ -5,6 +5,8 @@ recursive-include tests *.py *.mjs
 recursive-include demo *.py
 recursive-include scripts *.py *.cjs
 include manage.py package.json package-lock.json
-recursive-include verification *.json *.log
+recursive-include verification *.json *.log *.md
 include SOURCE_PROVENANCE.md
 recursive-include examples *.md *.mjs *.sql
+recursive-include src/nova_slider_captcha/locale *.po *.mo
+recursive-include tests/fixtures *.json

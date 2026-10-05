@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "engine": "jsdom 26.1.0 + real Django test client",
+  "checks": [
+    "wrong guess keeps widget usable with four attempts",
+    "keyboard Enter verifies through real Django API",
+    "protected demo consumes token and disables submit",
+    "real Django rejects protected replay",
+    "repeated refresh keeps newest challenge and clears proof",
+    "late submit A cannot clear or overwrite refreshed proof B, which remains usable",
+    "Admin has exactly one populated login proof field",
+    "proof expiration clears Admin hidden field",
+    "fifth mismatch locks widget and leaves no proof"
+  ],
+  "limitations": [
+    "No browser layout, pixels, pointer/touch rendering, or assistive-technology testing"
+  ]
+}

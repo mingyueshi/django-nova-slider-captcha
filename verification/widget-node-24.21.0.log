@@ -1,21 +1,36 @@
-✔ loads via init/challenge, no answer in DOM and single form field (94.85945ms)
-✔ keyboard submission, duplicate verification gated, token/reset events (26.321695ms)
-✔ wrong answer is retryable and exhausting attempts requires refresh (20.19086ms)
-✔ late verify success cannot overwrite refreshed challenge (17.544888ms)
-✔ late challenge response cannot replace newer challenge (21.328982ms)
-✔ HTML CSRF rejection clears init cache and next refresh recovers (14.73438ms)
-✔ challenge expiry invalidates pending verification and clears proof (13.784706ms)
-✔ proof expiry clears hidden input and emits reset (11.018549ms)
-✔ pointer release verifies, pointercancel does not (13.201754ms)
-✔ network failure is recoverable through refresh (15.95743ms)
-✔ detach and reinsert keeps generation monotonic and one listener set (23.034809ms)
-✔ two simultaneous widgets share init but keep independent challenges and IDs (11.600485ms)
-✔ Django init_required response clears cached initialization (10.766079ms)
-ℹ tests 13
+✔ loads via init/challenge, no answer in DOM and single form field (83.906813ms)
+✔ keyboard submission, duplicate verification gated, token/reset events (20.690039ms)
+✔ wrong answer is retryable and exhausting attempts requires refresh (15.358485ms)
+✔ late verify success cannot overwrite refreshed challenge (17.287398ms)
+✔ late challenge response cannot replace newer challenge (13.763424ms)
+✔ HTML CSRF rejection clears init cache and next refresh recovers (11.605637ms)
+✔ challenge expiry invalidates pending verification and clears proof (11.158955ms)
+✔ proof expiry clears hidden input and emits reset (12.496227ms)
+✔ pointer release verifies, pointercancel does not (17.343612ms)
+✔ network failure is recoverable through refresh (13.066695ms)
+✔ detach and reinsert keeps generation monotonic and one listener set (14.286863ms)
+✔ two simultaneous widgets share init but keep independent challenges and IDs (14.228735ms)
+✔ Django init_required response clears cached initialization (12.211468ms)
+✔ default remains Chinese regardless of document language, including ARIA (12.556679ms)
+✔ locale aliases, invalid locales, and dynamic labels retain proof and requests (18.367168ms)
+✔ custom message merge is text-only, bounded, and supports pre-upgrade properties (13.226897ms)
+✔ known error codes localize and use actual rate-limit retryAfter safely (56.973798ms)
+✔ initialization, JSON, and network errors never display arbitrary error messages (56.133373ms)
+✔ verification retries, unknown errors, and server expiry are localized (13.392616ms)
+✔ locale switches during pending verification preserve duplicate and late-response guards (11.516743ms)
+✔ invalid and cross-origin endpoints localize without making requests (18.502547ms)
+✔ long translated text uses wrapping CSS rather than fixed track and button widths (54.531683ms)
+✔ demo success ignores server messages and dynamically localizes safe result (21.293608ms)
+✔ demo rejected and interrupted requests have localized messages (22.894357ms)
+✔ refresh interrupts an old drag so its pointerup cannot submit the new puzzle (12.121714ms)
+✔ a stale pointer release or cancellation cannot submit or cancel a new drag (19.999449ms)
+✔ concurrent pointers cannot replace the active drag and matching cancellation releases it (13.185645ms)
+✔ expiry, keyboard checking, and disconnect release active pointer capture (19.892489ms)
+ℹ tests 28
 ℹ suites 0
-ℹ pass 13
+ℹ pass 28
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 589.265233
+ℹ duration_ms 945.917077

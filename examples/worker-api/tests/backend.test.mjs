@@ -4,6 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { handleCaptcha } from "../captcha.mjs";
 import { makePuzzle } from "../puzzle.mjs";
+import {claimRate,claimQuotas} from "../rate-limit.mjs";
 class D1 {
   constructor() {
     this.db = new DatabaseSync(":memory:");
@@ -13,6 +14,7 @@ class D1 {
         "utf8",
       ),
     );
+    this.db.exec(readFileSync(new URL('../migrations-0002-gcra.sql',import.meta.url),'utf8'));
   }
   prepare(sql) {
     const statement = this.db.prepare(sql);
@@ -171,39 +173,14 @@ test("session and CSRF boundaries", async () => {
   );
 });
 test("expiry of challenges, tokens and sessions", async () => {
-  const c = await ctx(),
-    p = await c.issue();
-  assert.equal(
-    (
-      await c.post(
-        "verify",
-        { challengeId: p.challengeId, x: c.answer(p.challengeId) },
-        { now: c.now + 120001 },
-      )
-    ).status,
-    409,
-  );
-  const q = await c.issue(),
-    proof = await c.post("verify", {
-      challengeId: q.challengeId,
-      x: c.answer(q.challengeId),
-    });
-  assert.equal(
-    (
-      await c.post(
-        "submit",
-        { token: proof.token, purpose: "demo" },
-        { now: c.now + 60001 },
-      )
-    ).status,
-    409,
-  );
-  assert.equal(
-    (await c.post("challenge", { purpose: "demo" }, { now: c.now + 1800001 }))
-      .status,
-    403,
-  );
+  const c=await ctx(),a=await c.issue(),b=await c.issue();
+  const proof=await c.post('verify',{challengeId:b.challengeId,x:c.answer(b.challengeId)});
+  assert.equal(proof.ok,true);
+  assert.equal((await c.post('submit',{token:proof.token,purpose:'demo'},{now:c.now+60001})).status,409);
+  assert.equal((await c.post('verify',{challengeId:a.challengeId,x:c.answer(a.challengeId)},{now:c.now+120001})).status,409);
+  assert.equal((await c.post('challenge',{purpose:'demo'},{now:c.now+1800001})).status,403);
 });
+
 test("parallel success issues a single proof; parallel submit consumes once", async () => {
   const c = await ctx(),
     p = await c.issue(),
@@ -310,4 +287,91 @@ test("PNG contains no plaintext answer metadata", () => {
   assert.equal(bytes.readUInt32BE(20), 160);
   assert.equal(bytes.includes(Buffer.from("tEXt")), false);
   assert.equal(bytes.includes(Buffer.from("answer")), false);
+});
+
+const quotaKey=(name='issue',char='a')=>name+':'+char.repeat(64);
+test('GCRA blocks minute-boundary double burst and admits exact refill',async()=>{
+ const db=new D1(),key=quotaKey(),t=59999.999;
+ for(let i=0;i<3;i++)assert.equal((await claimRate(db,key,3,t)).allowed,true);
+ const before=db.db.prepare('SELECT * FROM captcha_rate_state WHERE id=?').get(key);
+ assert.deepEqual(await claimRate(db,key,3,60000.001),{allowed:false,retryAfter:20});
+ assert.deepEqual(db.db.prepare('SELECT * FROM captcha_rate_state WHERE id=?').get(key),before);
+ assert.equal((await claimRate(db,key,3,79999.998)).allowed,false);
+ assert.equal((await claimRate(db,key,3,79999.999)).allowed,true);
+ assert.equal((await claimRate(db,key,3,79999.999)).allowed,false);
+});
+test('GCRA concurrency claims at most configured capacity',async()=>{
+ const db=new D1(),key=quotaKey();
+ const r=await Promise.all(Array.from({length:24},()=>claimRate(db,key,5,1000)));
+ assert.equal(r.filter(x=>x.allowed).length,5);
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,61000000);
+});
+test('backwards clock cannot reset debt and rejected requests do not extend it',async()=>{
+ const db=new D1(),key=quotaKey();await claimRate(db,key,1,90000);
+ const tat=db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us;
+ assert.deepEqual(await claimRate(db,key,1,30000),{allowed:false,retryAfter:120});
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,tat);
+ assert.equal((await claimRate(db,key,1,150000)).allowed,true);
+});
+test('fractional refill rounds toward stricter rate; invalid configs fail closed',async()=>{
+ const db=new D1(),key=quotaKey();
+ for(let i=0;i<7;i++)assert.equal((await claimRate(db,key,7,0)).allowed,true);
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,60000003);
+ for(const n of [0,-1,1.5,60001,NaN,Infinity,'3'])await assert.rejects(()=>claimRate(db,key,n,0),TypeError);
+ for(const t of [-1,Infinity,NaN,Number.MAX_SAFE_INTEGER])await assert.rejects(()=>claimRate(db,key,3,t),TypeError);
+});
+test('legacy active fixed window inherits cooldown without reopening quota',async()=>{
+ const db=new D1(),key=quotaKey();
+ db.db.prepare('INSERT INTO captcha_rates(id,count,expires) VALUES (?,?,?)').run(key+':1',3,180000);
+ db.db.prepare('INSERT INTO captcha_rates(id,count,expires) VALUES (?,?,?)').run(key+':2',1,210000);
+ assert.deepEqual(await claimRate(db,key,3,90000),{allowed:false,retryAfter:120});
+ assert.equal((await claimRate(db,key,3,209999.999)).allowed,false);
+ assert.equal((await claimRate(db,key,3,210000)).allowed,true);
+});
+test('stable IP quota is shared by new sessions; retry accounts for charged IP',async()=>{
+ const db=new D1(),ip=quotaKey('ip'),sess1=quotaKey('issue','b'),sess2=quotaKey('issue','c');
+ assert.equal((await claimQuotas(db,[[ip,1],[sess1,1]],0)).allowed,true);
+ assert.equal((await claimQuotas(db,[[ip,1],[sess2,1]],0)).allowed,false);
+ const db2=new D1();await claimRate(db2,sess1,1,0);
+ assert.deepEqual(await claimQuotas(db2,[[ip,1],[sess1,1]],30000),{allowed:false,retryAfter:60});
+ assert.equal((await claimRate(db2,quotaKey('verify','b'),1,30000)).allowed,true);
+});
+test('cleanup only removes fully replenished states; pruning never grants while debt remains',async()=>{
+ const db=new D1(),key=quotaKey();await claimRate(db,key,2,1000);
+ db.db.prepare('DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?').run(1000000,1000000);
+ assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_rate_state').get().n,1);
+ db.db.prepare('DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?').run(31000000,31000000);
+ assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_rate_state').get().n,0);
+ assert.equal((await claimRate(db,key,2,31000)).allowed,true);
+});
+test('HTTP rate-limited responses carry computed Retry-After and machine code',async()=>{
+ const c=await ctx();for(let i=0;i<15;i++)await c.issue();
+ const r=await handleCaptcha(new Request('https://demo.test/captcha/challenge',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://demo.test',Cookie:c.cookie,'X-CSRFToken':c.csrfToken},body:JSON.stringify({purpose:'demo'})}),c.db,'challenge',c.now);
+ assert.equal(r.status,429);assert.equal(r.headers.get('Retry-After'),'4');
+ assert.deepEqual(await r.json(),{ok:false,code:'rate_limited',retryAfter:4});
+});
+test('database limiter failure returns stable unavailable response, never a challenge',async()=>{
+ const c=await ctx();c.db.db.exec('DROP TABLE captcha_rate_state');
+ assert.equal((await c.issue()).status,503);
+});
+
+test('shared Django/Worker fixture agrees at each microsecond boundary',async()=>{
+ const fixture=JSON.parse(readFileSync(new URL('../../../tests/fixtures/gcra.json',import.meta.url),'utf8'));
+ const db=new D1(),key=quotaKey();
+ for(const step of fixture.steps){
+  assert.deepEqual(await claimRate(db,key,fixture.capacity,step.nowUs/1000),{allowed:step.allowed,retryAfter:step.retryAfter});
+  assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,step.tatUs);
+ }
+});
+test('changing purpose does not reset the shared issuance quota',async()=>{
+ const c=await ctx();for(let i=0;i<15;i++)await c.issue();
+ assert.equal((await c.post('challenge',{purpose:'login'})).status,429);
+});
+
+test('legacy lookup uses indexed exact-prefix range without long LIKE patterns',async()=>{
+ const db=new D1(),key=quotaKey(),other=quotaKey('issue','b');
+ db.db.prepare('INSERT INTO captcha_rates(id,count,expires) VALUES (?,?,?)').run(other+':1',1,999999);
+ db.db.prepare('INSERT INTO captcha_rates(id,count,expires) VALUES (?,?,?)').run(key+'-not-a-window',1,999999);
+ const prepare=db.prepare.bind(db);db.prepare=sql=>{assert.equal(/\bLIKE\b|\bGLOB\b/i.test(sql),false);return prepare(sql)};
+ assert.equal((await claimRate(db,key,3,0)).allowed,true);
 });

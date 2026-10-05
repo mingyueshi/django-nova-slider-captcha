@@ -21,3 +21,11 @@ class RateBucket(models.Model):
     key = models.CharField(max_length=128, primary_key=True)
     count = models.PositiveIntegerField(default=0)
     expires_at = models.DateTimeField(db_index=True)
+
+
+class RateLimitState(models.Model):
+    """Stable-key GCRA debt, kept separate from the legacy fixed windows."""
+
+    key = models.CharField(max_length=128, primary_key=True)
+    tat_us = models.PositiveBigIntegerField(default=0, db_index=True)
+    blocked_until_us = models.PositiveBigIntegerField(default=0, db_index=True)

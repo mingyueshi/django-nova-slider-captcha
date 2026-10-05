@@ -1,69 +1,76 @@
-# Verification · 2026-10-05
+# 0.2.0 验证说明
 
-Baseline: Nova Django Admin Theme **0.6.0**, source byte-equivalent to the public GitHub import [`b0fd37e528a6ad76bec646a68d02f017cde3c4b9`](https://github.com/mingyueshi/nova-admin/commit/b0fd37e528a6ad76bec646a68d02f017cde3c4b9). Nova source was referenced for integration, not modified or repackaged into this app.
+验证日期：2026-10-05。此文件记录本轮优化后的实际执行结果，不把旧版测试视为本版重跑。0.1.0 历史记录已保存到 `verification/history-0.1.0/`。
 
-## Executed Python / Django matrix
+Nova 集成基线是 Theme 0.6.0，对应公开源码 [b0fd37e](https://github.com/mingyueshi/nova-admin/commit/b0fd37e528a6ad76bec646a68d02f017cde3c4b9)。没有修改或把该主题内置到此包。
 
-All seven exact cells passed **31 tests per profile**, with four profiles each: source/native Admin, source/Nova Admin, installed wheel/native Admin, installed wheel/Nova Admin. Total: **28 passing profiles, 868 test executions**, with no skips. Each profile also passed Django system checks and migration-drift checks. Each cell passed `pip check` and source/wheel import-origin assertions. After the final CSS-only compatibility update, both installed-wheel profiles were rerun in all seven cells; those repeat executions are retained in the logs and are not added to the 868 unique-profile total.
+## 本轮 Python / Django 完整矩阵
 
-| Python | Django | Pillow | Four profiles |
+| Python | Django | Pillow | source/wheel × native/Nova |
 |---|---|---|---|
-| 3.11.17 | 5.2.17 | 12.2.0 | Passed |
-| 3.12.15 | 5.2.17 | 12.2.0 | Passed |
-| 3.12.15 | 6.0.8 | 12.2.0 | Passed |
-| 3.12.15 | 6.1.1 | 12.2.0 | Passed |
-| 3.13.16 | 6.1.1 | 12.2.0 | Passed |
-| 3.14.8 | 5.2.17 | 12.2.0 | Passed |
-| 3.14.8 | 6.1.1 | 12.2.0 | Passed |
+| 3.11.17 | 5.2.17 | 12.2.0 | 4 模式通过 |
+| 3.12.15 | 5.2.17 | 12.2.0 | 4 模式通过 |
+| 3.12.15 | 6.0.8 | 12.2.0 | 4 模式通过 |
+| 3.12.15 | 6.1.1 | 12.2.0 | 4 模式通过 |
+| 3.13.16 | 6.1.1 | 12.2.0 | 4 模式通过 |
+| 3.14.8 | 5.2.17 | 12.2.0 | 4 模式通过 |
+| 3.14.8 | 6.1.1 | 12.2.0 | 4 模式通过 |
 
-Platform: Linux x86-64, standard GIL CPython. Exact Python runtimes were installed in isolated task directories using uv 0.12.22; actual runtime/imported Django/Pillow versions were independently asserted. Dependency values were Django as above, Pillow 12.2.0, asgiref 3.12.1 and sqlparse 0.6.0. Build tools were setuptools 84.0.0 / wheel 0.48.0. Concurrency used **file-backed SQLite** and fresh thread-local database connections.
+每种模式实际运行 61 项测试，28 种模式共 **1708 次通过，无跳过**。最后一次重跑包含已修正的多指交错前端文件。系统检查、迁移漂移、`pip check`、源码/wheel 导入来源断言均通过。矩阵脚本现在强制重装指定 wheel，避免相同版本号掩盖旧安装包。
 
-Security tests include anonymous session initialization, PNG-only/public response contract, tolerance boundaries, giant/NaN/infinite/negative coordinates, nested malformed JSON, expiry, cross-session/purpose rejection, one-use proof replay, fifth-attempt lockout, direct-IP/session rate limits, untrusted forwarded-header rejection, same-origin restrictions even with a trusted CSRF origin, real CSRF middleware rejection, protected POST method restrictions, safe pruning, and fail-closed Admin form validation before password authentication. Eight-/twelve-thread races verify single token issuance, single consume winner, exact five-attempt cap and atomic rate claims.
+平台为 Linux x86-64、普通 GIL CPython；使用已存在的精确隔离运行时，不把运行时复用描述为重新下载。数据库并发使用文件型 SQLite 与独立线程连接。依赖为上述 Django/Pillow、asgiref 3.12.1、sqlparse 0.6.0。编译中文目录使用 polib 1.2.0；标准 Django `compilemessages` 也可在有 GNU gettext 的环境重建。
 
-Nova integration asserts its actual `nova-login-layout` renders; the native profile asserts that Nova-specific markup is absent. Successful Admin login and failed-password proof consumption are exercised.
+测试覆盖原有挑战/凭证/CSRF/Admin 约束，并新增：
 
-The install boundary matches Nova (`Python>=3.10`, `Django>=5.2.17,<6.2`), but **Python 3.10 was not tested and is not recommended for new deployment**. Metadata is not a claim that every possible combination is tested.
+- 微秒级补充边界，60 秒前后不恢复两个满桶；拒绝不延后债务
+- IP/session/action 独立键、共享 purpose 额度、新 session 不能绕过 IP 限额
+- 12 线程容量与单次补充竞争；清理与获取/更新竞争，包含注册删除信号的环境
+- 非法配额配置、实际 Retry-After、数据库故障的 503 失败关闭
+- 旧固定窗口升级保守保留最大过期时间，挑战与凭证保留，拒绝自动逆迁移
+- `USE_TZ=False` 与正常时区配置；回退时钟保留债务
+- Django 表单/模板的中文目录和活动语言；本地化不会更改机器错误代码
 
-## Executed JavaScript matrix
+安装声明仍为 Python ≥3.10、Django ≥5.2.17 且 <6.2；Python 3.10 和其他笛卡尔组合没有因此变成已测组合。
 
-The final shared widget passed **13 cases per Node version**, 39 executions total:
+## 本轮 Node / 前端矩阵
 
-| Node | bundled npm | jsdom | Widget cases | DOM + Django cases |
-|---|---|---|---|---|
-| 22.23.3 | 10.9.9 | 26.1.0 | 13 passed | 9 passed |
-| 24.21.0 | 11.19.0 | 26.1.0 | 13 passed | 9 passed |
-| 26.10.0 | 11.19.1 | 26.1.0 | 13 passed | 9 passed |
+| Node | 配套 npm | jsdom | 组件 | 真实 Django-client DOM | Worker SQL |
+|---|---|---|---:|---:|---:|
+| 22.23.3 | 10.9.9 | 26.1.0 | 28 | 12 | 25 |
+| 24.21.0 | 11.19.0 | 26.1.0 | 28 | 12 | 25 |
+| 26.10.0 | 11.19.1 | 26.1.0 | 28 | 12 | 25 |
 
-Each Node runtime is the official Linux x64 binary, checked against its official HTTPS SHA-256 list. Each version used a separate clean jsdom installation with lifecycle scripts disabled. Runtime provenance is in `verification/node-downloads.json`; outcomes and immutable widget hash are in `verification/node-results.json`.
+三组均通过：组件 84 次、Django DOM 36 次、Worker SQL 75 次。沿用各 Node 版本的独立干净 jsdom 安装；官方二进制校验记录保存在 `node-downloads.json`。
 
-Shared widget cases cover keyboard submission, duplicate-submit gating, retry/fifth-attempt failure, refresh, late responses, HTML CSRF failures, session-init cache recovery, challenge/proof expiry, pointer cancel, network recovery, reconnects, and multiple widgets. This is a frontend development matrix, not a runtime Node dependency for Django.
+组件检查覆盖默认中文、英文及地区回退、未知语言、自定义文案、文本注入防护、数字占位符、ARIA/宿主 lang、初始化失败、重试秒数、动态切换不丢失凭证/不延长有效期、刷新/迟到响应/过期/重放、长文本换行样式，以及旧 pointerup/cancel/lost-capture 不影响新拖动。真实 Django-client DOM 流程使用 Python 3.12.15 / Django 5.2.17，保留真实 CSRF 检查与一次性凭证消费；图片解码在 DOM 测试中被替代，因此不把这些结果说成真实浏览器视觉验证。
 
-An additional **nine DOM-to-real-Django test-client checks per Node version** (27 total) pass against Python 3.12.15 / Django 5.2.17 with actual CSRF enforcement and fresh disposable databases. They cover wrong-answer retry, Enter submission, protected demo consumption/replay, repeated refresh, exactly one populated Admin hidden field, proof expiration, five-error lockout, and a delayed protected submission that must not clear a newly solved replacement proof. Image decoding is stubbed for DOM tests; PNG validity/dimensions are verified independently by Pillow tests.
+`tests/fixtures/gcra.json` 同时驱动 Django 与 Worker，逐步核对允许/拒绝、Retry-After 和 TAT。Worker 使用真实 SQLite SQL，并验证原阈值继续保持：出题 15/session、120/IP，校验 60/session、240/IP，初始化 40/IP。
 
-## Artifacts and reproducibility
+## 独立评审与真实 Worker 运行时
 
-- `verification/matrix-results.json`: exact Python cells and profile status
-- `verification/python-runtime-versions.json`: observed versions
-- `verification/python-*.log`: full final matrix logs
-- `verification/node-downloads.json`: official URLs and matching SHA-256 values
-- `verification/node-results.json`, `widget-node-*.log`: exact frontend results
-- `verification/dom-results.json`, `dom-node-*.log`: real Django / DOM integration results
-- `verification/artifact-sha256.json`: tested wheel and asset hashes
-- `scripts/test_matrix.py`: isolated source/wheel/native/Nova runner
-- `tests/widget.test.mjs`: shared widget regression suite
-- `scripts/test_dom.cjs`, `scripts/dom_bridge.py`: test-only stdio bridge; not a deployed HTTP endpoint
+独立安全、升级和国际化评审通过；额外检查包括 32 线程清理/创建/条件更新、配置变更后的债务保留、SQL 故障注入和整数边界。发现的多指交错问题已修正并独立复现复测。
 
-All runtime package files and frontend assets inside the built wheel were byte-compared with final source. The wheel has no test solution bridge, demo database, credentials, node_modules, or development server.
+真实本地 workerd/D1 HTTP 检查通过：八路校验与八路消费各恰一成功；出题容量与 purpose 切换约束；计算后的 Retry-After；活跃旧窗口冷却继承，以及冷却到期后的恢复。
 
-## Not executed / limits
+实际 D1 还暴露了长 LIKE 模式限制。旧键继承查询已改为有主键索引的精确前缀范围 `[key + ':', key + ';')`；独立检查在 2017 个边界样例上验证与此前前缀意图等价，实际 workerd 复测通过。没有把原始数据库错误返回给客户端。
 
-- PostgreSQL, MySQL/MariaDB, production load, multi-host/proxy deployment and any real application beyond the supplied test/example sites
-- Python 3.10, other Python/Django Cartesian combinations, PyPy, free-threaded builds, Windows, macOS or ARM64
-- Real browser layout/pixel, touch-device, keyboard focus appearance or assistive-technology validation of the Django-rendered page: local Chromium was blocked by the execution environment's Unix-socket restrictions. DOM checks do not substitute for these
-- Genuine bot resistance, computer-vision resistance or a secure nonvisual verification alternative
+## 产物身份
 
-Public Site deployment/browser checks are a separate deliverable and are not counted as Django package tests. A production host still needs its own equivalent secure nonvisual route, throttling/MFA, secure deployment settings and manual browser verification.
+最终测试 wheel：`nova_slider_captcha-0.2.0-py3-none-any.whl`。
+SHA-256：`7eb1199d1c324a1bb290c675532d7e1caa708d2fadb3bc03375a472e147f7e2a`。
 
-## Repository export note
+已逐字节核对该 wheel 的全部 27 个运行文件与当前源码，含 `0002_ratelimitstate` 和中文 `.mo`。wheel 不包含测试用答案桥、示例数据库或开发环境。后续文档/报告元数据变化可能令重新构建的 wheel 整包哈希不同；运行文件身份另见 `source-runtime-sha256.json`。仓库不提交 wheel 或源码 ZIP。
 
-The runtime files under `src/` are byte-identical to the tested release snapshot. Documentation/install instructions and historical-log root paths were adjusted for this public source repository. Historical wheel digest refers to that previously tested artifact; rebuilding with updated README metadata can produce a different wheel digest. No wheel or source archive is checked in. There is no GitHub Actions workflow in this export; local historical results are not a remote CI pass. See `SOURCE_PROVENANCE.md`.
+## 报告与未验证范围
+
+当前机器记录位于 `verification/matrix-results.json`、`node-results.json`、`dom-results.json`、各版本日志和 `source-runtime-sha256.json`。日志只替换机器专用根路径，不修改测试结果。
+
+未执行：PostgreSQL/MySQL、生产负载、其他操作系统/架构、PyPy/无 GIL 版本、任意跨主机时钟偏差、真机 iOS/Android、屏幕阅读器或 RTL 语言。GCRA 不构成跨独立数据库的全局风控；视觉拼图不保证抵抗计算机视觉。生产仍需独立账号/IP 控制和安全的非视觉替代流程。
+
+公开站点的中英文/小屏浏览器检查与维护切换另外执行；它的 Worker 页面不能冒充 Django 页面浏览器检查。仓库没有 GitHub Actions workflow 时，本地通过不等于远端 CI 通过。
+
+## 公开演示的本轮浏览器检查
+
+在云 Chromium 对0.2.0公开站点检查了中文/英文状态与ARIA、维护503的本地化、维护恢复后刷新、英文错误次数提示、桌面拖动成功、成功后切换语言仍可消费同一凭证、小屏键盘调节成功、中文/英文业务提交、凭证到期恢复，以及自定义长文案。400与333 CSS像素视口（通过窗口缩放与浏览器缩放得到）浅/深色布局均无横向溢出。此处是实际浏览器检查，仍不是iOS/Android真机或辅助技术检查。
+
+部署切换先启用维护响应，读回全部旧桶并确认实际过期时间。约150秒维护后再次核实旧数据未新增且均已过期，移除维护配置并部署同一版本，公开服务恢复。线上演示仍是Worker/D1，不将该结果计入Django页面视觉验证。

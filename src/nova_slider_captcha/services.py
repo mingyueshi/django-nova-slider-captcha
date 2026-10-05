@@ -4,15 +4,18 @@ Conditional SQL UPDATEs are the correctness boundary. No local-memory/cache lock
 read-then-delete token, or select_for_update assumption is used.
 """
 import secrets
-from datetime import timedelta
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone as datetime_timezone
 
-from django.db.models import F
+from django.db import router
+from django.db.models import BigIntegerField, F, Value
+from django.db.models.functions import Greatest
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 
-from .conf import CHALLENGE_TTL, MAX_ATTEMPTS, PURPOSES, TOKEN_TTL, TOLERANCE, rate_limit
+from .conf import CHALLENGE_TTL, MAX_ATTEMPTS, PURPOSES, RATE_PERIOD_US, TOKEN_TTL, TOLERANCE, rate_limit
 from .images import make_puzzle
-from .models import Challenge, RateBucket
+from .models import Challenge, RateLimitState
 
 _SESSION_KEY = "_nova_slider_binding"
 
@@ -29,21 +32,63 @@ def session_binding(request, create=False):
     return _hash(nonce) if isinstance(nonce, str) and nonce else None
 
 
+@dataclass(frozen=True)
+class RateDecision:
+    allowed: bool
+    retry_after: int = 0
+
+    def __bool__(self):
+        return self.allowed
+
+
+def timestamp_us(now):
+    """Exact integer UTC microseconds; do not round via float timestamps."""
+    if timezone.is_naive(now):
+        now = timezone.make_aware(now, timezone.get_default_timezone())
+    delta = now - datetime(1970, 1, 1, tzinfo=datetime_timezone.utc)
+    return (delta.days * 86_400 + delta.seconds) * 1_000_000 + delta.microseconds
+
+
+def _retry_after(scopes, now_us):
+    # Include already-charged scopes: a later rejection does not refund them.
+    states = RateLimitState.objects.using(router.db_for_write(RateLimitState)).filter(key__in=scopes).values("key", "tat_us", "blocked_until_us")
+    eligible_us = now_us
+    for state in states:
+        eligible_us = max(eligible_us, state["tat_us"] - scopes[state["key"]], state["blocked_until_us"])
+    return max(1, (eligible_us - now_us + 999_999) // 1_000_000)
+
+
 def allow_request(request, action):
-    """Fixed 60-second windows, both per-session and per-direct-peer IP.
+    """Atomically claim GCRA capacity per direct-peer IP, then per session.
+
+    Each scope starts with N tokens and refills one per ceil(60s/N). Stable
+    keys prevent a wall-clock window boundary or a new session resetting IP
+    debt. An accepted earlier scope is not refunded if a later scope rejects.
+    Denials never advance a scope's TAT. Backward clocks retain debt rather
+    than reset it; deployments must synchronize clocks (arbitrary cross-host
+    skew is not covered). Database failures propagate and therefore fail closed.
 
     REMOTE_ADDR is authoritative. Forwarded headers are intentionally ignored;
     configure the trusted reverse proxy to set REMOTE_ADDR correctly.
     """
-    now = timezone.now()
-    window = int(now.timestamp()) // 60
-    subjects = {"session": session_binding(request, create=True), "ip": _hash(request.META.get("REMOTE_ADDR", "unknown"), "ip")}
-    for scope, subject in subjects.items():
-        key = f"{action}:{scope}:{window}:{subject}"
-        bucket, _ = RateBucket.objects.get_or_create(key=key, defaults={"expires_at": now + timedelta(seconds=120)})
-        if not RateBucket.objects.filter(pk=bucket.pk, count__lt=rate_limit(action, scope)).update(count=F("count") + 1):
-            return False
-    return True
+    limits = {scope: rate_limit(action, scope) for scope in ("ip", "session")}
+    now_us = timestamp_us(timezone.now())
+    subjects = (("ip", _hash(request.META.get("REMOTE_ADDR", "unknown"), "ip")),
+                ("session", session_binding(request, create=True)))
+    claimed = {}
+    for scope, subject in subjects:
+        capacity = limits[scope]
+        interval_us = (RATE_PERIOD_US + capacity - 1) // capacity
+        tolerance_us = (capacity - 1) * interval_us
+        key = f"{action}:{scope}:{subject}"
+        claimed[key] = tolerance_us
+        RateLimitState.objects.get_or_create(key=key)
+        updated = RateLimitState.objects.filter(
+            key=key, tat_us__lte=now_us + tolerance_us, blocked_until_us__lte=now_us,
+        ).update(tat_us=Greatest(F("tat_us"), Value(now_us, output_field=BigIntegerField())) + interval_us)
+        if not updated:
+            return RateDecision(False, _retry_after(claimed, now_us))
+    return RateDecision(True)
 
 
 def issue(request, purpose):

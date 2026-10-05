@@ -1,9 +1,9 @@
 {
-  "version": "0.1.0",
-  "unchanged_runtime_files": [
+  "version": "0.2.0",
+  "runtime_files": [
     {
       "path": "src/nova_slider_captcha/__init__.py",
-      "sha256": "189b0aa7787e510fb94b0fd58e86a4913fd45fe72295e5e45276870e2acf7f25"
+      "sha256": "42a9750015915ef4368b8d541e16cb8cf20c7fcfa2b7d4c011f36c48a6eec0fd"
     },
     {
       "path": "src/nova_slider_captcha/admin.py",
@@ -19,15 +19,23 @@
     },
     {
       "path": "src/nova_slider_captcha/conf.py",
-      "sha256": "011b09f27ab02c2fcae8300d381ebf82e9ee35f407ffabde5205695f6b1892fa"
+      "sha256": "5959a4cb8472e0177e963ed4922e8d866fcf31fbb3617dc42f7d18194642bf08"
     },
     {
       "path": "src/nova_slider_captcha/forms.py",
-      "sha256": "6dcf29bac585ccf88793e0e3c5121eb406be0db6915d5c384439b90df5db0b22"
+      "sha256": "2f1a855a1c8d5c6f80967fd87161042f1a96028579ce3288ec7576987c1cc4b1"
     },
     {
       "path": "src/nova_slider_captcha/images.py",
       "sha256": "6a063dc6bbaa968f7fdeb59b293037ace9e2a7887d8701c81d01da78c18a4e1c"
+    },
+    {
+      "path": "src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo",
+      "sha256": "d6e8ac5c4ac7ee1354b479e5e8a240b50e198232bfee670f0dbc07402e1eb799"
+    },
+    {
+      "path": "src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po",
+      "sha256": "a8bcb29989779a78d505918dc661dc89f0785a869beeadf46ecf54983599b644"
     },
     {
       "path": "src/nova_slider_captcha/management/__init__.py",
@@ -39,11 +47,15 @@
     },
     {
       "path": "src/nova_slider_captcha/management/commands/prune_slider_captcha.py",
-      "sha256": "cbf312869c30a8199525445a2abd1c7efed027a667da8310e3dff79ec3d4c8f4"
+      "sha256": "f2b9ff21f6a765b346f3859863293871c5a605b7529e0dca472873b3c6c1d1f8"
     },
     {
       "path": "src/nova_slider_captcha/migrations/0001_initial.py",
       "sha256": "66e3ca8bd567d0b1b9b0cf48d6c8e338156ad867de355e81ea95f4c1d3fa805a"
+    },
+    {
+      "path": "src/nova_slider_captcha/migrations/0002_ratelimitstate.py",
+      "sha256": "cf102185d206440858e4ff599ab03f1f6367e6fb3255eeed94a41c057812a5a5"
     },
     {
       "path": "src/nova_slider_captcha/migrations/__init__.py",
@@ -51,11 +63,11 @@
     },
     {
       "path": "src/nova_slider_captcha/models.py",
-      "sha256": "57e5e2a55e2aa4339d6adf7736ca005d29c940db1db37940da8e68cd2cfdae73"
+      "sha256": "dd368decc05b122e8760c4991d48830ab6d4e22670d7f58007fdfce81bf192a6"
     },
     {
       "path": "src/nova_slider_captcha/services.py",
-      "sha256": "ffbfc79c13328a63bbdd56c45e6177a3c07f92f9d3aa2c527a05847d2d29c1c8"
+      "sha256": "d6ed0aa1b67d81bd9204a385be3fcbca0f4538af90b6feff3989b0c914325053"
     },
     {
       "path": "src/nova_slider_captcha/static/nova_slider_captcha/demo.css",
@@ -63,15 +75,15 @@
     },
     {
       "path": "src/nova_slider_captcha/static/nova_slider_captcha/demo.js",
-      "sha256": "b381d445f24f986fbe9f7f647eb19a7b8ae34ebec02911ecd52ba7b76e0f021e"
+      "sha256": "101aa2b06cc556c874197cfb0f6604674165507da8ba5cff0fedc1c71d0854e3"
     },
     {
       "path": "src/nova_slider_captcha/static/nova_slider_captcha/slider.css",
-      "sha256": "2fee717362c7b7fd0411cf5c34eb39fcdc0e059ec2a6c6459af6451588e0f238"
+      "sha256": "284a5512efc6a19eb895497e1664b5e9b7c5bbf062055cd759f919325936aa2c"
     },
     {
       "path": "src/nova_slider_captcha/static/nova_slider_captcha/slider.js",
-      "sha256": "eda1ad0eeeec8f5ad126f07cb41f189585361ce385fbcbe4b493a26620a96db1"
+      "sha256": "4d941680a7892566691712663d65bfb6f5c3961847af0b0e5335c19b3e2dc22f"
     },
     {
       "path": "src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html",
@@ -79,11 +91,11 @@
     },
     {
       "path": "src/nova_slider_captcha/templates/nova_slider_captcha/demo.html",
-      "sha256": "5dbbdc7a7a5f73f54c9d65b680745cd30e02ce1b7aa7aec1cecb72d56f527351"
+      "sha256": "7b008f96db14d66e773bb6f42d0ce7c56822b51650691403c5002c60d3d98d0a"
     },
     {
       "path": "src/nova_slider_captcha/templates/nova_slider_captcha/widget.html",
-      "sha256": "db14cc65937b27373a1eeb4f1238fd75a5de545933f06447b2235aa39b95fe6c"
+      "sha256": "df9ba3635ae558e743f0c5aed82ccb143700fc5b3344b10feb6e93a1d6ce96e8"
     },
     {
       "path": "src/nova_slider_captcha/templatetags/__init__.py",
@@ -95,19 +107,31 @@
     },
     {
       "path": "src/nova_slider_captcha/views.py",
-      "sha256": "041ac8deb2c4360f9eb73f518a26781eda751a16d84b053dbb5e1f6808b0525a"
+      "sha256": "8424aaf8dbf31ca762939ff9f710c63b1678c6203f4eb96d4d823f42687c8236"
     },
     {
       "path": "examples/worker-api/captcha.mjs",
-      "sha256": "e1c3df77face2751efd43b77be9185a09bcc8c6a3d58429e5487797328594ece"
+      "sha256": "870761a113d2d09dbf3eb9f07663cc9f30f37c3d94b8df3dc1efbaed04e3a745"
+    },
+    {
+      "path": "examples/worker-api/migrations-0002-gcra.sql",
+      "sha256": "1850e4e0a402d668c3b0ec0334be7e9832c78c67246058cd4cb3c69aa862eca8"
     },
     {
       "path": "examples/worker-api/puzzle.mjs",
       "sha256": "344a5c559d6dcd0c2d0b425d3ec8b987396ee3357913dcd7d5b63a11e8737ab1"
     },
     {
+      "path": "examples/worker-api/rate-limit.mjs",
+      "sha256": "bf8dd021acf232498151494f22954382fd7e331c2a8fef91eef737e40554c5b0"
+    },
+    {
       "path": "examples/worker-api/schema.sql",
       "sha256": "6ae502a5b155bfad6125257201a6c98a6f8c6a781cef936cd72d84b18b2fde00"
+    },
+    {
+      "path": "examples/worker-api/worker.mjs",
+      "sha256": "30019f59010656829929e89ecd2ee8e7f0c7efac623bc075a100cad5ad6c22f6"
     }
   ]
 }

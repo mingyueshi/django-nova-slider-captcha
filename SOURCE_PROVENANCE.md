@@ -1,28 +1,23 @@
-# Source provenance and export boundary
+# 源码范围与版本记录
 
-This is the clean source export of the verified Nova Slider CAPTCHA **0.1.0** snapshot from 2026-10-05. It starts a new repository history; no prior hosting repository history or deployment data is imported.
+本仓库是 Nova Slider CAPTCHA 的独立开发仓库。0.1.0 的清洁源码导入已完成；0.2.0 在该公开历史上实现文档中文化、前端国际化和 GCRA 限流，不再宣称所有运行文件与 0.1.0 相同。
 
-## Included
+## 包含的内容
 
-- Installable Django package under `src/nova_slider_captcha/`, including migrations, templates, Admin integration and the vanilla `nova-slider` frontend
-- Runnable local Django example under `demo/` and its `manage.py`
-- Backend, frontend and real-Django DOM tests, compatibility scripts, exact historical matrix results and validation logs
-- Optional portable Worker/D1 API logic and schema under `examples/worker-api/`
+- `src/nova_slider_captcha/`：可安装的 Django app、数据库迁移、模板、Admin 集成、原生前端与翻译目录
+- `demo/`、`manage.py`：仅供本地开发的 Django 示例
+- `tests/`、`scripts/`：后端、前端、真实 Django-client DOM 集成检查和精确矩阵脚本
+- `examples/worker-api/`：可选的 Worker/D1 API、schema、升级迁移、最小入口和测试
+- `verification/`：本版验证记录、运行文件哈希与明确分开的历史结果
 
-The Django runtime files and optional Worker API/puzzle/schema files are unchanged from their verified snapshot. `verification/source-runtime-sha256.json` lists every included runtime file's SHA-256. Test assertions in the Worker suite are unchanged; only import/schema paths were adjusted for relocation. The small optional Worker fetch entrypoint is new export glue and is syntax-checked separately.
+`verification/source-runtime-sha256.json` 记录当前运行文件内容身份。`verification/history-0.1.0/` 保留历史版本结果，不能用于宣称 0.2.0 未经重测的部分已经通过。旧执行日志中的机器根路径已用占位符替换，保留实际版本与测试结果。
 
-## Export-only changes
+## 不包含的内容
 
-- The original standalone Django package becomes the repository root
-- README installs directly from a clone and explicitly explains the public demonstration's different backend
-- Historical execution-log root paths are redacted using `<PROJECT_ROOT>`, `<MATRIX_ROOT>`, `<RUNTIMES_ROOT>` and `<PIP_CACHE>`; test outcomes/version evidence remain intact
-- The ignore list excludes local secrets, databases, build/cache output and hosting metadata
-- The optional Worker example documents platform bindings but carries no real deployment IDs or credentials
+在线演示的 React 展示壳、Sites 专用脚手架、项目/数据库绑定、线上运行数据及原托管仓库私密历史不在本仓库。未纳入真实 `.env` 值、用户 session、数据库、Node/Python 环境、缓存、打包归档或托管写入凭据。
 
-## Deliberately excluded
+仓库发布不会自动把代码部署到第三方账户。公开交互演示由单独的托管项目维护，其后端使用 Worker/D1；Django 是本仓库的主要集成实现。不要把演示站的浏览器测试说成 Django 页面真实浏览器测试。
 
-The hosted demonstration's React presentation shell, Sites-specific scaffold and project/database binding are not exported. No `.env` values, user sessions, live database, local Python/Node environments, cache, archive/wheel, private Git history or hosting write credentials are included. The public demonstration remains unchanged by this repository publication.
+Nova Admin Theme 0.6.0 的对应公开基线为 [mingyueshi/nova-admin · b0fd37e](https://github.com/mingyueshi/nova-admin/commit/b0fd37e528a6ad76bec646a68d02f017cde3c4b9)。本仓库不内置该主题；运行 Nova 集成矩阵时需明确提供它的源码。
 
-The package is tested against Nova Admin Theme 0.6.0, whose public source is [mingyueshi/nova-admin at b0fd37e](https://github.com/mingyueshi/nova-admin/commit/b0fd37e528a6ad76bec646a68d02f017cde3c4b9). The theme is not vendored into this repository.
-
-Historical results and untested platform/security boundaries are detailed in `VERIFICATION.md`. The repository currently has no GitHub Actions workflow; do not interpret absent remote checks as a pass. New local relocation checks are summarized in `verification/export-checks.json`.
+测试覆盖、迁移要求和未验证范围见 [VERIFICATION.md](VERIFICATION.md) 及 [README.md](README.md)。仓库没有 GitHub Actions workflow 时，不能把没有远端检查当成 CI 通过。

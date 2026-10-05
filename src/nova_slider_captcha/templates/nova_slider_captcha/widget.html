@@ -1,4 +1,5 @@
+{% load i18n %}
 <div class="nova-slider-form-widget">
-  <nova-slider endpoint="{{ widget.endpoint }}" purpose="login" id="{{ widget.attrs.id }}" aria-label="Security verification"></nova-slider>
-  <noscript>JavaScript is required for this visual challenge. Use the site's equivalent secure nonvisual verification route or contact support.</noscript>
+  <nova-slider endpoint="{{ widget.endpoint }}" purpose="login" locale="{{ widget.locale }}"{% if widget.attrs.id %} id="{{ widget.attrs.id }}"{% endif %} aria-label="{% translate 'Security verification' %}"></nova-slider>
+  <noscript>{% translate "JavaScript is required for this visual challenge. Use the site's equivalent secure nonvisual verification route or contact support." %}</noscript>
 </div>

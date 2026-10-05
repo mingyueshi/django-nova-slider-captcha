@@ -4,9 +4,11 @@ Usage: python scripts/test_matrix.py --runtimes /path/to/uv-install-dir --nova-s
 All environment creation and reports stay in the selected --work directory.
 """
 import argparse
+import hashlib
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -40,7 +42,9 @@ def main():
             try:
                 run([interpreter, "-m", "venv", directory / "venv"])
                 py = directory / "venv/bin/python"
-                run([py, "-m", "pip", "install", "--disable-pip-version-check", f"Django=={djver}", "Pillow==12.2.0", "asgiref==3.12.1", "sqlparse==0.6.0", args.wheel])
+                run([py, "-m", "pip", "install", "--disable-pip-version-check", f"Django=={djver}", "Pillow==12.2.0", "asgiref==3.12.1", "sqlparse==0.6.0"])
+                # Same-version rebuilds must not silently keep an older wheel.
+                run([py, "-m", "pip", "install", "--disable-pip-version-check", "--force-reinstall", "--no-deps", args.wheel])
                 run([py, "-m", "pip", "check"])
                 run([py, "-c", f"import platform, django, PIL; assert platform.python_version() == {pyver!r}; assert django.get_version() == {djver!r}; assert PIL.__version__ == '12.2.0'; print(platform.python_version(), django.get_version(), PIL.__version__)"])
                 for mode in ("source", "wheel"):
@@ -59,6 +63,10 @@ def main():
                         run([py, "-m", "django", "check"], env)
                         run([py, "-m", "django", "makemigrations", "nova_slider_captcha", "--check", "--dry-run"], env)
                         run([py, "-m", "django", "test", "tests", "--noinput", "-v", "1"], env)
+                        counts = re.findall(r"Ran (\d+) tests? in", log_path.read_text())
+                        if not counts or int(counts[-1]) == 0:
+                            raise RuntimeError("The test runner did not report a nonempty suite")
+                        profile["tests"] = int(counts[-1])
                         profile["status"] = "passed"
                 result["status"] = "passed"
             except Exception as error:
@@ -72,7 +80,7 @@ def main():
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         results = list(executor.map(cell, CELLS))
     output = ROOT / "verification/matrix-results.json"
-    output.write_text(json.dumps({"baseline_nova": "0.6.0", "database": "file-backed SQLite", "cells": results}, indent=2) + "\n")
+    output.write_text(json.dumps({"baseline_nova": "0.6.0", "database": "file-backed SQLite", "wheel": {"name": args.wheel.name, "sha256": hashlib.sha256(args.wheel.read_bytes()).hexdigest()}, "cells": results}, indent=2) + "\n")
     return 0 if all(r["status"] == "passed" for r in results) else 1
 
 

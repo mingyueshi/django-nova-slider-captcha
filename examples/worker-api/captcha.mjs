@@ -1,4 +1,5 @@
 import { makePuzzle } from "./puzzle.mjs";
+import { claimQuotas, RateLimitStorageError } from "./rate-limit.mjs";
 const SID = "nova_captcha_session",
   SESSION_TTL = 1800000;
 const random = () =>
@@ -32,17 +33,7 @@ function cookie(req) {
       ?.slice(SID.length + 1) || ""
   );
 }
-async function rate(db, key, max, now) {
-  const bucket = Math.floor(now / 60000),
-    id = key + ":" + bucket;
-  const r = await db
-    .prepare(
-      "INSERT INTO captcha_rates (id,count,expires) VALUES (?,1,?) ON CONFLICT(id) DO UPDATE SET count=count+1 RETURNING count",
-    )
-    .bind(id, now + 120000)
-    .first();
-  return r.count <= max;
-}
+const limited = (decision) => json({ok:false,code:'rate_limited',retryAfter:decision.retryAfter},429,{'Retry-After':String(decision.retryAfter)});
 async function session(req, db, now) {
   const sid = cookie(req);
   if (!/^[a-f0-9]{64}$/.test(sid)) return null;
@@ -87,12 +78,13 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
     if (action === "init" && req.method === "GET") {
       let sess = await session(req, db, now);
       if (sess) return json({ csrfToken: sess.csrf });
-      const ip = req.headers.get("cf-connecting-ip");
-      if (ip && !(await rate(db, "init:" + (await sha(ip)), 40, now)))
-        return fail("rate_limited", 429, { retryAfter: 60 });
+      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
+      const decision=await claimQuotas(db,[["init:"+await sha(ip),40]],now);
+      if(!decision.allowed)return limited(decision);
       await db.batch([
         db.prepare("DELETE FROM captcha_sessions WHERE expires<?").bind(now),
         db.prepare("DELETE FROM captcha_rates WHERE expires<?").bind(now),
+        db.prepare("DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
       ]);
       const sid = random(),
         csrf = random();
@@ -121,17 +113,15 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
         .prepare("DELETE FROM captcha_challenges WHERE expires<?")
         .bind(now - 60000),
       db.prepare("DELETE FROM captcha_rates WHERE expires<?").bind(now),
+        db.prepare("DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
       db.prepare("DELETE FROM captcha_sessions WHERE expires<?").bind(now),
     ]);
     if (action === "challenge") {
       if (!["demo", "login"].includes(body.purpose))
         return fail("invalid_purpose");
-      const ip = req.headers.get("cf-connecting-ip");
-      if (
-        !(await rate(db, "issue:" + sess.id, 15, now)) ||
-        (ip && !(await rate(db, "ip:" + (await sha(ip)), 120, now)))
-      )
-        return fail("rate_limited", 429, { retryAfter: 60 });
+      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
+      const decision=await claimQuotas(db,[["ip:"+await sha(ip),120],["issue:"+sess.id,15]],now);
+      if(!decision.allowed)return limited(decision);
       const p = makePuzzle(),
         id = random();
       await db
@@ -149,21 +139,10 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
       });
     }
     if (action === "verify") {
-      if (
-        typeof body.challengeId !== "string" ||
-        !/^[a-f0-9]{64}$/.test(body.challengeId) ||
-        typeof body.x !== "number" ||
-        !Number.isFinite(body.x) ||
-        body.x < 0 ||
-        body.x > 276
-      )
-        return fail("invalid_input");
-      const ip = req.headers.get("cf-connecting-ip");
-      if (
-        !(await rate(db, "verify:" + sess.id, 60, now)) ||
-        (ip && !(await rate(db, "verify-ip:" + (await sha(ip)), 240, now)))
-      )
-        return fail("rate_limited", 429, { retryAfter: 60 });
+      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
+      const decision=await claimQuotas(db,[["verify-ip:"+await sha(ip),240],["verify:"+sess.id,60]],now);
+      if(!decision.allowed)return limited(decision);
+      if(typeof body.challengeId!=="string"||!/^[a-f0-9]{64}$/.test(body.challengeId)||typeof body.x!=="number"||!Number.isFinite(body.x)||body.x<0||body.x>276)return fail("invalid_input");
       const token = random(),
         digest = await sha(token);
       const row = await db
@@ -201,11 +180,12 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
       if (!row) return fail("invalid_or_used_token", 409);
       return json({
         ok: true,
-        message: "服务端已接受这次演示提交；验证凭证已消费。",
+        code: "accepted",
       });
     }
     return fail("not_found", 404);
   } catch (e) {
+    if (e instanceof RateLimitStorageError) return fail("rate_limit_unavailable",503);
     if (e instanceof SyntaxError || ["format", "size"].includes(e.message))
       return fail("invalid_input");
     console.error("Captcha operation unavailable");

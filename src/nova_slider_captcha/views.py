@@ -3,6 +3,7 @@ import math
 import uuid
 from functools import wraps
 
+from django.db import DatabaseError
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import render
@@ -16,6 +17,19 @@ from .conf import PURPOSES, WIDTH, PIECE_SIZE
 
 def _failure(code, status=400):
     return JsonResponse({"ok": False, "code": code, "attemptsRemaining": 0}, status=status)
+
+
+def _rate_failure(request, action):
+    try:
+        decision = services.allow_request(request, action)
+    except DatabaseError:
+        return _failure("rate_limit_unavailable", 503)
+    if not decision:
+        response = JsonResponse({"ok": False, "code": "rate_limited", "attemptsRemaining": 0,
+                                 "retryAfter": decision.retry_after}, status=429)
+        response["Retry-After"] = str(decision.retry_after)
+        return response
+    return None
 
 
 def same_origin(request):
@@ -70,10 +84,9 @@ def init(request):
 
 @json_post
 def challenge(request, data):
-    if not services.allow_request(request, "issue"):
-        response = _failure("rate_limited", 429)
-        response["Retry-After"] = "60"
-        return response
+    failure = _rate_failure(request, "issue")
+    if failure is not None:
+        return failure
     purpose = data.get("purpose")
     if not isinstance(purpose, str) or purpose not in PURPOSES:
         return _failure("invalid_purpose")
@@ -82,10 +95,9 @@ def challenge(request, data):
 
 @json_post
 def verify(request, data):
-    if not services.allow_request(request, "verify"):
-        response = _failure("rate_limited", 429)
-        response["Retry-After"] = "60"
-        return response
+    failure = _rate_failure(request, "verify")
+    if failure is not None:
+        return failure
     try:
         raw_id = data.get("challengeId")
         if not isinstance(raw_id, str) or len(raw_id) != 36:

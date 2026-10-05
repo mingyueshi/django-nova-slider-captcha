@@ -4,7 +4,9 @@
  const slider = form.querySelector('nova-slider');
  const button = document.getElementById('demo-submit');
  const result = document.getElementById('demo-result');
- let token = '', expiry, generation = 0;
+ let token = '', expiry, generation = 0, resultKey = '';
+ function showResult(key) { resultKey = key; result.textContent = slider.getText(key); }
+ slider.addEventListener('captcha-locale', () => { if (resultKey) showResult(resultKey); });
  function clear() { token = ''; button.disabled = true; clearTimeout(expiry); }
  function invalidate() { generation++; clear(); }
  slider.addEventListener('verified', ({detail}) => {
@@ -26,10 +28,10 @@
    const response = await fetch(slider.getAttribute('endpoint') + 'submit', {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]').value},body:JSON.stringify({token:submittedToken,purpose:'demo'})});
    const data = await response.json();
    if (requestGeneration !== generation) return;
-   result.textContent = data.ok ? data.message : 'Request rejected. Please complete a new challenge.';
+   showResult(data.ok ? 'demo_accepted' : 'demo_rejected');
   } catch (_) {
    if (requestGeneration !== generation) return;
-   result.textContent = 'Network error. Please try a new challenge.';
+   showResult('demo_network_error');
   } finally {
    if (requestGeneration === generation) invalidate();
   }

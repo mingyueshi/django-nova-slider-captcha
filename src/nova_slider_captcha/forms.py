@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin.forms import AdminAuthenticationForm
 from django.core.exceptions import ValidationError
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 
 from .services import consume
 
@@ -13,6 +13,7 @@ class SliderCaptchaWidget(forms.Widget):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, "", attrs)
         context["widget"]["endpoint"] = reverse("nova_slider_captcha:challenge").rsplit("challenge", 1)[0]
+        context["widget"]["locale"] = context["widget"]["attrs"].get("locale") or get_language() or "zh-hans"
         return context
 
     class Media:

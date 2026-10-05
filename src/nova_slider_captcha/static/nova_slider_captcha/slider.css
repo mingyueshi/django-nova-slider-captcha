@@ -9,6 +9,7 @@ nova-slider {
 }
 .nsc {
   color: var(--nsc-text);
+  overflow-wrap: anywhere;
 }
 .nsc * {
   box-sizing: border-box;
@@ -39,7 +40,8 @@ nova-slider {
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 24px;
+  padding: 16px;
+  overflow-y: auto;
   background: var(--nsc-panel);
   font-size: 14px;
   color: var(--nsc-muted);
@@ -50,7 +52,7 @@ nova-slider {
 .nsc-track {
   position: relative;
   margin-top: 18px;
-  height: 48px;
+  min-height: 48px;
   border-radius: 8px;
   background: var(--nsc-panel);
   border: 1px solid var(--nsc-line);
@@ -64,10 +66,12 @@ nova-slider {
   width: 48px;
 }
 .nsc-track-text {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
+  position: relative;
+  display: block;
+  min-height: 46px;
+  padding: 12px 52px;
+  text-align: center;
+  line-height: 1.6;
   font-size: 12px;
   letter-spacing: 0.12em;
   color: var(--nsc-muted);
@@ -77,6 +81,7 @@ nova-slider {
   background: transparent;
   position: absolute;
   z-index: 3;
+  inset: 0;
   width: 100%;
   height: 100%;
   margin: 0;
@@ -118,6 +123,7 @@ nova-slider {
 }
 .nsc-meta {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 12px;
   justify-content: space-between;
@@ -126,11 +132,17 @@ nova-slider {
   font-size: 12px;
 }
 .nsc-status {
+  min-width: 0;
+  flex: 1 1 160px;
   color: var(--nsc-muted);
   line-height: 1.7;
 }
 .nsc-refresh {
-  flex: none;
+  flex: 0 1 auto;
+  max-width: 100%;
+  white-space: normal;
+  text-align: start;
+  overflow-wrap: anywhere;
   min-height: 36px;
   transform: translateY(-7px);
   font: inherit;
@@ -140,7 +152,7 @@ nova-slider {
   padding: 6px 0 6px 9px;
   cursor: pointer;
 }
-.nsc-refresh span {
+.nsc-refresh span[aria-hidden] {
   font-size: 17px;
   vertical-align: -1px;
 }
@@ -161,10 +173,14 @@ nova-slider {
   font-weight: 600;
 }
 .nsc[data-state="success"] .nsc-status {
+  min-width: 0;
+  flex: 1 1 160px;
   color: var(--mint, #208660);
 }
 .nsc[data-state="error"] .nsc-status,
 .nsc[data-state="expired"] .nsc-status {
+  min-width: 0;
+  flex: 1 1 160px;
   color: var(--danger, var(--error-fg, #b1223c));
 }
 .nsc[data-state="checking"] .nsc-handle {

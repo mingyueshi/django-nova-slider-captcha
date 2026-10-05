@@ -1,0 +1,34 @@
+✔ contract: opaque challenge raster images and exact dimensions (61.177414ms)
+✔ solve + purpose-bound single-use business consumption (28.259021ms)
+✔ five wrong attempts then challenge locked (26.491306ms)
+✔ tolerance 4 inclusive and 5 exclusive (23.195566ms)
+✔ session and CSRF boundaries (28.522743ms)
+✔ expiry of challenges, tokens and sessions (37.334343ms)
+✔ parallel success issues a single proof; parallel submit consumes once (28.365677ms)
+✔ parallel wrong attempts never exceed five (35.766108ms)
+✔ challenge issuance rate limited per session (294.811772ms)
+✔ session creation rate limited by trusted edge IP (22.556965ms)
+✔ malformed inputs, giant numbers and bounded bodies fail closed (28.25858ms)
+✔ multiple challenges do not invalidate another tab (43.712882ms)
+✔ PNG contains no plaintext answer metadata (16.469525ms)
+✔ GCRA blocks minute-boundary double burst and admits exact refill (1.743304ms)
+✔ GCRA concurrency claims at most configured capacity (1.862352ms)
+✔ backwards clock cannot reset debt and rejected requests do not extend it (0.920065ms)
+✔ fractional refill rounds toward stricter rate; invalid configs fail closed (1.65474ms)
+✔ legacy active fixed window inherits cooldown without reopening quota (1.338334ms)
+✔ stable IP quota is shared by new sessions; retry accounts for charged IP (1.529742ms)
+✔ cleanup only removes fully replenished states; pruning never grants while debt remains (0.740985ms)
+✔ HTTP rate-limited responses carry computed Retry-After and machine code (288.39839ms)
+Captcha operation unavailable
+✔ database limiter failure returns stable unavailable response, never a challenge (2.110246ms)
+✔ shared Django/Worker fixture agrees at each microsecond boundary (1.559136ms)
+✔ changing purpose does not reset the shared issuance quota (278.181414ms)
+✔ legacy lookup uses indexed exact-prefix range without long LIKE patterns (1.190221ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1351.956703

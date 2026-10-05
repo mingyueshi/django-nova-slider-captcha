@@ -29,8 +29,8 @@ function response(body, status = 200, type = "application/json") {
     json: async () => body,
   };
 }
-async function setup(handler) {
-  const dom = new JSDOM("<!doctype html><body></body>", {
+async function setup(handler, options = {}) {
+  const dom = new JSDOM(`<!doctype html><html lang="${options.documentLang || "en"}"><body>${options.demo ? '<form id="captcha-demo"><input name="csrfmiddlewaretoken" value="csrf"><button id="demo-submit" disabled></button><p id="demo-result"></p></form>' : ""}</body></html>`, {
     url: "https://demo.test/",
     runScripts: "outside-only",
   });
@@ -57,11 +57,20 @@ async function setup(handler) {
               : { ok: true, token: "proof", expiresIn: 60 },
         );
   };
-  w.eval(script);
   const widget = w.document.createElement("nova-slider");
-  w.document.body.append(widget);
+  for (const [key, value] of Object.entries(options.attrs || {})) widget.setAttribute(key, value);
+  if (options.messages) widget.messages = options.messages;
+  if (Object.hasOwn(options, "localeProperty")) widget.locale = options.localeProperty;
+  w.eval(script);
+  (options.demo ? w.document.querySelector("form") : w.document.body).append(widget);
+  if (options.demo) w.eval(readFileSync(new URL("../src/nova_slider_captcha/static/nova_slider_captcha/demo.js", import.meta.url), "utf8"));
   await flush();
   return { w, dom, widget, calls, timers };
+}
+function pointer(c, type, pointerId = 1) {
+  const event = new c.w.Event(type);
+  Object.defineProperty(event, "pointerId", { value: pointerId });
+  c.widget.range.dispatchEvent(event);
 }
 function cleanup(c) {
   c.widget.remove();
@@ -203,13 +212,13 @@ test("proof expiry clears hidden input and emits reset", async () => {
 });
 test("pointer release verifies, pointercancel does not", async () => {
   const c = await setup();
-  c.widget.range.dispatchEvent(new c.w.Event("pointerdown"));
-  c.widget.range.dispatchEvent(new c.w.Event("pointercancel"));
-  c.widget.range.dispatchEvent(new c.w.Event("pointerup"));
+  pointer(c, "pointerdown");
+  pointer(c, "pointercancel");
+  pointer(c, "pointerup");
   await flush();
   assert.equal(c.calls.filter((x) => x.url.endsWith("verify")).length, 0);
-  c.widget.range.dispatchEvent(new c.w.Event("pointerdown"));
-  c.widget.range.dispatchEvent(new c.w.Event("pointerup"));
+  pointer(c, "pointerdown");
+  pointer(c, "pointerup");
   await flush();
   assert.equal(c.calls.filter((x) => x.url.endsWith("verify")).length, 1);
   cleanup(c);
@@ -274,5 +283,297 @@ test("Django init_required response clears cached initialization", async () => {
   await c.widget.refresh();
   assert.equal(c.widget.state, "ready");
   assert.equal(c.calls.filter((x) => x.url.endsWith("init")).length, 2);
+  cleanup(c);
+});
+
+test("default remains Chinese regardless of document language, including ARIA", async () => {
+  const c = await setup(undefined, { documentLang: "en" });
+  assert.equal(c.widget.locale, "zh-CN");
+  assert.equal(c.widget.getAttribute("aria-label"), "安全验证");
+  assert.equal(c.widget.lang, "zh-CN");
+  assert.equal(c.widget.status.textContent, "拖动拼图，对齐图中的缺口");
+  assert.equal(c.widget.range.getAttribute("aria-label"), "移动拼图块");
+  assert.equal(c.widget.range.getAttribute("aria-valuetext"), "0%，按 Enter 校验");
+  assert.equal(c.widget.querySelector(".nsc-background").alt, "带有一处拼图缺口的山水图案");
+  assert.equal(c.widget.querySelector(".nsc").lang, "zh-CN");
+  cleanup(c);
+});
+
+test("locale aliases, invalid locales, and dynamic labels retain proof and requests", async () => {
+  const c = await setup(undefined, { attrs: { locale: "en-US" } });
+  assert.equal(c.widget.locale, "en");
+  assert.equal(c.widget.status.textContent, "Slide the piece to fit the gap");
+  assert.equal(c.widget.getAttribute("aria-label"), "Security verification");
+  assert.equal(c.widget.lang, "en");
+  assert.equal(c.widget.range.getAttribute("aria-label"), "Move the puzzle piece");
+  assert.equal(c.widget.querySelector(".nsc-refresh").getAttribute("aria-label"), "Get a new puzzle");
+  c.widget.move(138);
+  assert.equal(c.widget.range.getAttribute("aria-valuetext"), "50%, press Enter to verify");
+  await c.widget.verify();
+  const seq = c.widget.seq, count = c.calls.length, timer = [...c.timers.keys()][0];
+  c.widget.setLocale("zh-Hans");
+  assert.equal(c.widget.getToken(), "proof");
+  assert.equal(c.widget.state, "success");
+  assert.equal(c.widget.overlay.textContent, "✓ 验证通过");
+  assert.equal(c.widget.seq, seq);
+  assert.equal(c.calls.length, count);
+  assert.equal([...c.timers.keys()][0], timer);
+  for (const locale of ["fr", "", "en-<script>", null, {}, 123, "__proto__"]) {
+    c.widget.setLocale(locale);
+    assert.equal(c.widget.locale, "zh-CN");
+  }
+  c.widget.setAttribute("locale", "EN_gb");
+  assert.equal(c.widget.locale, "en");
+  assert.match(c.widget.status.textContent, /^Verified\. Valid for \d+ seconds$/);
+  c.timers.get(timer).fn();
+  assert.equal(c.widget.status.textContent, "Your verification expired. Please verify again.");
+  cleanup(c);
+});
+
+test("custom message merge is text-only, bounded, and supports pre-upgrade properties", async () => {
+  const html = '<img src=x onerror="alert(1)">';
+  const c = await setup(undefined, {
+    localeProperty: "en-GB", messages: { ready: html, slider_label: html, keyboard: "X".repeat(5000), unknown: html },
+  });
+  assert.equal(c.widget.locale, "en");
+  assert.equal(c.widget.status.textContent, html);
+  assert.equal(c.widget.range.getAttribute("aria-label"), html);
+  assert.equal(c.widget.querySelector(".nsc-keyboard").textContent.length, 2000);
+  assert.equal(c.widget.querySelectorAll("img").length, 2);
+  assert.equal(c.widget.querySelectorAll("[onerror]").length, 0);
+  assert.equal(c.widget.messages.unknown, undefined);
+  c.widget.messages = { refresh: "Again", ready: 99, value: "{percent} {remaining} {seconds} {other}" };
+  assert.equal(c.widget.status.textContent, html);
+  assert.equal(c.widget.querySelector(".nsc-refresh-text").textContent, "Again");
+  assert.equal(c.widget.getText("value", { percent: 1000, remaining: -1, seconds: Infinity }), "100 0 0 {other}");
+  assert.equal(c.widget.getText("value", { percent: html, remaining: 1e12, seconds: 1.2 }), "0 86400 2 {other}");
+  assert.equal(c.widget.getText("__proto__"), "");
+  c.widget.setLocale("zh-CN");
+  assert.equal(c.widget.status.textContent, html);
+  c.widget.messages = null;
+  assert.equal(c.widget.status.textContent, "拖动拼图，对齐图中的缺口");
+  cleanup(c);
+});
+
+test("known error codes localize and use actual rate-limit retryAfter safely", async () => {
+  const cases = [
+    [{ code: "rate_limited", retryAfter: 7.1 }, "Too many requests. Try again in 8 seconds."],
+    [{ code: "rate_limited", retryAfter: '<script>' }, "Too many requests. Please try again later."],
+    [{ code: "rate_limited", retryAfter: 1e12 }, "Too many requests. Try again in 86400 seconds."],
+    [{ code: "rate_limit_unavailable" }, "Verification is temporarily unavailable. Please try again later."],
+    [{ code: "constructor", message: "server secret" }, "Could not generate a puzzle. Please try again."],
+    [{ code: "unexpected", message: "<script>alert(1)</script>" }, "Could not generate a puzzle. Please try again."],
+  ];
+  for (const [body, expected] of cases) {
+    const c = await setup((url) => response(url.endsWith("init") ? { csrfToken: "csrf" } : body, url.endsWith("init") ? 200 : 429), { attrs: { locale: "en" } });
+    assert.equal(c.widget.state, "error");
+    assert.equal(c.widget.status.textContent, expected);
+    assert.equal(c.widget.overlay.textContent, expected);
+    assert.doesNotMatch(c.widget.textContent, /server secret|<script>/);
+    cleanup(c);
+  }
+});
+
+test("initialization, JSON, and network errors never display arbitrary error messages", async () => {
+  for (const mode of ["http", "csrf", "network", "json"]) {
+    const c = await setup(() => {
+      if (mode === "network") throw Error("secret transport details");
+      if (mode === "json") return { ...response({}), json: async () => { throw Error("secret JSON details"); } };
+      return response(mode === "csrf" ? {} : { message: "secret server details" }, mode === "csrf" ? 200 : 500);
+    }, { attrs: { locale: "en" } });
+    assert.equal(c.widget.state, "error");
+    assert.equal(c.widget.status.textContent, mode === "network" ? "Connection interrupted. Please get a new puzzle and try again." : "Initialization failed. Please try again.");
+    assert.doesNotMatch(c.widget.textContent, /secret/);
+    c.widget.setLocale("zh-CN");
+    assert.match(c.widget.status.textContent, /初始化失败|网络连接中断/);
+    cleanup(c);
+  }
+});
+
+test("verification retries, unknown errors, and server expiry are localized", async () => {
+  let answer = { ok: false, code: "incorrect", attemptsRemaining: 3 };
+  const c = await setup((url) => response(url.endsWith("init") ? { csrfToken: "csrf" } : url.endsWith("challenge") ? puzzle() : answer), { attrs: { locale: "en" } });
+  await c.widget.verify();
+  assert.equal(c.widget.status.textContent, "Not aligned. Try again · 3 attempts remaining");
+  c.widget.locale = "zh-CN";
+  assert.equal(c.widget.status.textContent, "没有对齐，再试一次 · 剩余 3 次");
+  c.widget.locale = "en";
+  answer = { ok: false, code: "unexpected", message: "untrusted server body" };
+  await c.widget.verify();
+  assert.equal(c.widget.status.textContent, "Verification failed. Please get a new puzzle.");
+  await c.widget.refresh();
+  answer = { ok: true, token: "proof", expiresIn: 17 };
+  await c.widget.verify();
+  assert.match(c.widget.status.textContent, /Valid for 1[67] seconds/);
+  assert.doesNotMatch(c.widget.status.textContent, /60 seconds/);
+  cleanup(c);
+});
+
+test("locale switches during pending verification preserve duplicate and late-response guards", async () => {
+  let resolve;
+  const c = await setup((url) => url.endsWith("verify") ? new Promise(r => resolve = r) : response(url.endsWith("init") ? { csrfToken: "csrf" } : puzzle()));
+  const pending = c.widget.verify();
+  await flush();
+  c.widget.setLocale("en");
+  assert.equal(c.widget.status.textContent, "Checking with the server…");
+  c.widget.verify();
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 1);
+  await c.widget.refresh();
+  resolve(response({ ok: true, token: "stale", expiresIn: 60 }));
+  await pending;
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.widget.getToken(), "");
+  assert.equal(c.widget.status.textContent, "Slide the piece to fit the gap");
+  cleanup(c);
+});
+
+test("invalid and cross-origin endpoints localize without making requests", async () => {
+  for (const [endpoint, expected] of [["https://outside.test/", "The CAPTCHA endpoint must use the same origin as this page."], ["http://[", "The CAPTCHA endpoint is invalid."]]) {
+    const c = await setup(undefined, { attrs: { endpoint, locale: "en" } });
+    assert.equal(c.widget.status.textContent, expected);
+    assert.equal(c.calls.length, 0);
+    await c.widget.refresh();
+    assert.equal(c.calls.length, 0);
+    c.widget.setLocale("zh-CN");
+    assert.match(c.widget.status.textContent, /验证码接口/);
+    cleanup(c);
+  }
+});
+
+test("long translated text uses wrapping CSS rather than fixed track and button widths", async () => {
+  const c = await setup(undefined, { messages: { track: "Long translated instructions ".repeat(30), refresh: "Long translated refresh label ".repeat(15) } });
+  const style = c.w.document.createElement("style");
+  style.textContent = readFileSync(new URL("../src/nova_slider_captcha/static/nova_slider_captcha/slider.css", import.meta.url), "utf8");
+  c.w.document.head.append(style);
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc")).overflowWrap, "anywhere");
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-meta")).flexWrap, "wrap");
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-refresh")).whiteSpace, "normal");
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-track-text")).position, "relative");
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-track")).minHeight, "48px");
+  cleanup(c);
+});
+
+test("demo success ignores server messages and dynamically localizes safe result", async () => {
+  const c = await setup((url) => response(url.endsWith("init") ? { csrfToken: "csrf" } : url.endsWith("challenge") ? puzzle() : url.endsWith("submit") ? { ok: true, message: '<img onerror="alert(1)">' } : { ok: true, token: "proof", expiresIn: 60 }), { attrs: { endpoint: "/captcha/", locale: "en" }, demo: true });
+  await c.widget.verify();
+  c.w.document.querySelector("form").dispatchEvent(new c.w.Event("submit", { cancelable: true }));
+  await flush();
+  assert.equal(c.w.document.querySelector("#demo-result").textContent, "Request accepted. The verification token has been used.");
+  assert.equal(c.w.document.querySelector("#demo-submit").disabled, true);
+  assert.equal(c.w.document.querySelectorAll("[onerror]").length, 0);
+  c.widget.setLocale("zh-CN");
+  assert.equal(c.w.document.querySelector("#demo-result").textContent, "请求已接受，验证凭证已使用。");
+  cleanup(c);
+});
+
+test("demo rejected and interrupted requests have localized messages", async () => {
+  for (const network of [false, true]) {
+    const c = await setup((url) => {
+      if (network && url.endsWith("submit")) throw Error("private network error");
+      return response(url.endsWith("init") ? { csrfToken: "csrf" } : url.endsWith("challenge") ? puzzle() : url.endsWith("submit") ? { ok: false, message: "private response" } : { ok: true, token: "proof", expiresIn: 60 });
+    }, { attrs: { endpoint: "/captcha/", locale: "en" }, demo: true });
+    await c.widget.verify();
+    c.w.document.querySelector("form").dispatchEvent(new c.w.Event("submit", { cancelable: true }));
+    await flush();
+    assert.equal(c.w.document.querySelector("#demo-result").textContent, network ? "Network error. Please try a new challenge." : "Request rejected. Please complete a new challenge.");
+    assert.doesNotMatch(c.w.document.body.textContent, /private/);
+    cleanup(c);
+  }
+});
+
+test("refresh interrupts an old drag so its pointerup cannot submit the new puzzle", async () => {
+  const c = await setup(undefined, { attrs: { locale: "en" } });
+  pointer(c, "pointerdown");
+  await c.widget.refresh();
+  pointer(c, "pointerup");
+  await flush();
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 0);
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.widget.getToken(), "");
+  cleanup(c);
+});
+
+test("a stale pointer release or cancellation cannot submit or cancel a new drag", async () => {
+  const c = await setup();
+  const captures = [], releases = [];
+  c.widget.range.setPointerCapture = id => captures.push(id);
+  c.widget.range.releasePointerCapture = id => releases.push(id);
+  pointer(c, "pointerdown", 1);
+  assert.equal(c.widget.activePointerId, 1);
+  await c.widget.refresh();
+  assert.equal(c.widget.activePointerId, null);
+  assert.deepEqual(releases, [1]);
+  pointer(c, "pointerdown", 2);
+  pointer(c, "pointerup", 1);
+  pointer(c, "pointercancel", 1);
+  pointer(c, "lostpointercapture", 1);
+  await flush();
+  assert.equal(c.widget.activePointerId, 2);
+  assert.equal(c.widget.dragging, true);
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 0);
+  c.widget.setLocale("en");
+  c.widget.messages = { ready: "Keep dragging" };
+  assert.equal(c.widget.activePointerId, 2);
+  pointer(c, "pointerup", 2);
+  pointer(c, "pointerup", 2);
+  await flush();
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 1);
+  assert.equal(c.widget.activePointerId, null);
+  assert.equal(c.widget.dragging, false);
+  assert.deepEqual(captures, [1, 2]);
+  assert.deepEqual(releases, [1, 2]);
+  cleanup(c);
+});
+
+test("concurrent pointers cannot replace the active drag and matching cancellation releases it", async () => {
+  const c = await setup();
+  const releases = [];
+  c.widget.range.releasePointerCapture = id => releases.push(id);
+  pointer(c, "pointerdown", 10);
+  pointer(c, "pointerdown", 11);
+  pointer(c, "pointerup", 11);
+  pointer(c, "pointercancel", 11);
+  assert.equal(c.widget.activePointerId, 10);
+  pointer(c, "pointercancel", 10);
+  pointer(c, "pointerup", 10);
+  await flush();
+  assert.equal(c.widget.activePointerId, null);
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 0);
+  assert.deepEqual(releases, [10]);
+  pointer(c, "pointerdown", 12);
+  pointer(c, "lostpointercapture", 12);
+  pointer(c, "pointerup", 12);
+  await flush();
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 0);
+  assert.equal(c.widget.activePointerId, null);
+  cleanup(c);
+});
+
+test("expiry, keyboard checking, and disconnect release active pointer capture", async () => {
+  const c = await setup();
+  const releases = [];
+  c.widget.range.releasePointerCapture = id => releases.push(id);
+  pointer(c, "pointerdown", 20);
+  [...c.timers.values()][0].fn();
+  assert.equal(c.widget.activePointerId, null);
+  assert.deepEqual(releases, [20]);
+  pointer(c, "pointerdown", 21);
+  assert.equal(c.widget.activePointerId, null);
+  await c.widget.refresh();
+  pointer(c, "pointerdown", 22);
+  await c.widget.verify();
+  assert.equal(c.widget.activePointerId, null);
+  assert.deepEqual(releases, [20, 22]);
+  await c.widget.refresh();
+  pointer(c, "pointerdown", 23);
+  c.widget.remove();
+  assert.equal(c.widget.activePointerId, null);
+  assert.deepEqual(releases, [20, 22, 23]);
+  c.w.document.body.append(c.widget);
+  await flush();
+  pointer(c, "pointerup", 23);
+  await flush();
+  assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 1);
+  assert.equal(c.widget.state, "ready");
   cleanup(c);
 });

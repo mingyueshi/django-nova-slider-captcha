@@ -16,7 +16,7 @@ from PIL import Image
 
 from nova_slider_captcha import services
 from nova_slider_captcha.forms import SliderAdminAuthenticationForm
-from nova_slider_captcha.models import Challenge, RateBucket
+from nova_slider_captcha.models import Challenge, RateBucket, RateLimitState
 
 
 class CaptchaHelpers:
@@ -186,7 +186,8 @@ class CaptchaTests(CaptchaHelpers, TestCase):
         self.challenge(self.client)
         response = self.post(self.client, "challenge", {"purpose": "demo"})
         self.assertEqual(response.status_code, 429)
-        self.assertEqual(response["Retry-After"], "60")
+        self.assertEqual(response["Retry-After"], "30")
+        self.assertEqual(response.json()["retryAfter"], 30)
 
     @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_ip": 2})
     def test_ip_limit_survives_session_changes_and_ignores_forwarded_header(self):
@@ -302,5 +303,35 @@ class AtomicityTests(CaptchaHelpers, TransactionTestCase):
         def allowed(_):
             request = RequestFactory().get("/")
             request.session = session.copy()
-            return services.allow_request(request, "issue")
-        self.assertEqual(self.parallel(allowed).count(True), 3)
+            return bool(services.allow_request(request, "issue"))
+        # Fix the clock: out-of-order wall timestamps are conservatively treated
+        # as a backward-clock step and may legitimately admit fewer requests.
+        with patch("nova_slider_captcha.services.timezone.now", return_value=timezone.now()):
+            self.assertEqual(self.parallel(allowed).count(True), 3)
+
+    @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_ip": 3, "issue_session": 100})
+    def test_ip_limit_creation_race_across_new_sessions_is_atomic(self):
+        def allowed(index):
+            request = RequestFactory().get("/")
+            request.session = {"_nova_slider_binding": f"new-session-{index}"}
+            return bool(services.allow_request(request, "issue"))
+        now = timezone.now()
+        with patch("nova_slider_captcha.services.timezone.now", return_value=now):
+            self.assertEqual(self.parallel(allowed, 12).count(True), 3)
+        self.assertEqual(RateLimitState.objects.count(), 4)
+
+    @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_ip": 3, "issue_session": 3})
+    def test_concurrent_refill_allows_one_and_denials_preserve_debt(self):
+        session = dict(self.client.session)
+        def allowed(_):
+            request = RequestFactory().get("/")
+            request.session = session.copy()
+            return bool(services.allow_request(request, "issue"))
+        now = timezone.now()
+        with patch("nova_slider_captcha.services.timezone.now", return_value=now):
+            self.assertEqual([allowed(0) for _ in range(3)], [True, True, True])
+            before = list(RateLimitState.objects.order_by("key").values())
+            self.assertFalse(any(self.parallel(allowed, 12)))
+            self.assertEqual(before, list(RateLimitState.objects.order_by("key").values()))
+        with patch("nova_slider_captcha.services.timezone.now", return_value=now + timedelta(seconds=20)):
+            self.assertEqual(self.parallel(allowed, 12).count(True), 1)

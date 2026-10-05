@@ -1,6 +1,10 @@
 {
   "baseline_nova": "0.6.0",
   "database": "file-backed SQLite",
+  "wheel": {
+    "name": "nova_slider_captcha-0.2.0-py3-none-any.whl",
+    "sha256": "7eb1199d1c324a1bb290c675532d7e1caa708d2fadb3bc03375a472e147f7e2a"
+  },
   "cells": [
     {
       "python": "3.11.17",
@@ -11,30 +15,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.11.17-django-5.2.17.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.12.15",
@@ -45,30 +48,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.12.15-django-5.2.17.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.12.15",
@@ -79,30 +81,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.12.15-django-6.0.8.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.12.15",
@@ -113,30 +114,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.12.15-django-6.1.1.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.13.16",
@@ -147,30 +147,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.13.16-django-6.1.1.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.14.8",
@@ -181,30 +180,29 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.14.8-django-5.2.17.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     },
     {
       "python": "3.14.8",
@@ -215,30 +213,32 @@
           "mode": "source",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "source",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "native",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         },
         {
           "mode": "wheel",
           "theme": "nova",
           "status": "passed",
-          "tests": 31
+          "tests": 61
         }
       ],
       "log": "verification/python-3.14.8-django-6.1.1.log",
-      "status": "passed",
-      "final_css_wheel_retest": "native and Nova profiles passed"
+      "status": "passed"
     }
-  ]
+  ],
+  "tests_per_profile": 61,
+  "total_test_executions": 1708,
+  "profile_count": 28
 }

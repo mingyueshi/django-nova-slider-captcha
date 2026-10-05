@@ -1,0 +1,244 @@
+{
+  "baseline_nova": "0.6.0",
+  "database": "file-backed SQLite",
+  "cells": [
+    {
+      "python": "3.11.17",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.11.17-django-5.2.17.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.12.15",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.12.15-django-5.2.17.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.12.15",
+      "django": "6.0.8",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.12.15-django-6.0.8.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.12.15",
+      "django": "6.1.1",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.12.15-django-6.1.1.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.13.16",
+      "django": "6.1.1",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.13.16-django-6.1.1.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.14.8",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.14.8-django-5.2.17.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    },
+    {
+      "python": "3.14.8",
+      "django": "6.1.1",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "source",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 31
+        },
+        {
+          "mode": "wheel",
+          "theme": "nova",
+          "status": "passed",
+          "tests": 31
+        }
+      ],
+      "log": "verification/python-3.14.8-django-6.1.1.log",
+      "status": "passed",
+      "final_css_wheel_retest": "native and Nova profiles passed"
+    }
+  ]
+}

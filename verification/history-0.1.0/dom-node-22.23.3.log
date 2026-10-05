@@ -1,0 +1,4 @@
+(node:7) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Forbidden: /captcha/submit
+["wrong guess keeps widget usable with four attempts","keyboard Enter verifies through real Django API","protected demo consumes token and disables submit","real Django rejects protected replay","repeated refresh keeps newest challenge and clears proof","late submit A cannot clear or overwrite refreshed proof B, which remains usable","Admin has exactly one populated login proof field","proof expiration clears Admin hidden field","fifth mismatch locks widget and leaves no proof"]

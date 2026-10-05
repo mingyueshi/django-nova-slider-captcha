@@ -17,3 +17,6 @@ USE_TZ = True
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
 SESSION_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_SAMESITE = "Strict"
+
+# 开发示例默认中文；部署方可按自身语言策略覆盖。
+LANGUAGE_CODE = "zh-hans"

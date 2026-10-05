@@ -1,0 +1,18 @@
+{
+  "periodUs": 60000000,
+  "capacity": 3,
+  "steps": [
+    {"nowUs": 59999999, "allowed": true, "retryAfter": 0, "tatUs": 79999999},
+    {"nowUs": 59999999, "allowed": true, "retryAfter": 0, "tatUs": 99999999},
+    {"nowUs": 59999999, "allowed": true, "retryAfter": 0, "tatUs": 119999999},
+    {"nowUs": 60000001, "allowed": false, "retryAfter": 20, "tatUs": 119999999},
+    {"nowUs": 60000001, "allowed": false, "retryAfter": 20, "tatUs": 119999999},
+    {"nowUs": 60000001, "allowed": false, "retryAfter": 20, "tatUs": 119999999},
+    {"nowUs": 79999998, "allowed": false, "retryAfter": 1, "tatUs": 119999999},
+    {"nowUs": 79999999, "allowed": true, "retryAfter": 0, "tatUs": 139999999},
+    {"nowUs": 80000000, "allowed": false, "retryAfter": 20, "tatUs": 139999999},
+    {"nowUs": 119999999, "allowed": true, "retryAfter": 0, "tatUs": 159999999},
+    {"nowUs": 119999999, "allowed": true, "retryAfter": 0, "tatUs": 179999999},
+    {"nowUs": 119999999, "allowed": false, "retryAfter": 20, "tatUs": 179999999}
+  ]
+}
