@@ -1,0 +1,6 @@
+{
+  "dist/nova_slider_captcha-0.1.0-py3-none-any.whl": "b361d8715b1606b7c75cadbe7221eab166883be672e6ac9c8a7dcaaf50e8f7cd",
+  "src/nova_slider_captcha/static/nova_slider_captcha/slider.js": "eda1ad0eeeec8f5ad126f07cb41f189585361ce385fbcbe4b493a26620a96db1",
+  "src/nova_slider_captcha/static/nova_slider_captcha/slider.css": "2fee717362c7b7fd0411cf5c34eb39fcdc0e059ec2a6c6459af6451588e0f238",
+  "src/nova_slider_captcha/static/nova_slider_captcha/demo.js": "b381d445f24f986fbe9f7f647eb19a7b8ae34ebec02911ecd52ba7b76e0f021e"
+}

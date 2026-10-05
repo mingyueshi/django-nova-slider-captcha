@@ -1,0 +1,113 @@
+{
+  "version": "0.1.0",
+  "unchanged_runtime_files": [
+    {
+      "path": "src/nova_slider_captcha/__init__.py",
+      "sha256": "189b0aa7787e510fb94b0fd58e86a4913fd45fe72295e5e45276870e2acf7f25"
+    },
+    {
+      "path": "src/nova_slider_captcha/admin.py",
+      "sha256": "f7e0ec5b569a1d7590101d2dbb1a0919a02e70569d85c8bafdb72c8e1b696fd7"
+    },
+    {
+      "path": "src/nova_slider_captcha/apps.py",
+      "sha256": "3fa512fb95fd9a56e0bbb9c5170dc66d861716b3844bfb0547b6bf5e940237a4"
+    },
+    {
+      "path": "src/nova_slider_captcha/checks.py",
+      "sha256": "f71b959d481bb36d118fc60668a0957a3acc5b2c282f8b2e260171a00dcc4cb5"
+    },
+    {
+      "path": "src/nova_slider_captcha/conf.py",
+      "sha256": "011b09f27ab02c2fcae8300d381ebf82e9ee35f407ffabde5205695f6b1892fa"
+    },
+    {
+      "path": "src/nova_slider_captcha/forms.py",
+      "sha256": "6dcf29bac585ccf88793e0e3c5121eb406be0db6915d5c384439b90df5db0b22"
+    },
+    {
+      "path": "src/nova_slider_captcha/images.py",
+      "sha256": "6a063dc6bbaa968f7fdeb59b293037ace9e2a7887d8701c81d01da78c18a4e1c"
+    },
+    {
+      "path": "src/nova_slider_captcha/management/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/nova_slider_captcha/management/commands/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/nova_slider_captcha/management/commands/prune_slider_captcha.py",
+      "sha256": "cbf312869c30a8199525445a2abd1c7efed027a667da8310e3dff79ec3d4c8f4"
+    },
+    {
+      "path": "src/nova_slider_captcha/migrations/0001_initial.py",
+      "sha256": "66e3ca8bd567d0b1b9b0cf48d6c8e338156ad867de355e81ea95f4c1d3fa805a"
+    },
+    {
+      "path": "src/nova_slider_captcha/migrations/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/nova_slider_captcha/models.py",
+      "sha256": "57e5e2a55e2aa4339d6adf7736ca005d29c940db1db37940da8e68cd2cfdae73"
+    },
+    {
+      "path": "src/nova_slider_captcha/services.py",
+      "sha256": "ffbfc79c13328a63bbdd56c45e6177a3c07f92f9d3aa2c527a05847d2d29c1c8"
+    },
+    {
+      "path": "src/nova_slider_captcha/static/nova_slider_captcha/demo.css",
+      "sha256": "4a459e6e16da395a662d9033eb8ce47ec0a440d092ebe5fabf9bb42927eb2bc1"
+    },
+    {
+      "path": "src/nova_slider_captcha/static/nova_slider_captcha/demo.js",
+      "sha256": "b381d445f24f986fbe9f7f647eb19a7b8ae34ebec02911ecd52ba7b76e0f021e"
+    },
+    {
+      "path": "src/nova_slider_captcha/static/nova_slider_captcha/slider.css",
+      "sha256": "2fee717362c7b7fd0411cf5c34eb39fcdc0e059ec2a6c6459af6451588e0f238"
+    },
+    {
+      "path": "src/nova_slider_captcha/static/nova_slider_captcha/slider.js",
+      "sha256": "eda1ad0eeeec8f5ad126f07cb41f189585361ce385fbcbe4b493a26620a96db1"
+    },
+    {
+      "path": "src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html",
+      "sha256": "2e2ccc2dd277e65d0151caaa67e10f3dbd6e5f638d0c733c8af99ecb42eb3874"
+    },
+    {
+      "path": "src/nova_slider_captcha/templates/nova_slider_captcha/demo.html",
+      "sha256": "5dbbdc7a7a5f73f54c9d65b680745cd30e02ce1b7aa7aec1cecb72d56f527351"
+    },
+    {
+      "path": "src/nova_slider_captcha/templates/nova_slider_captcha/widget.html",
+      "sha256": "db14cc65937b27373a1eeb4f1238fd75a5de545933f06447b2235aa39b95fe6c"
+    },
+    {
+      "path": "src/nova_slider_captcha/templatetags/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/nova_slider_captcha/urls.py",
+      "sha256": "f18fd9862237aa20ebc37fa8537bb90ea1dcf6f010daef43ce4b4766b18d5205"
+    },
+    {
+      "path": "src/nova_slider_captcha/views.py",
+      "sha256": "041ac8deb2c4360f9eb73f518a26781eda751a16d84b053dbb5e1f6808b0525a"
+    },
+    {
+      "path": "examples/worker-api/captcha.mjs",
+      "sha256": "e1c3df77face2751efd43b77be9185a09bcc8c6a3d58429e5487797328594ece"
+    },
+    {
+      "path": "examples/worker-api/puzzle.mjs",
+      "sha256": "344a5c559d6dcd0c2d0b425d3ec8b987396ee3357913dcd7d5b63a11e8737ab1"
+    },
+    {
+      "path": "examples/worker-api/schema.sql",
+      "sha256": "6ae502a5b155bfad6125257201a6c98a6f8c6a781cef936cd72d84b18b2fde00"
+    }
+  ]
+}

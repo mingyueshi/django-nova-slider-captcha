@@ -1,0 +1,13 @@
+{
+  "name": "nova-slider-captcha-dev",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/widget.test.mjs",
+    "test:dom": "node scripts/test_dom.cjs",
+    "test:worker": "node --test examples/worker-api/tests/backend.test.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  }
+}

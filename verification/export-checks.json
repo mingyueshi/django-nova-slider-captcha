@@ -1,0 +1,31 @@
+{
+  "date_utc": "2026-10-05",
+  "scope": "Clean source relocation and optional Worker API export, not a full matrix rerun",
+  "runtime_identity": {
+    "django_files_unchanged": 24,
+    "worker_api_schema_files_unchanged": 3,
+    "manifest": "verification/source-runtime-sha256.json"
+  },
+  "tested_versions": {
+    "python": "3.12.15",
+    "django": "5.2.17",
+    "pillow": "12.2.0",
+    "node": "24.21.0",
+    "jsdom": "26.1.0",
+    "npm_clean_install": "11.9.0"
+  },
+  "checks": {
+    "django_system_check": "passed",
+    "django_migration_drift": "passed",
+    "django_native_tests": 31,
+    "django_nova_tests": 31,
+    "widget_tests": 13,
+    "django_dom_checks": 9,
+    "worker_backend_tests": 13,
+    "worker_entrypoint_syntax": "passed",
+    "wheel_build": "passed",
+    "wheel_runtime_byte_identity_files": 24
+  },
+  "export_wheel_sha256": "4def40432638018c29354f2d5fcd15fd671a0b25770ecff68575dfe0ae83af8b",
+  "github_actions": "No workflow included. Historical local results and these export checks are not remote CI."
+}

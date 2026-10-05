@@ -1,0 +1,176 @@
+nova-slider {
+  display: block;
+  width: 100%;
+  --nsc-accent: var(--accent, var(--link-fg, #1d4ed8));
+  --nsc-muted: var(--muted, var(--body-quiet-color, #667389));
+  --nsc-panel: var(--panel2, var(--darkened-bg, #f7f8fc));
+  --nsc-line: var(--line, var(--border-color, #e7eaf2));
+  --nsc-text: var(--text, var(--body-fg, #23283a));
+}
+.nsc {
+  color: var(--nsc-text);
+}
+.nsc * {
+  box-sizing: border-box;
+}
+.nsc-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--nsc-panel);
+  isolation: isolate;
+}
+.nsc-background {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.nsc-piece {
+  position: absolute;
+  left: 0;
+  filter: drop-shadow(0 2px 3px #0007);
+  pointer-events: none;
+}
+.nsc-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 24px;
+  background: var(--nsc-panel);
+  font-size: 14px;
+  color: var(--nsc-muted);
+}
+.nsc-overlay[hidden] {
+  display: none;
+}
+.nsc-track {
+  position: relative;
+  margin-top: 18px;
+  height: 48px;
+  border-radius: 8px;
+  background: var(--nsc-panel);
+  border: 1px solid var(--nsc-line);
+  overflow: visible;
+}
+.nsc-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--nsc-accent) 9%, transparent);
+  border-radius: 7px;
+  width: 48px;
+}
+.nsc-track-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--nsc-muted);
+}
+.nsc-range {
+  appearance: none;
+  background: transparent;
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.nsc-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 48px;
+  height: 48px;
+}
+.nsc-range::-moz-range-thumb {
+  width: 48px;
+  height: 48px;
+}
+.nsc-range:active {
+  cursor: grabbing;
+}
+.nsc-range:focus-visible ~ .nsc-handle {
+  outline: 3px solid var(--nsc-accent);
+  outline-offset: 3px;
+}
+.nsc-handle {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--nsc-line);
+  border-radius: 8px;
+  background: var(--panel, var(--nova-panel, var(--body-bg, #fff)));
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+  color: var(--nsc-accent);
+  box-shadow: 0 2px 5px #0000000b;
+  pointer-events: none;
+}
+.nsc-meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 45px;
+  padding-top: 13px;
+  font-size: 12px;
+}
+.nsc-status {
+  color: var(--nsc-muted);
+  line-height: 1.7;
+}
+.nsc-refresh {
+  flex: none;
+  min-height: 36px;
+  transform: translateY(-7px);
+  font: inherit;
+  color: var(--nsc-muted);
+  background: none;
+  border: 0;
+  padding: 6px 0 6px 9px;
+  cursor: pointer;
+}
+.nsc-refresh span {
+  font-size: 17px;
+  vertical-align: -1px;
+}
+.nsc-refresh:hover {
+  color: var(--nsc-accent);
+}
+.nsc-keyboard {
+  font-size: 11px;
+  color: var(--nsc-muted);
+  margin: 0;
+  line-height: 1.8;
+}
+.nsc[data-state="success"] .nsc-overlay {
+  background: #163b3294;
+  color: #fff;
+  backdrop-filter: blur(3px);
+  font-size: 20px;
+  font-weight: 600;
+}
+.nsc[data-state="success"] .nsc-status {
+  color: var(--mint, #208660);
+}
+.nsc[data-state="error"] .nsc-status,
+.nsc[data-state="expired"] .nsc-status {
+  color: var(--danger, var(--error-fg, #b1223c));
+}
+.nsc[data-state="checking"] .nsc-handle {
+  opacity: 0.6;
+}
+.nsc[data-state="error"] .nsc-overlay,
+.nsc[data-state="expired"] .nsc-overlay {
+  background: color-mix(in srgb, var(--nsc-panel) 93%, transparent);
+}

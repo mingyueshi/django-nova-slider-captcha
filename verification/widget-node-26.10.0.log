@@ -1,0 +1,21 @@
+✔ loads via init/challenge, no answer in DOM and single form field (106.670221ms)
+✔ keyboard submission, duplicate verification gated, token/reset events (24.152541ms)
+✔ wrong answer is retryable and exhausting attempts requires refresh (19.819822ms)
+✔ late verify success cannot overwrite refreshed challenge (17.56554ms)
+✔ late challenge response cannot replace newer challenge (23.092085ms)
+✔ HTML CSRF rejection clears init cache and next refresh recovers (14.883744ms)
+✔ challenge expiry invalidates pending verification and clears proof (14.531675ms)
+✔ proof expiry clears hidden input and emits reset (14.649632ms)
+✔ pointer release verifies, pointercancel does not (11.535967ms)
+✔ network failure is recoverable through refresh (9.820687ms)
+✔ detach and reinsert keeps generation monotonic and one listener set (24.299131ms)
+✔ two simultaneous widgets share init but keep independent challenges and IDs (12.336232ms)
+✔ Django init_required response clears cached initialization (11.168304ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 564.581618

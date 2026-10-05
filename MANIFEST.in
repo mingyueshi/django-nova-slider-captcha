@@ -1,0 +1,10 @@
+include LICENSE README.md VERIFICATION.md
+recursive-include src/nova_slider_captcha/templates *.html
+recursive-include src/nova_slider_captcha/static *.js *.css
+recursive-include tests *.py *.mjs
+recursive-include demo *.py
+recursive-include scripts *.py *.cjs
+include manage.py package.json package-lock.json
+recursive-include verification *.json *.log
+include SOURCE_PROVENANCE.md
+recursive-include examples *.md *.mjs *.sql

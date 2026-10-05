@@ -1,0 +1,92 @@
+(node:12) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# (node:34) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: loads via init/challenge, no answer in DOM and single form field
+ok 1 - loads via init/challenge, no answer in DOM and single form field
+  ---
+  duration_ms: 92.250539
+  type: 'test'
+  ...
+# Subtest: keyboard submission, duplicate verification gated, token/reset events
+ok 2 - keyboard submission, duplicate verification gated, token/reset events
+  ---
+  duration_ms: 19.596926
+  type: 'test'
+  ...
+# Subtest: wrong answer is retryable and exhausting attempts requires refresh
+ok 3 - wrong answer is retryable and exhausting attempts requires refresh
+  ---
+  duration_ms: 19.018686
+  type: 'test'
+  ...
+# Subtest: late verify success cannot overwrite refreshed challenge
+ok 4 - late verify success cannot overwrite refreshed challenge
+  ---
+  duration_ms: 15.27237
+  type: 'test'
+  ...
+# Subtest: late challenge response cannot replace newer challenge
+ok 5 - late challenge response cannot replace newer challenge
+  ---
+  duration_ms: 13.117979
+  type: 'test'
+  ...
+# Subtest: HTML CSRF rejection clears init cache and next refresh recovers
+ok 6 - HTML CSRF rejection clears init cache and next refresh recovers
+  ---
+  duration_ms: 11.308866
+  type: 'test'
+  ...
+# Subtest: challenge expiry invalidates pending verification and clears proof
+ok 7 - challenge expiry invalidates pending verification and clears proof
+  ---
+  duration_ms: 10.677987
+  type: 'test'
+  ...
+# Subtest: proof expiry clears hidden input and emits reset
+ok 8 - proof expiry clears hidden input and emits reset
+  ---
+  duration_ms: 11.453733
+  type: 'test'
+  ...
+# Subtest: pointer release verifies, pointercancel does not
+ok 9 - pointer release verifies, pointercancel does not
+  ---
+  duration_ms: 21.656947
+  type: 'test'
+  ...
+# Subtest: network failure is recoverable through refresh
+ok 10 - network failure is recoverable through refresh
+  ---
+  duration_ms: 14.406256
+  type: 'test'
+  ...
+# Subtest: detach and reinsert keeps generation monotonic and one listener set
+ok 11 - detach and reinsert keeps generation monotonic and one listener set
+  ---
+  duration_ms: 15.261463
+  type: 'test'
+  ...
+# Subtest: two simultaneous widgets share init but keep independent challenges and IDs
+ok 12 - two simultaneous widgets share init but keep independent challenges and IDs
+  ---
+  duration_ms: 11.113152
+  type: 'test'
+  ...
+# Subtest: Django init_required response clears cached initialization
+ok 13 - Django init_required response clears cached initialization
+  ---
+  duration_ms: 14.756323
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 595.950763
