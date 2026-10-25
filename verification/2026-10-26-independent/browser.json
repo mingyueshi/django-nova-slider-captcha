@@ -1,0 +1,58 @@
+{
+  "engine": "Chromium 155.0.8059.86",
+  "actual_png": true,
+  "mocked_http": true,
+  "django_http_browser_integration": false,
+  "checks": [
+    {
+      "decode": "present",
+      "image": "valid",
+      "state": "ready",
+      "dimensions": [
+        [
+          320,
+          160
+        ],
+        [
+          44,
+          44
+        ]
+      ]
+    },
+    {
+      "decode": "removed",
+      "image": "valid",
+      "state": "ready",
+      "dimensions": [
+        [
+          320,
+          160
+        ],
+        [
+          44,
+          44
+        ]
+      ]
+    },
+    {
+      "decode": "present",
+      "image": "broken",
+      "state": "error",
+      "token": ""
+    },
+    {
+      "decode": "removed",
+      "image": "broken",
+      "state": "error",
+      "token": ""
+    },
+    {
+      "fallback_refresh_then_old_image_error": "ready",
+      "generation": 2
+    },
+    {
+      "viewport_width": 390,
+      "document_scroll_width": 390
+    }
+  ]
+}

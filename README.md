@@ -64,6 +64,10 @@ urlpatterns = [
 
 使用 Django 模板时，静态路径应通过 `{% static %}` 生成。组件会调用 `GET /captcha/init` 初始化 session 与 CSRF，然后使用同源 JSON POST 请求。跨域 CORS 接入未提供；前后端分开开发时，通过同源反向代理接入。
 
+例如页面位于 `https://www.example.com/` 时，将浏览器可见的 `https://www.example.com/captcha/` 反代到 Django，并让组件使用 `endpoint="/captcha/"`。前端和验证码接口需要相同的 scheme、Host 和端口；`api.example.com` 仍是不同 origin。`same-site` 请求也被拒绝，增加 `CSRF_TRUSTED_ORIGINS` 不会放开这项约束。
+
+代理应保留外部 Host，向 Django 准确传递外部 HTTPS scheme，并正确配置 `ALLOWED_HOSTS`；仅在入口代理会移除客户端伪造头并重新设置时，才配置 `SECURE_PROXY_SSL_HEADER` / `USE_X_FORWARDED_HOST`。保证 session/CSRF Cookie 的域、路径覆盖页面与验证码接口，并在生产启用 Secure；代理不得缓存验证码响应或丢弃 `Set-Cookie`。可信代理还需正确提供客户端 `REMOTE_ADDR`，本组件不会直接读取 `X-Forwarded-For`。不要通过关闭 CSRF 或宽泛信任客户端转发头解决代理错误。
+
 组件内部自带一个名为 `nova_slider_token` 的隐藏表单字段。不要在外面重复渲染同名字段。成功事件 `verified` 的 `event.detail` 为 `{token, expiresIn}`；凭证失效或刷新时发出 `captcha-reset`，状态变化发出 `captcha-state`。只在相关表单内临时保留凭证，不放入 URL、日志或持久浏览器存储。
 
 业务接口示意：
@@ -188,6 +192,16 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 定期执行 `python manage.py prune_slider_captcha` 清理安全过期的挑战、旧桶和完全补充的 GCRA 状态。未清偿债务与未结束冷却期不能提前删除。清理和限流会并发运行，竞争失败必须保守拒绝，不能作为无状态放行依据。
 
+可从每五分钟执行一次开始，例如在部署用户的 crontab 中配置（替换路径，并使用与服务一致的生产环境变量和数据库配置）：
+
+```cron
+*/5 * * * * cd /srv/myapp && /srv/myapp/.venv/bin/python manage.py prune_slider_captcha >> /var/log/myapp/captcha-prune.log 2>&1
+```
+
+按访问量、状态表增长和数据库清理耗时调整频率；避免调度重叠，确保日志可写并纳入监控。状态数量由 IP、session 和动作共同决定，一个 IP 可以产生大量 session，不能仅按 IP 数估计。清理频率不改变债务和冷却记录的保留条件。
+
+`SECRET_KEY` 轮换会使已有挑战与未消费凭证失效，也会改变 IP/session 限流身份，可能产生新额度。本组件的自定义 `salted_hmac` 不尝试 `SECRET_KEY_FALLBACKS`。应协调所有实例的密钥切换、提示用户重新完成验证码，并在轮换窗口保留独立的入口/账号限流；旧状态仍按上述安全条件清理，不能为轮换直接清空限流表。
+
 ## 安全与无障碍边界
 
 - 生产必须设置 HTTPS、安全的 session/CSRF Cookie、强密钥、可信 Host/代理和独立登录/账号限流，必要时配合 MFA。
@@ -199,7 +213,7 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 ## 验证与兼容
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。Python 3.10 仅是安装边界，未作为本项目的已测/新部署推荐组合。精确七格 Python/Django 与三格 Node 结果见 [验证说明](VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，详情及本轮改进结果见 [本地自测记录](verification/2026-10-26-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
 
 ```sh
 python manage.py check
@@ -213,6 +227,6 @@ npm run test:worker
 
 Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。完整矩阵脚本要求显式提供精确运行时、Nova 源码路径及已构建 wheel；它不是适用于所有平台的一键 CI。
 
-需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。仓库目前没有 GitHub Actions workflow；已执行的本地检查与远端 CI 必须分开表述。
+需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](.github/workflows/tests.yml) 在 push、pull request 和手动触发时检查 Django、迁移漂移、完整测试及组件/DOM/Worker 测试；本地新增配置不代表远端 CI 已运行或通过。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
 
 代码使用 MIT 许可证，原始法律文本保留在 [LICENSE](LICENSE)，不翻译其法律条款。

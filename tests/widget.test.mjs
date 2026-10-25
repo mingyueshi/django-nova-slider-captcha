@@ -45,6 +45,7 @@ async function setup(handler, options = {}) {
   };
   w.clearTimeout = (id) => timers.delete(id);
   w.HTMLImageElement.prototype.decode = () => Promise.resolve();
+  const images = options.images?.(w);
   w.fetch = async (url, options = {}) => {
     calls.push({ url, options });
     return handler
@@ -65,7 +66,40 @@ async function setup(handler, options = {}) {
   (options.demo ? w.document.querySelector("form") : w.document.body).append(widget);
   if (options.demo) w.eval(readFileSync(new URL("../src/nova_slider_captcha/static/nova_slider_captcha/demo.js", import.meta.url), "utf8"));
   await flush();
-  return { w, dom, widget, calls, timers };
+  return { w, dom, widget, calls, timers, images };
+}
+// Model event delivery and cache state explicitly: jsdom does not load PNGs.
+function imageEvents(w, { cached = false, cachedWidth = 320, synchronous = false, decode } = {}) {
+  const images = [], states = new WeakMap(), listeners = new Map();
+  const prototype = w.HTMLImageElement.prototype;
+  prototype.decode = decode;
+  const add = prototype.addEventListener, remove = prototype.removeEventListener;
+  prototype.addEventListener = function (type, fn, options) {
+    if (["load", "error"].includes(type)) {
+      if (!listeners.has(this)) listeners.set(this, new Set());
+      listeners.get(this).add(fn);
+    }
+    return add.call(this, type, fn, options);
+  };
+  prototype.removeEventListener = function (type, fn, options) {
+    listeners.get(this)?.delete(fn);
+    return remove.call(this, type, fn, options);
+  };
+  function finish(image, type = "load") {
+    states.set(image, { complete: true, width: type === "load" ? 320 : 0 });
+    image.dispatchEvent(new w.Event(type));
+  }
+  Object.defineProperties(prototype, {
+    src: { configurable: true, get() { return this.getAttribute("src") || ""; }, set(value) {
+      this.setAttribute("src", value);
+      states.set(this, { complete: cached, width: cached ? cachedWidth : 0 });
+      images.push(this);
+      if (synchronous) finish(this);
+    } },
+    complete: { configurable: true, get() { return states.get(this)?.complete ?? false; } },
+    naturalWidth: { configurable: true, get() { return states.get(this)?.width ?? 0; } },
+  });
+  return { images, finish, listeners, active: () => [...listeners.values()].reduce((n, set) => n + set.size, 0) };
 }
 function pointer(c, type, pointerId = 1) {
   const event = new c.w.Event(type);
@@ -76,6 +110,113 @@ function cleanup(c) {
   c.widget.remove();
   c.dom.window.close();
 }
+test("missing decode waits for both load events and cleans listeners", async () => {
+  const c = await setup(undefined, { images: imageEvents });
+  const [background, piece] = c.images.images;
+  assert.equal(c.widget.state, "loading");
+  assert.equal(c.images.active(), 4);
+  c.images.finish(background);
+  await flush();
+  assert.equal(c.widget.state, "loading");
+  c.images.finish(piece);
+  await flush();
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.images.active(), 0);
+  assert.equal(background.alt, "带有一处拼图缺口的山水图案");
+  cleanup(c);
+});
+test("missing decode handles cached images and listeners installed before src", async () => {
+  for (const mode of [{ cached: true }, { synchronous: true }]) {
+    const c = await setup(undefined, { images: w => imageEvents(w, mode) });
+    assert.equal(c.widget.state, "ready");
+    assert.equal(c.images.active(), 0);
+    cleanup(c);
+  }
+});
+test("a completed broken cached image fails instead of becoming ready", async () => {
+  const c = await setup(undefined, { images: w => imageEvents(w, { cached: true, cachedWidth: 0 }) });
+  assert.equal(c.widget.state, "error");
+  assert.equal(c.widget.range.disabled, true);
+  assert.equal(c.images.active(), 0);
+  cleanup(c);
+});
+test("refresh recovers from fallback image errors while ignoring old events", async () => {
+  const c = await setup(undefined, { images: imageEvents });
+  const old = [...c.images.images];
+  c.images.finish(old[0], "error");
+  await flush();
+  assert.equal(c.widget.state, "error");
+  const pending = c.widget.refresh();
+  await flush();
+  for (const image of old) c.images.finish(image, "error");
+  for (const image of c.images.images.slice(-2)) c.images.finish(image);
+  await pending;
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.images.active(), 0);
+  cleanup(c);
+});
+test("image errors and decode rejection fail closed and clean the sibling", async () => {
+  for (const mode of ["fallback", "decode-error", "decode-reject"]) {
+    const c = await setup(undefined, { images: w => imageEvents(w, {
+      decode: mode === "decode-error" ? () => new Promise(() => {}) : mode === "decode-reject" ? () => Promise.reject(Error("bad decode")) : undefined,
+    }) });
+    if (mode !== "decode-reject") c.images.finish(c.images.images[0], "error");
+    await flush();
+    assert.equal(c.widget.state, "error");
+    assert.equal(c.widget.getToken(), "");
+    assert.equal(c.widget.range.disabled, true);
+    assert.equal(c.images.active(), 0);
+    for (const image of c.images.images) c.images.finish(image);
+    await flush();
+    assert.equal(c.widget.state, "error");
+    cleanup(c);
+  }
+});
+test("fallback refresh and disconnect isolate late events and remove listeners", async () => {
+  const c = await setup(undefined, { images: imageEvents });
+  const old = [...c.images.images];
+  const refreshed = c.widget.refresh();
+  await flush();
+  assert.ok(old.every(image => c.images.listeners.get(image).size === 0));
+  for (const image of old) c.images.finish(image);
+  await flush();
+  assert.equal(c.widget.state, "loading");
+  for (const image of c.images.images.slice(2)) c.images.finish(image);
+  await refreshed;
+  assert.equal(c.widget.state, "ready");
+  const pending = c.widget.refresh();
+  await flush();
+  const disconnected = c.images.images.slice(-2);
+  c.widget.remove();
+  await pending;
+  assert.equal(c.images.active(), 0);
+  c.w.document.body.append(c.widget);
+  await flush();
+  for (const image of disconnected) c.images.finish(image, "error");
+  await flush();
+  assert.equal(c.widget.state, "loading");
+  for (const image of c.images.images.slice(-2)) c.images.finish(image);
+  await flush();
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.images.active(), 0);
+  cleanup(c);
+});
+test("late decode completion after refresh cannot ready or fail a new generation", async () => {
+  const decodes = [];
+  const c = await setup(undefined, { images: w => imageEvents(w, { decode: () => new Promise((resolve, reject) => decodes.push({ resolve, reject })) }) });
+  const pending = c.widget.refresh();
+  await flush();
+  decodes[0].resolve();
+  decodes[1].reject(Error("old image"));
+  await flush();
+  assert.equal(c.widget.state, "loading");
+  decodes[2].resolve();
+  decodes[3].resolve();
+  await pending;
+  assert.equal(c.widget.state, "ready");
+  assert.equal(c.images.active(), 0);
+  cleanup(c);
+});
 test("loads via init/challenge, no answer in DOM and single form field", async () => {
   const c = await setup();
   assert.equal(c.widget.state, "ready");

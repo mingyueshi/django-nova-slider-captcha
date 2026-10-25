@@ -1,5 +1,4 @@
 import json
-import math
 import uuid
 from functools import wraps
 
@@ -106,7 +105,7 @@ def verify(request, data):
     except (ValueError, TypeError, AttributeError):
         return _failure("invalid_challenge")
     x = data.get("x")
-    if type(x) not in (int, float) or not 0 <= x <= WIDTH - PIECE_SIZE or not math.isfinite(x):
+    if type(x) not in (int, float) or not 0 <= x <= WIDTH - PIECE_SIZE:
         return _failure("invalid_position")
     return JsonResponse(services.verify(request, challenge_id, x))
 

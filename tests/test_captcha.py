@@ -162,6 +162,15 @@ class CaptchaTests(CaptchaHelpers, TestCase):
         for token in (None, [], {}, True, "", "x" * 43, "x" * 5000):
             self.assertFalse(services.consume(token, self.request(self.client), "demo"))
 
+    def test_proof_generation_and_consumption_share_encoded_length(self):
+        token, _ = self.token(self.client)
+        self.assertEqual(services.TOKEN_BYTES, 32)
+        self.assertEqual(len(token), services.TOKEN_LENGTH)
+        self.assertEqual(services.TOKEN_LENGTH, (services.TOKEN_BYTES * 8 + 5) // 6)
+        self.assertFalse(services.consume(token + "x", self.request(self.client), "demo"))
+        self.assertFalse(services.consume(token[:-1], self.request(self.client), "demo"))
+        self.assertTrue(services.consume(token, self.request(self.client), "demo"))
+
     def test_same_origin_enforced_even_for_csrf_trusted_origin(self):
         with override_settings(CSRF_TRUSTED_ORIGINS=["https://unrelated.example"]):
             self.assertEqual(self.post(self.client, "challenge", {"purpose": "demo"}, HTTP_ORIGIN="https://unrelated.example").status_code, 403)

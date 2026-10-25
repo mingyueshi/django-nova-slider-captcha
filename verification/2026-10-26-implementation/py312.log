@@ -1,0 +1,22 @@
+{"PYTHONPATH": "src:.", "DJANGO_SETTINGS_MODULE": "tests.settings", "NOVA_TEST_DB": "/tmp/nova-slider-implementation-py312-20261026.sqlite3", "PYTHONDONTWRITEBYTECODE": "1"}
+$ /tmp/nova-slider-review-20261026/bin/python -c import platform,django,PIL,sqlite3; print(platform.platform()); print(platform.python_version(), django.get_version(), PIL.__version__, sqlite3.sqlite_version)
+macOS-27.0.1-arm64-arm-64bit
+3.12.14 5.2.17 12.2.0 3.54.0
+$ /tmp/nova-slider-review-20261026/bin/python -m pip check
+/tmp/nova-slider-review-20261026/bin/python: No module named pip
+Shared review environment is read-only and contains no pip; continuing checks without installing or modifying it.
+$ /tmp/nova-slider-review-20261026/bin/python -m django check
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-review-20261026/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ /tmp/nova-slider-review-20261026/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+.......................................................................
+----------------------------------------------------------------------
+Ran 71 tests in 3.409s
+
+OK
+Destroying test database for alias 'default'...
+Found 71 test(s).
+System check identified no issues (0 silenced).

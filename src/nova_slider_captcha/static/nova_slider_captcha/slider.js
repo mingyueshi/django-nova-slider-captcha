@@ -93,6 +93,35 @@
     typeof value === "number" && Number.isFinite(value)
       ? Math.min(max, Math.max(0, Math.ceil(value))) : 0;
   const localError = (key, values = {}) => Object.assign(new Error(key), { key, values });
+  function loadImage(image, source, signal) {
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const decode = typeof image.decode === "function";
+      const finish = (error) => {
+        if (settled) return;
+        settled = true;
+        image.removeEventListener("load", loaded);
+        image.removeEventListener("error", failed);
+        signal.removeEventListener("abort", aborted);
+        if (error) reject(error); else resolve();
+      };
+      const loaded = () => { if (!decode) finish(); };
+      const failed = () => finish(new Error("Image loading failed"));
+      const aborted = () => finish(new DOMException("Image loading aborted", "AbortError"));
+      // Register before src, including cached/synchronously delivered load events.
+      image.addEventListener("load", loaded);
+      image.addEventListener("error", failed);
+      signal.addEventListener("abort", aborted, { once: true });
+      if (signal.aborted) { aborted(); return; }
+      try {
+        image.src = source;
+        if (decode) image.decode().then(() => finish(), finish);
+        else if (image.complete) {
+          if (image.naturalWidth > 0) finish(); else failed();
+        }
+      } catch (error) { finish(error); }
+    });
+  }
   const errorText = (data, fallback) => {
     if (data?.code === "rate_limit_unavailable") return { key: "unavailable", values: {} };
     if (!errorKeys.has(data?.code)) return { key: fallback, values: {} };
@@ -307,12 +336,17 @@
           throw localError(message.key, message.values);
         }
         this.challenge = data;
-        const bg = this.querySelector(".nsc-background"), piece = this.querySelector(".nsc-piece");
-        bg.src = data.background;
-        piece.src = data.piece;
+        // New nodes isolate each generation from old image load/error events.
+        const bg = new Image(), piece = new Image();
+        for (const [image, className, alt] of [[bg, "nsc-background", "background_alt"], [piece, "nsc-piece", "piece_alt"]]) {
+          image.className = className;
+          image.alt = this.getText(alt);
+          image.draggable = false;
+          this.querySelector("." + className).replaceWith(image);
+        }
         piece.style.width = (data.pieceWidth / data.width) * 100 + "%";
         piece.style.top = (data.pieceY / data.height) * 100 + "%";
-        await Promise.all([bg.decode(), piece.decode()]);
+        await Promise.all([loadImage(bg, data.background, this.request.signal), loadImage(piece, data.piece, this.request.signal)]);
         if (seq !== this.seq) return;
         this.setState("ready", "ready");
         this.timer = setTimeout(() => {
@@ -325,6 +359,7 @@
         }, Math.max(0, data.expiresIn * 1000 - (Date.now() - started)));
       } catch (e) {
         if (seq !== this.seq || e.name === "AbortError") return;
+        this.request.abort(); // Also clean up a sibling image still loading.
         this.setState("error", Object.hasOwn(dictionaries.en, e.key) ? e.key : "network_error", e.values);
       }
     }

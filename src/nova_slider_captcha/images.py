@@ -2,6 +2,7 @@
 import base64
 import io
 import math
+import random
 import secrets
 
 from PIL import Image, ImageDraw, ImageFilter
@@ -16,9 +17,11 @@ def _data_uri(image):
 
 
 def make_puzzle():
-    rng = secrets.SystemRandom()
-    target_x = rng.randrange(60, WIDTH - PIECE_SIZE - 12)
-    piece_y = rng.randrange(24, HEIGHT - PIECE_SIZE - 20)
+    # Coordinates remain security-sensitive; decorative art uses its own fresh
+    # seeded PRNG so pixel noise does not repeatedly consult the OS random source.
+    target_x = secrets.randbelow(WIDTH - PIECE_SIZE - 12 - 60) + 60
+    piece_y = secrets.randbelow(HEIGHT - PIECE_SIZE - 20 - 24) + 24
+    rng = random.Random(secrets.randbits(128))
     palette = rng.choice([((15, 43, 61), (36, 153, 141)), ((28, 38, 82), (155, 119, 189)), ((33, 50, 72), (46, 136, 197))])
     canvas = Image.new("RGB", (WIDTH, HEIGHT))
     pixels = canvas.load()

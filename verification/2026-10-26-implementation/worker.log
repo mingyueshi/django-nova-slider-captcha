@@ -1,0 +1,39 @@
+$ npm run test:worker
+
+> nova-slider-captcha-dev@0.2.0 test:worker
+> node --test examples/worker-api/tests/backend.test.mjs
+
+✔ contract: opaque challenge raster images and exact dimensions (33.250417ms)
+✔ solve + purpose-bound single-use business consumption (12.843125ms)
+✔ five wrong attempts then challenge locked (11.897041ms)
+✔ tolerance 4 inclusive and 5 exclusive (16.773125ms)
+✔ session and CSRF boundaries (10.049709ms)
+✔ expiry of challenges, tokens and sessions (18.726417ms)
+✔ parallel success issues a single proof; parallel submit consumes once (12.109375ms)
+✔ parallel wrong attempts never exceed five (11.617667ms)
+✔ challenge issuance rate limited per session (132.040125ms)
+✔ session creation rate limited by trusted edge IP (4.726083ms)
+✔ malformed inputs, giant numbers and bounded bodies fail closed (11.630125ms)
+✔ multiple challenges do not invalidate another tab (18.231041ms)
+✔ PNG contains no plaintext answer metadata (8.931917ms)
+✔ GCRA blocks minute-boundary double burst and admits exact refill (0.54325ms)
+✔ GCRA concurrency claims at most configured capacity (0.622375ms)
+✔ backwards clock cannot reset debt and rejected requests do not extend it (0.258709ms)
+✔ fractional refill rounds toward stricter rate; invalid configs fail closed (0.551417ms)
+✔ legacy active fixed window inherits cooldown without reopening quota (0.257208ms)
+✔ stable IP quota is shared by new sessions; retry accounts for charged IP (0.854583ms)
+✔ cleanup only removes fully replenished states; pruning never grants while debt remains (0.352042ms)
+✔ HTTP rate-limited responses carry computed Retry-After and machine code (134.321625ms)
+Captcha operation unavailable
+✔ database limiter failure returns stable unavailable response, never a challenge (0.907583ms)
+✔ shared Django/Worker fixture agrees at each microsecond boundary (1.012834ms)
+✔ changing purpose does not reset the shared issuance quota (135.382333ms)
+✔ legacy lookup uses indexed exact-prefix range without long LIKE patterns (0.583625ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 616.819208

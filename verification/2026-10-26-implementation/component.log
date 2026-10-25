@@ -1,0 +1,46 @@
+$ npm test
+
+> nova-slider-captcha-dev@0.2.0 test
+> node --test tests/widget.test.mjs
+
+✔ missing decode waits for both load events and cleans listeners (39.403375ms)
+✔ missing decode handles cached images and listeners installed before src (11.715667ms)
+✔ image errors and decode rejection fail closed and clean the sibling (12.61175ms)
+✔ fallback refresh and disconnect isolate late events and remove listeners (7.757084ms)
+✔ late decode completion after refresh cannot ready or fail a new generation (5.665375ms)
+✔ loads via init/challenge, no answer in DOM and single form field (5.240458ms)
+✔ keyboard submission, duplicate verification gated, token/reset events (7.216916ms)
+✔ wrong answer is retryable and exhausting attempts requires refresh (6.097417ms)
+✔ late verify success cannot overwrite refreshed challenge (5.117667ms)
+✔ late challenge response cannot replace newer challenge (4.995792ms)
+✔ HTML CSRF rejection clears init cache and next refresh recovers (5.329125ms)
+✔ challenge expiry invalidates pending verification and clears proof (4.702917ms)
+✔ proof expiry clears hidden input and emits reset (7.028333ms)
+✔ pointer release verifies, pointercancel does not (5.133792ms)
+✔ network failure is recoverable through refresh (3.867542ms)
+✔ detach and reinsert keeps generation monotonic and one listener set (5.451042ms)
+✔ two simultaneous widgets share init but keep independent challenges and IDs (6.544458ms)
+✔ Django init_required response clears cached initialization (4.326292ms)
+✔ default remains Chinese regardless of document language, including ARIA (3.799958ms)
+✔ locale aliases, invalid locales, and dynamic labels retain proof and requests (6.417917ms)
+✔ custom message merge is text-only, bounded, and supports pre-upgrade properties (7.662958ms)
+✔ known error codes localize and use actual rate-limit retryAfter safely (18.876583ms)
+✔ initialization, JSON, and network errors never display arbitrary error messages (12.1945ms)
+✔ verification retries, unknown errors, and server expiry are localized (8.367125ms)
+✔ locale switches during pending verification preserve duplicate and late-response guards (6.039542ms)
+✔ invalid and cross-origin endpoints localize without making requests (11.957667ms)
+✔ long translated text uses wrapping CSS rather than fixed track and button widths (23.049166ms)
+✔ demo success ignores server messages and dynamically localizes safe result (5.83625ms)
+✔ demo rejected and interrupted requests have localized messages (8.855333ms)
+✔ refresh interrupts an old drag so its pointerup cannot submit the new puzzle (3.205666ms)
+✔ a stale pointer release or cancellation cannot submit or cancel a new drag (3.579667ms)
+✔ concurrent pointers cannot replace the active drag and matching cancellation releases it (2.99275ms)
+✔ expiry, keyboard checking, and disconnect release active pointer capture (5.446125ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 417.463167

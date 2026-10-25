@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "baseline_ref": "33b92ec",
+  "seed": 20261026,
+  "steps": 500,
+  "checks": [
+    "allowed",
+    "retryAfter",
+    "all per-step rate states"
+  ],
+  "scenarios": [
+    "backward clock",
+    "refill",
+    "quota changes",
+    "IP/session/action separation",
+    "prune",
+    "upgrade cooldown"
+  ]
+}

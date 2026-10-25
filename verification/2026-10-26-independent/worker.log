@@ -1,0 +1,38 @@
+
+> nova-slider-captcha-dev@0.2.0 test:worker
+> node --test examples/worker-api/tests/backend.test.mjs
+
+✔ contract: opaque challenge raster images and exact dimensions (38.471083ms)
+✔ solve + purpose-bound single-use business consumption (12.43325ms)
+✔ five wrong attempts then challenge locked (12.129ms)
+✔ tolerance 4 inclusive and 5 exclusive (12.870625ms)
+✔ session and CSRF boundaries (14.330916ms)
+✔ expiry of challenges, tokens and sessions (21.223459ms)
+✔ parallel success issues a single proof; parallel submit consumes once (12.188083ms)
+✔ parallel wrong attempts never exceed five (11.437875ms)
+✔ challenge issuance rate limited per session (140.298708ms)
+✔ session creation rate limited by trusted edge IP (4.827917ms)
+✔ malformed inputs, giant numbers and bounded bodies fail closed (12.555333ms)
+✔ multiple challenges do not invalidate another tab (19.995083ms)
+✔ PNG contains no plaintext answer metadata (9.221ms)
+✔ GCRA blocks minute-boundary double burst and admits exact refill (0.664458ms)
+✔ GCRA concurrency claims at most configured capacity (0.677166ms)
+✔ backwards clock cannot reset debt and rejected requests do not extend it (0.300166ms)
+✔ fractional refill rounds toward stricter rate; invalid configs fail closed (0.582917ms)
+✔ legacy active fixed window inherits cooldown without reopening quota (0.283625ms)
+✔ stable IP quota is shared by new sessions; retry accounts for charged IP (0.468583ms)
+✔ cleanup only removes fully replenished states; pruning never grants while debt remains (0.221792ms)
+✔ HTTP rate-limited responses carry computed Retry-After and machine code (138.650959ms)
+Captcha operation unavailable
+✔ database limiter failure returns stable unavailable response, never a challenge (0.852584ms)
+✔ shared Django/Worker fixture agrees at each microsecond boundary (0.725459ms)
+✔ changing purpose does not reset the shared issuance quota (138.394792ms)
+✔ legacy lookup uses indexed exact-prefix range without long LIKE patterns (0.566625ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 643.770958

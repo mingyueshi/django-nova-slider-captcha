@@ -18,6 +18,9 @@ from .images import make_puzzle
 from .models import Challenge, RateLimitState
 
 _SESSION_KEY = "_nova_slider_binding"
+TOKEN_BYTES = 32
+# URL-safe base64 without padding, as returned by secrets.token_urlsafe().
+TOKEN_LENGTH = (TOKEN_BYTES * 8 + 5) // 6
 
 
 def _hash(value, salt="binding"):
@@ -27,7 +30,7 @@ def _hash(value, salt="binding"):
 def session_binding(request, create=False):
     nonce = request.session.get(_SESSION_KEY)
     if not nonce and create:
-        nonce = secrets.token_urlsafe(32)
+        nonce = secrets.token_urlsafe(TOKEN_BYTES)
         request.session[_SESSION_KEY] = nonce
     return _hash(nonce) if isinstance(nonce, str) and nonce else None
 
@@ -82,10 +85,22 @@ def allow_request(request, action):
         tolerance_us = (capacity - 1) * interval_us
         key = f"{action}:{scope}:{subject}"
         claimed[key] = tolerance_us
-        RateLimitState.objects.get_or_create(key=key)
-        updated = RateLimitState.objects.filter(
+        eligible = RateLimitState.objects.filter(
             key=key, tat_us__lte=now_us + tolerance_us, blocked_until_us__lte=now_us,
-        ).update(tat_us=Greatest(F("tat_us"), Value(now_us, output_field=BigIntegerField())) + interval_us)
+        )
+        next_tat = Greatest(F("tat_us"), Value(now_us, output_field=BigIntegerField())) + interval_us
+        updated = eligible.update(tat_us=next_tat)
+        if not updated:
+            # Missing rows are born already charged. get_or_create's unique-key
+            # race recovery must never overwrite another request's debt/cooldown.
+            _, created = RateLimitState.objects.get_or_create(
+                key=key, defaults={"tat_us": now_us + interval_us if now_us >= 0 else 0},
+            )
+            updated = created and now_us >= 0
+            if not created:
+                # A creator or cleanup may have raced the first UPDATE. Recheck
+                # atomically; disappearance here is conservatively a denial.
+                updated = eligible.update(tat_us=next_tat)
         if not updated:
             return RateDecision(False, _retry_after(claimed, now_us))
     return RateDecision(True)
@@ -114,7 +129,7 @@ def verify(request, challenge_id, x):
         return {"ok": False, "code": "attempts_exhausted", "attemptsRemaining": 0}
     active = Challenge.objects.filter(pk=challenge.pk, session_hash=binding, expires_at__gt=now, solved=False, attempts__lt=MAX_ATTEMPTS)
     if abs(challenge.target_x - x) <= TOLERANCE:
-        token = secrets.token_urlsafe(32)
+        token = secrets.token_urlsafe(TOKEN_BYTES)
         updated = active.update(attempts=F("attempts") + 1, solved=True, token_hash=_hash(token, "token"), token_expires_at=now + timedelta(seconds=TOKEN_TTL))
         if updated:
             return {"ok": True, "token": token, "expiresIn": TOKEN_TTL}
@@ -134,7 +149,7 @@ def consume(token, request, purpose):
     operation. Do not trust a client's asserted purpose. Returns bool; database
     failures propagate (fail closed). Business transactions remain your concern.
     """
-    if purpose not in PURPOSES or not isinstance(token, str) or len(token) != 43:
+    if purpose not in PURPOSES or not isinstance(token, str) or len(token) != TOKEN_LENGTH:
         return False
     binding = session_binding(request)
     if not binding:

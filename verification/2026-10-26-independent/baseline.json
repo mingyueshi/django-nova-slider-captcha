@@ -1,0 +1,36 @@
+{
+  "python": "3.12.14",
+  "django": "5.2.17",
+  "samples": 15,
+  "median_ms": 129.02025000005324,
+  "min_ms": 123.4841250000045,
+  "max_ms": 256.41241699997863,
+  "queries_new_then_existing": [
+    {
+      "allowed": true,
+      "count": 10,
+      "verbs": [
+        "SELECT",
+        "BEGIN",
+        "INSERT",
+        "COMMIT",
+        "UPDATE",
+        "SELECT",
+        "BEGIN",
+        "INSERT",
+        "COMMIT",
+        "UPDATE"
+      ]
+    },
+    {
+      "allowed": true,
+      "count": 4,
+      "verbs": [
+        "SELECT",
+        "UPDATE",
+        "SELECT",
+        "UPDATE"
+      ]
+    }
+  ]
+}

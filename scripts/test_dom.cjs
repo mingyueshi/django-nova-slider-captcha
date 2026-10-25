@@ -65,6 +65,6 @@ async function page(url, demo=false){
  const expiry=[...p.timers.values()].find(t=>t.ms>=50000 && t.ms<=60000);assert.ok(expiry);expiry.fn();assert.equal(slider.getToken(),'');assert.equal(slider.state,'expired');results.push('proof expiration clears Admin hidden field');
  await slider.refresh();for(let i=0;i<5;i++){slider.move(0);await slider.verify()}assert.equal(slider.state,'error');assert.equal(slider.getToken(),'');results.push('fifth mismatch locks widget and leaves no proof');
  p.dom.window.close();
- fs.writeFileSync(path.join(root,'verification/dom-results.json'),JSON.stringify({status:'passed',engine:'jsdom 26.1.0 + real Django test client',checks:results,limitations:['No browser layout, pixels, pointer/touch rendering, or assistive-technology testing']},null,2)+'\n');
+ if(process.env.NOVA_DOM_REPORT) fs.writeFileSync(process.env.NOVA_DOM_REPORT,JSON.stringify({status:'passed',engine:'jsdom 26.1.0 + real Django test client',checks:results,limitations:['No browser layout, pixels, pointer/touch rendering, or assistive-technology testing']},null,2)+'\n');
  console.log(JSON.stringify(results));bridge.stdin.end();
 })().catch(error=>{console.error(error);bridge.kill();process.exitCode=1});

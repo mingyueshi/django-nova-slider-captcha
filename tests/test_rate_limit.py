@@ -38,6 +38,49 @@ def scope_key(action="issue", scope="ip", subject="192.0.2.1"):
 
 @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_ip": 3, "issue_session": 3})
 class GCRATests(CaptchaHelpers, TestCase):
+    def test_existing_accepted_scopes_use_only_two_conditional_updates(self):
+        with at(1_000_000):
+            self.assertTrue(services.allow_request(request(), "issue"))
+            with CaptureQueriesContext(connection) as queries:
+                self.assertTrue(services.allow_request(request(), "issue"))
+        self.assertEqual(len(queries), 2)
+        self.assertTrue(all(query["sql"].startswith("UPDATE ") for query in queries))
+        self.assertTrue(all('"blocked_until_us" <=' in query["sql"] for query in queries))
+
+    def test_creation_charges_first_request_without_another_update(self):
+        with at(1_000_000), CaptureQueriesContext(connection) as queries:
+            self.assertTrue(services.allow_request(request(), "issue"))
+        self.assertEqual(sum(query["sql"].startswith("UPDATE ") for query in queries), 2)
+        self.assertEqual(sum(query["sql"].startswith("INSERT ") for query in queries), 2)
+        self.assertEqual(set(RateLimitState.objects.values_list("tat_us", flat=True)), {21_000_000})
+
+    def test_concurrent_creator_cooldown_is_never_overwritten(self):
+        now = 1_000_000
+        def competitor(**kwargs):
+            state = RateLimitState.objects.create(key=kwargs["key"], tat_us=now + RATE_PERIOD_US, blocked_until_us=now + 10_000_000)
+            return state, False
+        with at(now), patch.object(RateLimitState.objects, "get_or_create", side_effect=competitor):
+            self.assertFalse(services.allow_request(request(), "issue"))
+        state = RateLimitState.objects.get(pk=scope_key())
+        self.assertEqual((state.tat_us, state.blocked_until_us), (now + RATE_PERIOD_US, now + 10_000_000))
+        self.assertEqual(RateLimitState.objects.count(), 1)
+
+    def test_disappearance_between_creation_lookup_and_retry_fails_closed(self):
+        def disappears(**kwargs):
+            state = RateLimitState.objects.create(key=kwargs["key"])
+            state.delete()  # A fully idle row can be removed by quota cleanup.
+            return state, False
+        with at(1_000_000), patch.object(RateLimitState.objects, "get_or_create", side_effect=disappears):
+            decision = services.allow_request(request(), "issue")
+        self.assertFalse(decision)
+        self.assertEqual(decision.retry_after, 1)
+        self.assertFalse(RateLimitState.objects.exists())
+
+    def test_negative_clock_does_not_charge_new_denied_state(self):
+        with at(-1):
+            self.assertFalse(services.allow_request(request(), "issue"))
+        self.assertEqual(RateLimitState.objects.get(pk=scope_key()).tat_us, 0)
+
     def test_shared_cross_backend_contract_fixture(self):
         fixture = json.loads((Path(__file__).parent / "fixtures/gcra.json").read_text())
         self.assertEqual(fixture["periodUs"], RATE_PERIOD_US)
@@ -191,6 +234,18 @@ class GCRATests(CaptchaHelpers, TestCase):
                     self.assertNotIn("secret", response.content.decode())
                     issue.assert_not_called()
                     verify.assert_not_called()
+
+    def test_fast_update_database_failure_is_503_even_for_existing_scopes(self):
+        client = self.client_with_init()
+        with at(1_000_000):
+            self.assertTrue(services.allow_request(self.request(client), "issue"))
+            with patch("django.db.models.query.QuerySet.update", side_effect=DatabaseError("private failure")):
+                with patch.object(services, "issue") as issue:
+                    response = self.post(client, "challenge", {"purpose": "demo"})
+                    self.assertEqual(response.status_code, 503)
+                    self.assertEqual(response.json()["code"], "rate_limit_unavailable")
+                    self.assertNotIn("private", response.content.decode())
+                    issue.assert_not_called()
 
     def test_cleanup_only_removes_fully_refilled_unblocked_states(self):
         now = 120_000_000

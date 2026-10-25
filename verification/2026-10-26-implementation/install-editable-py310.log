@@ -1,0 +1,26 @@
+Obtaining file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: Django==5.2.17 in /private/tmp/nova-slider-implementation-20261026-py310/lib/python3.10/site-packages (5.2.17)
+Requirement already satisfied: asgiref>=3.8.1 in /private/tmp/nova-slider-implementation-20261026-py310/lib/python3.10/site-packages (from Django==5.2.17) (3.12.1)
+Requirement already satisfied: sqlparse>=0.3.1 in /private/tmp/nova-slider-implementation-20261026-py310/lib/python3.10/site-packages (from Django==5.2.17) (0.6.0)
+Requirement already satisfied: Pillow==12.2.0 in /private/tmp/nova-slider-implementation-20261026-py310/lib/python3.10/site-packages (from nova-slider-captcha==0.2.0) (12.2.0)
+Requirement already satisfied: typing_extensions>=4 in /private/tmp/nova-slider-implementation-20261026-py310/lib/python3.10/site-packages (from asgiref>=3.8.1->Django==5.2.17) (4.16.0)
+Building wheels for collected packages: nova-slider-captcha
+  Building editable for nova-slider-captcha (pyproject.toml): started
+  Building editable for nova-slider-captcha (pyproject.toml): finished with status 'done'
+  Created wheel for nova-slider-captcha: filename=nova_slider_captcha-0.2.0-0.editable-py3-none-any.whl size=11551 sha256=152b1c3e47c5f0374221638a1909e2252ff70f20635d0342f63f2bbb8c98abab
+  Stored in directory: /private/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/pip-ephem-wheel-cache-4ufyohgk/wheels/0b/78/e6/3cde178a0c156813cc47dccba1d26ed3164c4b8f185b780690
+Successfully built nova-slider-captcha
+Installing collected packages: nova-slider-captcha
+Successfully installed nova-slider-captcha-0.2.0
+
+[notice] A new release of pip is available: 23.0.1 -> 26.2.2
+[notice] To update, run: /tmp/nova-slider-implementation-20261026-py310/bin/python -m pip install --upgrade pip
+No broken requirements found.

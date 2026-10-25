@@ -1,0 +1,114 @@
+[
+  {
+    "profile": "py310",
+    "command": [
+      "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+      "-c",
+      "import platform,django,PIL,sqlite3; print(platform.platform()); print(platform.python_version(), django.get_version(), PIL.__version__, sqlite3.sqlite_version)"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py310",
+    "command": [
+      "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py310",
+    "command": [
+      "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+      "-m",
+      "django",
+      "check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py310",
+    "command": [
+      "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+      "-m",
+      "django",
+      "makemigrations",
+      "nova_slider_captcha",
+      "--check",
+      "--dry-run"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py310",
+    "command": [
+      "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+      "-m",
+      "django",
+      "test",
+      "tests",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py312",
+    "command": [
+      "/tmp/nova-slider-review-20261026/bin/python",
+      "-c",
+      "import platform,django,PIL,sqlite3; print(platform.platform()); print(platform.python_version(), django.get_version(), PIL.__version__, sqlite3.sqlite_version)"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py312",
+    "command": [
+      "/tmp/nova-slider-review-20261026/bin/python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "exit_code": 1
+  },
+  {
+    "profile": "py312",
+    "command": [
+      "/tmp/nova-slider-review-20261026/bin/python",
+      "-m",
+      "django",
+      "check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py312",
+    "command": [
+      "/tmp/nova-slider-review-20261026/bin/python",
+      "-m",
+      "django",
+      "makemigrations",
+      "nova_slider_captcha",
+      "--check",
+      "--dry-run"
+    ],
+    "exit_code": 0
+  },
+  {
+    "profile": "py312",
+    "command": [
+      "/tmp/nova-slider-review-20261026/bin/python",
+      "-m",
+      "django",
+      "test",
+      "tests",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "exit_code": 0
+  }
+]

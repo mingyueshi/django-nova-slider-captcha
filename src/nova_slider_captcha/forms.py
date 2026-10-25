@@ -12,7 +12,7 @@ class SliderCaptchaWidget(forms.Widget):
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, "", attrs)
-        context["widget"]["endpoint"] = reverse("nova_slider_captcha:challenge").rsplit("challenge", 1)[0]
+        context["widget"]["endpoint"] = reverse("nova_slider_captcha:demo")
         context["widget"]["locale"] = context["widget"]["attrs"].get("locale") or get_language() or "zh-hans"
         return context
 

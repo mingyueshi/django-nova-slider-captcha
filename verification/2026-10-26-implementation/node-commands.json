@@ -1,0 +1,36 @@
+[
+  {
+    "check": "npm-ci",
+    "command": [
+      "npm",
+      "ci"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "component",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "dom",
+    "command": [
+      "npm",
+      "run",
+      "test:dom"
+    ],
+    "exit_code": 0
+  },
+  {
+    "check": "worker",
+    "command": [
+      "npm",
+      "run",
+      "test:worker"
+    ],
+    "exit_code": 0
+  }
+]
