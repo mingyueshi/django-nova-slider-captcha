@@ -46,4 +46,4 @@ Worker 使用 Cloudflare 提供的可信边缘 IP。缺少时使用共同的 unk
 npm run test:worker
 ```
 
-本测试使用 SQLite 执行实际 SQL，不会部署 Cloudflare，也不替代你的 D1/生产运行时验证。测试范围和真实 workerd 检查分别记录在根目录的 [验证说明](../../VERIFICATION.md)。
+本测试使用 SQLite 执行实际 SQL，不会部署 Cloudflare，也不替代你的 D1/生产运行时验证。测试范围和真实 workerd 检查分别记录在 [验证说明](../../docs/VERIFICATION.md)。

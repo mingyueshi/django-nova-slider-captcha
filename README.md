@@ -2,7 +2,7 @@
 
 可自行部署、方便接入 Django 的拼图滑块验证码。提供可安装的 Django app、原生 JavaScript Web Component、模板与 Django Admin 示例，以及可选的 Worker/D1 API 示例。适配 Nova Admin Theme 0.6.0，不修改 Django 或 Nova 的全局行为。
 
-[公开交互演示](https://nova-slider-captcha.mingyueshi.chatgpt.site)使用 Worker + D1 服务端；本仓库根目录是 Django 组件。`examples/worker-api/` 保留演示的 API 逻辑、数据库 schema 和最小入口，托管演示的 React 展示页面、Sites 脚手架、部署绑定和运行数据不在仓库中。克隆代码不会复制线上服务。详见 [源码范围](SOURCE_PROVENANCE.md)。
+[公开交互演示](https://nova-slider-captcha.mingyueshi.chatgpt.site)使用 Worker + D1 服务端；本仓库根目录是 Django 组件。`examples/worker-api/` 保留演示的 API 逻辑、数据库 schema 和最小入口，托管演示的 React 展示页面、Sites 脚手架、部署绑定和运行数据不在仓库中。克隆代码不会复制线上服务。详见 [源码范围](docs/SOURCE_PROVENANCE.md)。
 
 ## 0.2.0 的变化
 
@@ -213,7 +213,9 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 ## 验证与兼容
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，详情及本轮改进结果见 [本地自测记录](verification/2026-10-26-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](docs/README.md)。
+
+安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，详情及本轮改进结果见 [本地自测记录](docs/2026-10-26-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
 
 ```sh
 python manage.py check

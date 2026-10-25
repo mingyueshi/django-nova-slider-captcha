@@ -8,7 +8,8 @@
 - `demo/`、`manage.py`：仅供本地开发的 Django 示例
 - `tests/`、`scripts/`：后端、前端、真实 Django-client DOM 集成检查和精确矩阵脚本
 - `examples/worker-api/`：可选的 Worker/D1 API、schema、升级迁移、最小入口和测试
-- `verification/`：本版验证记录、运行文件哈希与明确分开的历史结果
+- `docs/`：项目说明、诊断报告和验证文档
+- `verification/`：验证原始记录、运行文件哈希与明确分开的历史结果
 
 `verification/source-runtime-sha256.json` 记录当前运行文件内容身份。`verification/history-0.1.0/` 保留历史版本结果，不能用于宣称 0.2.0 未经重测的部分已经通过。旧执行日志中的机器根路径已用占位符替换，保留实际版本与测试结果。
 
@@ -20,4 +21,4 @@
 
 Nova Admin Theme 0.6.0 的对应公开基线为 [mingyueshi/nova-admin · b0fd37e](https://github.com/mingyueshi/nova-admin/commit/b0fd37e528a6ad76bec646a68d02f017cde3c4b9)。本仓库不内置该主题；运行 Nova 集成矩阵时需明确提供它的源码。
 
-测试覆盖、迁移要求和未验证范围见 [VERIFICATION.md](VERIFICATION.md) 及 [README.md](README.md)。仓库没有 GitHub Actions workflow 时，不能把没有远端检查当成 CI 通过。
+测试覆盖、迁移要求和未验证范围见 [VERIFICATION.md](VERIFICATION.md) 及 [README.md](../README.md)。仓库没有 GitHub Actions workflow 时，不能把没有远端检查当成 CI 通过。

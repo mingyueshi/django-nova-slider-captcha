@@ -13,7 +13,7 @@
 
 ## 环境与结果
 
-平台：macOS 27.0.1 arm64，SQLite 3.54.0。精确版本见 [versions.json](2026-10-26-implementation/versions.json)。
+平台：macOS 27.0.1 arm64，SQLite 3.54.0。精确版本见 [versions.json](../verification/2026-10-26-implementation/versions.json)。
 
 | 检查 | 实际结果 |
 |---|---|
@@ -54,11 +54,11 @@ NOVA_PYTHON=/tmp/nova-slider-review-20261026/bin/python \
 npm run test:worker
 ```
 
-原始命令与输出见 [本轮日志目录](2026-10-26-implementation/) 的 `py310.log`、`py312.log`、`py312-uv-pip-check.log`、`install-editable-py310.log`、`component-final.log`、`dom.log`、`worker.log`。`component.log` 是新增最后两项测试前的 33 项通过结果，最终以 `component-final.log` 的 35 项为准。DOM 日志中的 `Forbidden: /captcha/submit` 是预期的重复消费拒绝检查。
+原始命令与输出见 [本轮日志目录](../verification/2026-10-26-implementation/) 的 `py310.log`、`py312.log`、`py312-uv-pip-check.log`、`install-editable-py310.log`、`component-final.log`、`dom.log`、`worker.log`。`component.log` 是新增最后两项测试前的 33 项通过结果，最终以 `component-final.log` 的 35 项为准。DOM 日志中的 `Forbidden: /captcha/submit` 是预期的重复消费拒绝检查。
 
 ## 性能与查询数
 
-用同一 Python 3.12 环境读取基线源码，预热后交错运行基线/当前各 15 次；[原始样本与 SQL 统计](2026-10-26-implementation/hotpaths.json) 均保留。
+用同一 Python 3.12 环境读取基线源码，预热后交错运行基线/当前各 15 次；[原始样本与 SQL 统计](../verification/2026-10-26-implementation/hotpaths.json) 均保留。
 
 | 检查 | 33b92ec 基线 | 当前 |
 |---|---:|---:|

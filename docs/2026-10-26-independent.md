@@ -57,7 +57,7 @@ PYTHONPATH=src:. python scripts/benchmark_hotpaths.py \
 
 ## 记录与边界
 
-[机器摘要](2026-10-26-independent/summary.json)、[性能样本](2026-10-26-independent/hotpaths.json)、[运行文件哈希](2026-10-26-independent/wheel-runtime.json)、[浏览器结果](2026-10-26-independent/browser.json) 和各测试日志保存在 [独立验收目录](2026-10-26-independent/)。
+[机器摘要](../verification/2026-10-26-independent/summary.json)、[性能样本](../verification/2026-10-26-independent/hotpaths.json)、[运行文件哈希](../verification/2026-10-26-independent/wheel-runtime.json)、[浏览器结果](../verification/2026-10-26-independent/browser.json) 和各测试日志保存在 [独立验收目录](../verification/2026-10-26-independent/)。
 
 已测试 wheel 的 SHA-256：`8434f733526e1fba9d0deb794260ccd234bba01a745b71f7cf440a7909c5aff2`。构建产物仅保存在本机临时目录；文档或构建元数据后续变化可能改变包哈希，运行文件身份以独立逐文件核对为准。
 
