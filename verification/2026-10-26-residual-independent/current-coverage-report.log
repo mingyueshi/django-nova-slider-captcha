@@ -1,0 +1,24 @@
+Name                                                                  Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------------------------
+src/nova_slider_captcha/__init__.py                                       1      0      0      0 100.00%
+src/nova_slider_captcha/admin.py                                          5      0      0      0 100.00%
+src/nova_slider_captcha/apps.py                                           7      0      0      0 100.00%
+src/nova_slider_captcha/checks.py                                        26      1     10      1  94.44%   13
+src/nova_slider_captcha/conf.py                                          72      0     26      0 100.00%
+src/nova_slider_captcha/demo_urls.py                                      4      0      0      0 100.00%
+src/nova_slider_captcha/events.py                                        32      2      4      0  94.44%   49-50
+src/nova_slider_captcha/forms.py                                        138      0     42      0 100.00%
+src/nova_slider_captcha/images.py                                        53      0      4      0 100.00%
+src/nova_slider_captcha/management/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/__init__.py                   0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/prune_slider_captcha.py      19      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0001_initial.py                        6      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0002_ratelimitstate.py                26      0      6      0 100.00%
+src/nova_slider_captcha/migrations/0003_challenge_policy.py               4      0      0      0 100.00%
+src/nova_slider_captcha/migrations/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/models.py                                        24      0      0      0 100.00%
+src/nova_slider_captcha/services.py                                     120      1     38      1  98.73%   115
+src/nova_slider_captcha/urls.py                                           4      0      0      0 100.00%
+src/nova_slider_captcha/views.py                                        128      7     34      2  94.44%   29-31, 63-64, 69, 102
+------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                   669     11    164      4  98.20%

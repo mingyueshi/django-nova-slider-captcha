@@ -1,0 +1,6 @@
+{
+  "intentional_test_exit": 1,
+  "reports_generated_after_failure": true,
+  "gate_exit": 1,
+  "not_merged_into_baseline_or_current": true
+}

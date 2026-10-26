@@ -1,10 +1,28 @@
 """Low-cardinality business events. Never pass request data or exception text."""
 import logging
+from threading import Lock
+from time import monotonic
 
 from .conf import purposes, rate_log_level
 
 logger = logging.getLogger("nova_slider_captcha")
 logger.addHandler(logging.NullHandler())
+
+# One timestamp, independent of configuration contents: fixed memory and at most
+# one warning per five minutes per process, even under concurrent form renders.
+_optional_link_warning_lock = Lock()
+_optional_link_next_warning = 0.0
+
+
+def optional_link_invalid():
+    global _optional_link_next_warning
+    now = monotonic()
+    with _optional_link_warning_lock:
+        if now < _optional_link_next_warning:
+            return
+        _optional_link_next_warning = now + 300
+    # Claim the slot before logging; broken handlers must not retry every render.
+    event("optional_link", "configuration_invalid", 200, action="render")
 
 
 def event(name, reason, status, *, purpose=None, action=None, level=None):

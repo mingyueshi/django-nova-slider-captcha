@@ -400,7 +400,9 @@ class SiteLoginForm(SliderAdminAuthenticationForm):
 admin_site.login_form = SiteLoginForm
 ```
 
-URL 与标签均由可信宿主代码提供，不读取客户端参数或 HTML attrs。只允许原始值以单个 `/` 开头的本地绝对路径，不接受 scheme、外站、协议相对地址、编码的双斜杠/反斜杠、空白或控制字符；同时校验解码值。URL 最长 2048，标签必须为 1–200 个可打印字符，并始终转义（即使传 SafeString）。非法全局配置检查为 E007，Widget 渲染也会拒绝；标签和 URL 必须同时配置。
+URL 与标签均由可信宿主代码提供，不读取客户端参数或 HTML attrs。只允许原始值以单个 `/` 开头的本地绝对路径，不接受 scheme、外站、协议相对地址、编码的双斜杠/反斜杠、空白或控制字符；同时校验解码值。URL 最长 2048，标签必须为 1–200 个可打印字符，并始终转义（即使传 SafeString）。非法全局配置仍产生 E007，直接调用配置验证器仍抛 ValueError；Widget 渲染仅对这个可选全局链接降级为不显示，不让普通表单/Admin 页面因此500。合法配置动态恢复立即生效；显式合法 Widget 链接不读非法全局设置，显式非法参数仍在构造时抛 ValueError。标签和 URL 必须同时配置。验证码字段/服务的安全配置校验与拒绝行为不变。
+
+全局可选链接降级会记录固定 WARNING 事件 `optional_link / configuration_invalid`；不记录 URL、标签或异常文本。每个进程只保留一个时间戳，最多每300秒一次（多worker/重启各自计时），不会缓存链接验证结果；日志处理器失败不影响页面。E007 仍用于部署检查，降级并非把错误设置当作正确配置。
 
 这个链接只导航，不生成凭证、不跳过原验证，也不内置短信、邮件或音频服务。宿主替代页面及其提交接口仍须自行实施身份核验、授权、CSRF、限流、一次性证明与同等保护；不能把目的 URL 直接指向已免验证的业务操作。现有语言字典、默认语言和回退没有改动，链接标签由宿主明确选择。
 
@@ -469,6 +471,8 @@ npm test
 NOVA_PYTHON=python npm run test:dom
 npm run test:worker
 ```
+
+开发/CI 分支覆盖率使用独立的 `requirements-coverage.txt`（coverage.py 7.17.0），不增加运行依赖。稳定 coverage profile 为 Python 3.12 / Django 5.2.17 / Pillow 12.3.0，包含升级脚本子进程，不排除包内文件。门槛分别检查纯语句/纯分支：包整体97%/95%，forms.py 99%/97%；不把 coverage report 的组合百分比当成纯分支。CI 无论测试成功或失败都尝试生成并上传 HTML/JSON/XML 和原始覆盖率数据，测试失败不会被报告步骤掩盖。基线、命令、缺失分支和负向检查见 [覆盖率维护说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/COVERAGE.md)。
 
 Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。完整矩阵脚本要求显式提供精确运行时、Nova 源码路径及已构建 wheel；它不是适用于所有平台的一键 CI。
 

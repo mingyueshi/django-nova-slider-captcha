@@ -1,0 +1,14 @@
+{
+  "synthetic_measurement_exit_code": 7,
+  "report_commands_exit_codes": {
+    "combine": 0,
+    "json": 0,
+    "html": 0,
+    "xml": 0
+  },
+  "coverage_gate_exit_code": 1,
+  "html_exists": true,
+  "json_exists": true,
+  "xml_exists": true,
+  "scope": "Local report generation after intentional nonzero exit; not remote Actions execution"
+}

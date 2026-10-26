@@ -1,0 +1,9 @@
+[run]
+branch = True
+source = src/nova_slider_captcha
+relative_files = True
+patch = subprocess
+
+[report]
+show_missing = True
+precision = 2

@@ -1,0 +1,48 @@
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -c import platform,pathlib,django,PIL,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(platform.python_version(),django.get_version(),PIL.__version__,p); assert platform.python_version().startswith('3.10'+'.'); assert django.get_version()=='5.2.17'; assert PIL.__version__=='12.2.0'; assert p.is_relative_to(pathlib.Path('/Users/apple/Documents/GitHub/django-nova-slider-captcha/src'))
+3.10.20 5.2.17 12.2.0 /Users/apple/Documents/GitHub/django-nova-slider-captcha/src/nova_slider_captcha/__init__.py
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django check
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+......................................................................................................................................
+----------------------------------------------------------------------
+Ran 134 tests in 3.400s
+
+OK
+Destroying test database for alias 'default'...
+Found 134 test(s).
+System check identified no issues (0 silenced).
+$ uv pip check --python /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python
+Using Python 3.10.20 environment at: /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026
+Checked 5 packages in 0.47ms
+All installed packages are compatible
+$ uv pip install --python /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python --no-deps --reinstall /tmp/nova-slider-residual-impl-dist-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl
+Using Python 3.10.20 environment at: /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026
+Resolved 1 package in 0.55ms
+Prepared 1 package in 0.13ms
+Installed 1 package in 1ms
+ + nova-slider-captcha==0.3.0 (from file:///tmp/nova-slider-residual-impl-dist-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl)
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -c import platform,pathlib,django,PIL,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(platform.python_version(),django.get_version(),PIL.__version__,p); assert platform.python_version().startswith('3.10'+'.'); assert django.get_version()=='5.2.17'; assert PIL.__version__=='12.2.0'; assert p.is_relative_to(pathlib.Path('/private/tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026'))
+3.10.20 5.2.17 12.2.0 /private/tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/lib/python3.10/site-packages/nova_slider_captcha/__init__.py
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django check
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+......................................................................................................................................
+----------------------------------------------------------------------
+Ran 134 tests in 3.428s
+
+OK
+Destroying test database for alias 'default'...
+Found 134 test(s).
+System check identified no issues (0 silenced).
+$ uv pip check --python /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026/bin/python
+Using Python 3.10.20 environment at: /tmp/nova-slider-residual-impl-py310-dj5217-pil122-20261026
+Checked 6 packages in 0.34ms
+All installed packages are compatible

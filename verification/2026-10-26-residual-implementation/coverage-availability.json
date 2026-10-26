@@ -1,0 +1,5 @@
+{
+  "url": "https://pypi.org/pypi/coverage/json",
+  "version": "7.17.0",
+  "requires_python": ">=3.11"
+}

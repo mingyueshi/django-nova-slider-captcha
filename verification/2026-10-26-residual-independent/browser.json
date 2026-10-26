@@ -1,0 +1,10 @@
+{
+  "alternatives": 0,
+  "hiddenProofFields": 1,
+  "invalidLabelVisible": false,
+  "proofEmpty": true,
+  "title": "登录 | Django 站点管理员",
+  "widgetState": "ready",
+  "refreshWorked": true,
+  "scope": "Real local Admin; no CAPTCHA solving or login"
+}

@@ -1,0 +1,10 @@
+Using CPython 3.11.12 interpreter at: /tmp/nova-slider-followup-impl-py311-dj5217-pil123-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-residual-impl-py311-dj5217-pil123-20261026
+Activate with: source /tmp/nova-slider-residual-impl-py311-dj5217-pil123-20261026/bin/activate
+Using Python 3.11.12 environment at: /tmp/nova-slider-residual-impl-py311-dj5217-pil123-20261026
+Resolved 4 packages in 1.24s
+Installed 4 packages in 280ms
+ + asgiref==3.13.0
+ + django==5.2.17
+ + pillow==12.3.0
+ + sqlparse==0.6.0

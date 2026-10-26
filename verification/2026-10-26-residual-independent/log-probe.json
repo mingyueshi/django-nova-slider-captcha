@@ -1,0 +1,10 @@
+{
+  "concurrent_renders": 32,
+  "warnings_first_window": 1,
+  "suppressed_before_300_seconds": true,
+  "broken_sink_executed_once": true,
+  "configuration_recovery_immediate": true,
+  "next_window_warns": true,
+  "no_configuration_values_or_exception_text_logged": true,
+  "limitations": "Synthetic clock; process-local bound, not cross-worker aggregation"
+}

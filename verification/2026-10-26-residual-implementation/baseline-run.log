@@ -1,0 +1,41 @@
+$ /tmp/nova-slider-residual-impl-tools-20261026/bin/python -m coverage run -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+..........................................................................................................................
+----------------------------------------------------------------------
+Ran 122 tests in 3.212s
+
+OK
+Destroying test database for alias 'default'...
+Found 122 test(s).
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-residual-impl-tools-20261026/bin/python -m coverage combine --keep
+Combined 4 files
+$ /tmp/nova-slider-residual-impl-tools-20261026/bin/python -m coverage report
+Combined 4 files
+Name                                                                  Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------------------------
+src/nova_slider_captcha/__init__.py                                       1      0      0      0 100.00%
+src/nova_slider_captcha/admin.py                                          5      0      0      0 100.00%
+src/nova_slider_captcha/apps.py                                           7      0      0      0 100.00%
+src/nova_slider_captcha/checks.py                                        26      1     10      1  94.44%   13
+src/nova_slider_captcha/conf.py                                          72      0     26      0 100.00%
+src/nova_slider_captcha/demo_urls.py                                      4      0      0      0 100.00%
+src/nova_slider_captcha/events.py                                        21      2      2      0  91.30%   31-32
+src/nova_slider_captcha/forms.py                                        131      6     40      3  94.74%   52, 58-59, 135, 154-155
+src/nova_slider_captcha/images.py                                        53      0      4      0 100.00%
+src/nova_slider_captcha/management/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/__init__.py                   0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/prune_slider_captcha.py      19      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0001_initial.py                        6      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0002_ratelimitstate.py                26      0      6      0 100.00%
+src/nova_slider_captcha/migrations/0003_challenge_policy.py               4      0      0      0 100.00%
+src/nova_slider_captcha/migrations/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/models.py                                        24      0      0      0 100.00%
+src/nova_slider_captcha/services.py                                     120      1     38      1  98.73%   115
+src/nova_slider_captcha/urls.py                                           4      0      0      0 100.00%
+src/nova_slider_captcha/views.py                                        128      7     34      2  94.44%   29-31, 63-64, 69, 102
+------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                   651     17    160      7  97.04%
+$ /tmp/nova-slider-residual-impl-tools-20261026/bin/python -m coverage json --pretty-print -o /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/baseline.json
+Wrote JSON report to /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/baseline.json

@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.translation import get_language, gettext_lazy as _
 
 from .conf import alternative_link, challenge_policy, configured_alternative_link, purposes, valid_purpose
+from .events import optional_link_invalid
 from .models import Challenge
 from .services import consume, session_binding
 
@@ -27,7 +28,15 @@ class SliderCaptchaWidget(forms.Widget):
         context["widget"]["endpoint"] = reverse(self.api_root)
         context["widget"]["locale"] = context["widget"]["attrs"].get("locale") or get_language() or "zh-hans"
         context["widget"]["purpose"] = self.purpose
-        context["widget"]["alternative"] = self.alternative or configured_alternative_link()
+        alternative = self.alternative
+        if alternative is None:
+            try:
+                alternative = configured_alternative_link()
+            except ValueError:
+                # Only the optional global navigation setting degrades. E007
+                # still rejects it in checks; proof/policy validation is intact.
+                optional_link_invalid()
+        context["widget"]["alternative"] = alternative
         return context
 
     class Media:

@@ -4,6 +4,9 @@
 
 | 文档 | 内容 |
 |---|---|
+| [可选链接与覆盖率独立验收](2026-10-26-residual-independent.md) | 主控降级/日志/覆盖率反例、六格源码与wheel及浏览器检查 |
+| [可选链接与覆盖率实施自测](2026-10-26-residual-implementation.md) | 渲染降级、告警节制、覆盖率门槛与实施验证 |
+| [分支覆盖率维护](COVERAGE.md) | 统计范围、实测基线、纯语句/分支门槛与CI报告 |
 | [后续接入与出图独立验收](2026-10-26-followup-independent.md) | 主控六组源码/wheel、真实浏览器、负向包检查与性能复测 |
 | [后续接入与出图实施自测](2026-10-26-followup-implementation.md) | 核心/演示拆分、依赖矩阵、宿主替代入口与图像优化 |
 | [可信代理、部署检查与清理监控](DEPLOYMENT.md) | ASGI/WSGI 的 REMOTE_ADDR 映射、生产 checks 和 prune 成功监控 |

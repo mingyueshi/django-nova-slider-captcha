@@ -1,0 +1,19 @@
+F
+======================================================================
+FAIL: test_deliberate_failure (__main__.ReportingProbe.test_deliberate_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/failure_probe.py", line 13, in test_deliberate_failure
+    self.fail("Deliberate local coverage reporting probe")
+AssertionError: Deliberate local coverage reporting probe
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)
+Combined 1 file
+Combined 1 file
+Wrote JSON report to /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/failure-reports/coverage.json
+Wrote HTML report to /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/failure-reports/html/index.html
+Wrote XML report to /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/failure-reports/coverage.xml
+Coverage gate failed: package statement coverage below 97%

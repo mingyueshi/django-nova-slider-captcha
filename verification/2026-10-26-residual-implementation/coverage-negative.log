@@ -1,0 +1,1 @@
+{"valid_measured_report": "passed", "rejected": ["empty", "no_branch", "wrong_package", "missing_forms", "wrong_version", "inconsistent_totals", "zero_branches", "excluded_lines", "below_branch_floor"]}

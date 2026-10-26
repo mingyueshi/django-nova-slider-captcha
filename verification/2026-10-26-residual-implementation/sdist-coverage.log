@@ -1,0 +1,44 @@
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+......................................................................................................................................
+----------------------------------------------------------------------
+Ran 134 tests in 3.452s
+
+OK
+Destroying test database for alias 'default'...
+Found 134 test(s).
+System check identified no issues (0 silenced).
+Combined 4 files
+Combined 4 files
+Wrote JSON report to /Users/apple/Documents/GitHub/django-nova-slider-captcha/verification/2026-10-26-residual-implementation/sdist-coverage.json
+{
+  "package": {
+    "statements_covered": 658,
+    "statements": 669,
+    "statement_percent": 98.35575485799701,
+    "branches_covered": 160,
+    "branches": 164,
+    "branch_percent": 97.5609756097561,
+    "combined_percent": 98.19927971188476,
+    "floors": {
+      "statements": 97,
+      "branches": 95
+    }
+  },
+  "forms": {
+    "statements_covered": 138,
+    "statements": 138,
+    "statement_percent": 100.0,
+    "branches_covered": 42,
+    "branches": 42,
+    "branch_percent": 100.0,
+    "combined_percent": 100.0,
+    "floors": {
+      "statements": 99,
+      "branches": 97
+    }
+  },
+  "forms_missing_lines": [],
+  "forms_missing_branches": []
+}
+{"valid_measured_report": "passed", "rejected": ["empty", "no_branch", "wrong_package", "missing_forms", "wrong_version", "inconsistent_totals", "zero_branches", "excluded_lines", "package_branch_floor", "forms_branch_floor", "package_statement_floor", "forms_statement_floor"]}

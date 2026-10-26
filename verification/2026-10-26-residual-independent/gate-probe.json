@@ -1,0 +1,45 @@
+{
+  "valid_report_passed": true,
+  "rejected": [
+    {
+      "case": "forms_branches",
+      "rejected": true,
+      "reason": "forms pure branch coverage below 97%"
+    },
+    {
+      "case": "forms_statements",
+      "rejected": true,
+      "reason": "forms statement coverage below 99%"
+    },
+    {
+      "case": "package_branches",
+      "rejected": true,
+      "reason": "package pure branch coverage below 95%"
+    },
+    {
+      "case": "package_statements",
+      "rejected": true,
+      "reason": "package statement coverage below 97%"
+    },
+    {
+      "case": "empty_report",
+      "rejected": true,
+      "reason": "Branch measurement is required"
+    },
+    {
+      "case": "no_branch_measurement",
+      "rejected": true,
+      "reason": "Branch measurement is required"
+    },
+    {
+      "case": "missing_unexecuted_module",
+      "rejected": true,
+      "reason": "Report must contain exactly this source package, including unexecuted files"
+    },
+    {
+      "case": "foreign_package",
+      "rejected": true,
+      "reason": "Report must contain exactly this source package, including unexecuted files"
+    }
+  ]
+}

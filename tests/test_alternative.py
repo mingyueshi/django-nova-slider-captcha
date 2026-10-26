@@ -13,6 +13,10 @@ class FieldConfigurationTests(SimpleTestCase):
             with self.subTest(kwargs=kwargs), self.assertRaisesMessage(ValueError, message):
                 SliderCaptchaField(**kwargs)
 
+    def test_field_rejects_a_plain_text_widget(self):
+        with self.assertRaisesMessage(ValueError, "SliderCaptchaField requires SliderCaptchaWidget"):
+            SliderCaptchaField(widget=forms.TextInput)
+
 
 class AlternativeLinkTests(SimpleTestCase):
     def test_unconfigured_widget_does_not_claim_an_available_alternative(self):
@@ -53,8 +57,7 @@ class AlternativeLinkTests(SimpleTestCase):
         self.assertIn('href="/specific/"', explicit.render("proof", ""))
         with override_settings(NOVA_SLIDER_ALTERNATIVE_URL="javascript:bad"):
             self.assertIn("nova_slider_captcha.E007", [error.id for error in captcha_settings_check(None)])
-            with self.assertRaises(ValueError):
-                widget.render("proof", "")
+            self.assertNotIn('class="nsc-alternative"', widget.render("proof", ""))
 
     def test_multiple_prefixed_widgets_keep_distinct_links_and_field_names(self):
         class Proofs(forms.Form):
