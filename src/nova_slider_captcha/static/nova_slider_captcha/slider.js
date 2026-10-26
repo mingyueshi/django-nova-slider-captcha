@@ -155,14 +155,26 @@
     return inits.get(endpoint);
   }
   class NovaSlider extends HTMLElement {
-    static get observedAttributes() { return ["locale"]; }
+    static get observedAttributes() { return ["locale", "aria-describedby", "aria-invalid"]; }
     get locale() { return normalizeLocale(this.getAttribute("locale")); }
     set locale(value) { this.setLocale(value); }
     setLocale(value) {
       this.setAttribute("locale", normalizeLocale(value));
       return this.locale;
     }
-    attributeChangedCallback() { this.renderLocale(); }
+    attributeChangedCallback(name) {
+      if (name === "locale") this.renderLocale();
+      else this.syncFormAria();
+    }
+    syncFormAria() {
+      if (!this.range) return;
+      const descriptions = (this.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+      descriptions.push(this.querySelector(".nsc-keyboard").id);
+      this.range.setAttribute("aria-describedby", [...new Set(descriptions)].join(" "));
+      const invalid = this.getAttribute("aria-invalid");
+      if (invalid === null) this.range.removeAttribute("aria-invalid");
+      else this.range.setAttribute("aria-invalid", invalid);
+    }
     get messages() { return { ...dictionaries[this.locale], ...this._messages }; }
     set messages(overrides) {
       if (overrides === null) this._messages = {};
@@ -224,6 +236,7 @@
       this.innerHTML = `<div class="nsc"><div class="nsc-image"><img class="nsc-background" alt="" draggable="false"><img class="nsc-piece" alt="" draggable="false"><div class="nsc-overlay"></div></div><div class="nsc-track"><div class="nsc-fill"></div><span class="nsc-track-text" aria-hidden="true"></span><input class="nsc-range" type="range" min="0" max="1" step="1" value="0" aria-describedby="nsc-instructions-${NovaSlider.id++}"><span class="nsc-handle" aria-hidden="true">→</span></div><div class="nsc-meta"><span class="nsc-status" role="status" aria-live="polite"></span><button class="nsc-refresh" type="button"><span aria-hidden="true">↻</span> <span class="nsc-refresh-text"></span></button></div><p class="nsc-keyboard"></p><input type="hidden" name="nova_slider_token" value=""></div>`;
       this.range = this.querySelector(".nsc-range");
       this.querySelector(".nsc-keyboard").id = this.range.getAttribute("aria-describedby");
+      this.syncFormAria();
       this.status = this.querySelector(".nsc-status");
       this.overlay = this.querySelector(".nsc-overlay");
       this.field = this.querySelector("input[type=hidden]");

@@ -16,8 +16,8 @@ readline.createInterface({input:bridge.stdout}).on('line',line=>{let d=JSON.pars
 function call(body){return new Promise((resolve,reject)=>{const requestId=++id;pending.set(requestId,{resolve,reject});bridge.stdin.write(JSON.stringify({...body,requestId})+'\n')})}
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function wait(fn){for(let i=0;i<300;i++){if(fn())return;await delay(10)}throw Error('Wait timed out')}
-async function page(url, demo=false, language){
- const response=await call({path:url,language});assert.equal(response.status,200);
+async function page(url, demo=false, language, formCase){
+ const response=await call(formCase ? {op:'aria_form',...formCase} : {path:url,language});assert.equal(response.status,200);
  const dom=new JSDOM(response.text,{url:'http://testserver'+url,runScripts:'outside-only'});const w=dom.window;
  w.HTMLImageElement.prototype.decode=async()=>{};
  w.fetch=async(url,opts={})=>{const r=await call({path:new URL(url,w.location.href).pathname,method:opts.method||'GET',headers:opts.headers||{},body:opts.body});return{ok:r.status>=200&&r.status<300,status:r.status,headers:{get:()=>r.text.startsWith('{')?'application/json':'text/html'},json:async()=>JSON.parse(r.text)}};
@@ -73,6 +73,26 @@ async function page(url, demo=false, language){
   assert.equal(slider.range.getAttribute('aria-label'),'Move the puzzle piece');
   assert.equal(slider.status.textContent,'Slide the piece to fit the gap');
   results.push('Django '+language+' inheritance renders English fallback labels and ARIA');
+  p.dom.window.close();
+ }
+ for (const help of [false,true]) for (const bound of [false,true]) {
+  p=await page('/aria-form/',false,undefined,{help,bound});
+  const widgets=[...p.w.document.querySelectorAll('nova-slider')];
+  await wait(()=>widgets.every(widget=>widget.state==='ready'));
+  const keyboardIds=[];
+  for (const widget of widgets) {
+   const keyboardId=widget.querySelector('.nsc-keyboard').id;keyboardIds.push(keyboardId);
+   const expected=[];
+   if(help)expected.push(widget.id+'_helptext');
+   if(bound)expected.push(widget.id+'_error');
+   expected.push(keyboardId);
+   assert.deepEqual(widget.range.getAttribute('aria-describedby').split(' '),expected);
+   for(const id of expected)assert.ok(p.w.document.getElementById(id)?.textContent.trim());
+   assert.equal(widget.range.getAttribute('aria-invalid'),bound?'true':null);
+   widget.range.focus();assert.equal(p.w.document.activeElement,widget.range);
+  }
+  assert.equal(new Set(keyboardIds).size,2);
+  results.push(`Django Form ARIA help=${help} error=${bound} resolves on both focusable sliders`);
   p.dom.window.close();
  }
  if(process.env.NOVA_DOM_REPORT) fs.writeFileSync(process.env.NOVA_DOM_REPORT,JSON.stringify({status:'passed',engine:'jsdom 26.1.0 + real Django test client',checks:results,limitations:['No browser layout, pixels, pointer/touch rendering, or assistive-technology testing']},null,2)+'\n');

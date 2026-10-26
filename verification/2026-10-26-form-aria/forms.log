@@ -1,0 +1,12 @@
+test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) ... ok
+test_only_supported_aria_attrs_are_forwarded_and_escaped (tests.test_forms.WidgetAriaTests.test_only_supported_aria_attrs_are_forwarded_and_escaped) ... ok
+test_default_endpoint_uses_existing_root_route (tests.test_forms.WidgetEndpointTests.test_default_endpoint_uses_existing_root_route) ... ok
+test_mount_and_script_prefix_are_preserved_independent_of_challenge_path (tests.test_forms.WidgetEndpointTests.test_mount_and_script_prefix_are_preserved_independent_of_challenge_path) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.012s
+
+OK
+Found 4 test(s).
+Skipping setup of unused database(s): default.
+System check identified no issues (0 silenced).

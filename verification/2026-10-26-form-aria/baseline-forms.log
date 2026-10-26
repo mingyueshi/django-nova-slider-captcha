@@ -1,0 +1,67 @@
+test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) ...
+  test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=False, bound=True) ... FAIL
+  test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=True, bound=False) ... FAIL
+  test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=True, bound=True) ... FAIL
+test_only_supported_aria_attrs_are_forwarded_and_escaped (tests.test_forms.WidgetAriaTests.test_only_supported_aria_attrs_are_forwarded_and_escaped) ... ERROR
+
+======================================================================
+ERROR: test_only_supported_aria_attrs_are_forwarded_and_escaped (tests.test_forms.WidgetAriaTests.test_only_supported_aria_attrs_are_forwarded_and_escaped)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "$TASK/source/tests/test_forms.py", line 84, in test_only_supported_aria_attrs_are_forwarded_and_escaped
+    self.assertEqual(widget["aria-describedby"], attrs["aria-describedby"])
+                     ~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'aria-describedby'
+
+======================================================================
+FAIL: test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=False, bound=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "$TASK/source/tests/test_forms.py", line 74, in test_form_preserves_help_and_error_references_for_each_prefixed_field
+    self.assertEqual(attrs.get("aria-describedby", "").split(), expected)
+AssertionError: Lists differ: [] != ['id_account-proof_error']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'id_account-proof_error'
+
+- []
++ ['id_account-proof_error']
+
+======================================================================
+FAIL: test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=True, bound=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "$TASK/source/tests/test_forms.py", line 74, in test_form_preserves_help_and_error_references_for_each_prefixed_field
+    self.assertEqual(attrs.get("aria-describedby", "").split(), expected)
+AssertionError: Lists differ: [] != ['id_account-proof_helptext']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'id_account-proof_helptext'
+
+- []
++ ['id_account-proof_helptext']
+
+======================================================================
+FAIL: test_form_preserves_help_and_error_references_for_each_prefixed_field (tests.test_forms.WidgetAriaTests.test_form_preserves_help_and_error_references_for_each_prefixed_field) (help=True, bound=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "$TASK/source/tests/test_forms.py", line 74, in test_form_preserves_help_and_error_references_for_each_prefixed_field
+    self.assertEqual(attrs.get("aria-describedby", "").split(), expected)
+AssertionError: Lists differ: [] != ['id_account-proof_helptext', 'id_account-proof_error']
+
+Second list contains 2 additional elements.
+First extra element 0:
+'id_account-proof_helptext'
+
+- []
++ ['id_account-proof_helptext', 'id_account-proof_error']
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.016s
+
+FAILED (failures=3, errors=1)
+Found 2 test(s).
+Skipping setup of unused database(s): default.
+System check identified no issues (0 silenced).

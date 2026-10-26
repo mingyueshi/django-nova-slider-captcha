@@ -1,0 +1,208 @@
+{
+  "status": "passed",
+  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "results": [
+    {
+      "help": false,
+      "error": false,
+      "tabFocus": true,
+      "arrowRight": true,
+      "widgets": [
+        {
+          "id": "id_account-proof",
+          "invalid": null,
+          "value": "1",
+          "describedby": [
+            "nsc-instructions-1"
+          ],
+          "keyboard": "nsc-instructions-1",
+          "texts": [
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        },
+        {
+          "id": "id_account-second",
+          "invalid": null,
+          "value": "0",
+          "describedby": [
+            "nsc-instructions-2"
+          ],
+          "keyboard": "nsc-instructions-2",
+          "texts": [
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        }
+      ],
+      "ax": [
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "false"
+        },
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "false"
+        }
+      ]
+    },
+    {
+      "help": false,
+      "error": true,
+      "tabFocus": true,
+      "arrowRight": true,
+      "widgets": [
+        {
+          "id": "id_account-proof",
+          "invalid": "true",
+          "value": "1",
+          "describedby": [
+            "id_account-proof_error",
+            "nsc-instructions-1"
+          ],
+          "keyboard": "nsc-instructions-1",
+          "texts": [
+            "This field is required.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        },
+        {
+          "id": "id_account-second",
+          "invalid": "true",
+          "value": "0",
+          "describedby": [
+            "id_account-second_error",
+            "nsc-instructions-2"
+          ],
+          "keyboard": "nsc-instructions-2",
+          "texts": [
+            "This field is required.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        }
+      ],
+      "ax": [
+        {
+          "name": "Move the puzzle piece",
+          "description": "This field is required. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "true"
+        },
+        {
+          "name": "Move the puzzle piece",
+          "description": "This field is required. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "true"
+        }
+      ]
+    },
+    {
+      "help": true,
+      "error": false,
+      "tabFocus": true,
+      "arrowRight": true,
+      "widgets": [
+        {
+          "id": "id_account-proof",
+          "invalid": null,
+          "value": "1",
+          "describedby": [
+            "id_account-proof_helptext",
+            "nsc-instructions-1"
+          ],
+          "keyboard": "nsc-instructions-1",
+          "texts": [
+            "Use the secure alternative if needed.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        },
+        {
+          "id": "id_account-second",
+          "invalid": null,
+          "value": "0",
+          "describedby": [
+            "id_account-second_helptext",
+            "nsc-instructions-2"
+          ],
+          "keyboard": "nsc-instructions-2",
+          "texts": [
+            "Use the secure alternative if needed.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        }
+      ],
+      "ax": [
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the secure alternative if needed. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "false"
+        },
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the secure alternative if needed. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "false"
+        }
+      ]
+    },
+    {
+      "help": true,
+      "error": true,
+      "tabFocus": true,
+      "arrowRight": true,
+      "widgets": [
+        {
+          "id": "id_account-proof",
+          "invalid": "true",
+          "value": "1",
+          "describedby": [
+            "id_account-proof_helptext",
+            "id_account-proof_error",
+            "nsc-instructions-1"
+          ],
+          "keyboard": "nsc-instructions-1",
+          "texts": [
+            "Use the secure alternative if needed.",
+            "This field is required.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        },
+        {
+          "id": "id_account-second",
+          "invalid": "true",
+          "value": "0",
+          "describedby": [
+            "id_account-second_helptext",
+            "id_account-second_error",
+            "nsc-instructions-2"
+          ],
+          "keyboard": "nsc-instructions-2",
+          "texts": [
+            "Use the secure alternative if needed.",
+            "This field is required.",
+            "Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen."
+          ]
+        }
+      ],
+      "ax": [
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the secure alternative if needed. This field is required. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "true"
+        },
+        {
+          "name": "Move the puzzle piece",
+          "description": "Use the secure alternative if needed. This field is required. Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.",
+          "invalid": "true"
+        }
+      ]
+    }
+  ],
+  "lifecycle": {
+    "updates": true,
+    "removals": true,
+    "locale": true,
+    "repeatedConnection": true,
+    "reconnect": true
+  },
+  "limitations": [
+    "No screen reader or human assistive technology acceptance"
+  ]
+}

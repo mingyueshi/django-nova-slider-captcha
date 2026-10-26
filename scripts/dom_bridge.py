@@ -20,6 +20,13 @@ from django.core.management import call_command
 from django.utils.translation import override
 call_command("migrate", verbosity=0, stdout=io.StringIO())
 from nova_slider_captcha.models import Challenge
+from django import forms
+from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin
+
+
+class AriaForm(SliderCaptchaFormMixin, forms.Form):
+    proof = SliderCaptchaField()
+    second = SliderCaptchaField()
 
 client = Client(enforce_csrf_checks=True)
 for line in sys.stdin:
@@ -27,6 +34,12 @@ for line in sys.stdin:
     try:
         if data.get("op") == "solution":
             result = {"x": Challenge.objects.get(pk=data["id"]).target_x}
+        elif data.get("op") == "aria_form":
+            form = AriaForm(data={} if data.get("bound") else None, prefix="account")
+            for field in form.fields.values():
+                field.help_text = "Use the secure alternative if needed." if data.get("help") else ""
+            with override("en"):
+                result = {"status": 200, "text": "<form>" + str(form.as_p()) + "</form>"}
         else:
             method = data.get("method", "GET")
             headers = {"HTTP_" + key.upper().replace("-", "_"): value for key, value in data.get("headers", {}).items() if key.lower() != "content-type"}

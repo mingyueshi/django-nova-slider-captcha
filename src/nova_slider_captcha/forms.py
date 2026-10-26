@@ -28,6 +28,13 @@ class SliderCaptchaWidget(forms.Widget):
         context["widget"]["endpoint"] = reverse(self.api_root)
         context["widget"]["locale"] = context["widget"]["attrs"].get("locale") or get_language() or "zh-hans"
         context["widget"]["purpose"] = self.purpose
+        # Forward only form descriptions and validity, never arbitrary attrs.
+        widget_attrs = context["widget"]["attrs"]
+        context["widget"]["aria_attrs"] = {
+            name: str(value).lower() if isinstance(value, bool) else value
+            for name in ("aria-describedby", "aria-invalid")
+            if (value := widget_attrs.get(name)) is not None
+        }
         alternative = self.alternative
         if alternative is None:
             try:

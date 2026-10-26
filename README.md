@@ -146,6 +146,8 @@ NOVA_SLIDER_TOLERANCE = 4        # 0–10 原图像素，0 为精确匹配
 
 使用 `SliderCaptchaField` 和放在最左边的 `SliderCaptchaFormMixin`，在初始化时传入 `request=`。字段名可自由选择；Widget 的 `purpose`、完整隐藏字段名和资源由字段提供。只使用 Field 而遗漏 Mixin 会拒绝验证。字段必须保持 `required=True`、`disabled=False`；不支持的值在构造时抛出明确 ValueError，字段实例之后被改写仍会在运行时拒绝。
 
+Widget 将 Django 提供的 `aria-describedby` 和 `aria-invalid` 同步到可聚焦滑块，帮助文字、字段错误与组件键盘说明共同关联；动态更新或移除这两个属性也会同步。自定义表单模板仍须渲染被引用的帮助/错误元素。这不改变视觉拼图需要安全非视觉替代流程的边界。
+
 普通 Form 示例（放进已有 Django app）：
 
 ```python

@@ -1,0 +1,29 @@
+{
+  "baseline": "7ea6a4900dde5438257999f6d3061785c092a5e4",
+  "captured_at": "2026-10-26T07:51:40.559675+00:00",
+  "evidence_kind": "local implementation verification; independent cloud review pending",
+  "files": {
+    "README.md": "22f1fef433cc8bcd1c054a992e3e155019929ee0dca8793d43b41cb1e0867f15",
+    "docs/CHANGELOG.md": "a31a998118d7e53e0773d30e2e0745f256b53d092eca4bf2ecfb9ea0cd3a19bb",
+    "scripts/dom_bridge.py": "36ba1ab98c996b18a7dd3840d6e95be52c106527a2432e6fd895dbc4fe3271d0",
+    "scripts/test_dom.cjs": "4e36085683b87a5ab1ac09756cb3206ee165918088fb49741b0d8d1a1bf64df9",
+    "src/nova_slider_captcha/forms.py": "0b54b924f49c712c3d6e0cc5c86bde4cc24380ed232c9acc510eb9e2f57f9c50",
+    "src/nova_slider_captcha/static/nova_slider_captcha/slider.js": "a92d3a3235791dd4be5df69046acc8ee1b20402f4998153c5cb2824446c110d4",
+    "src/nova_slider_captcha/templates/nova_slider_captcha/widget.html": "d4f121ece86f4a10d800ace5ee351df82bcee3408472db17b05a8e869fe8b55a",
+    "tests/test_forms.py": "a9c2c853576b838337b08d17805a6c45ed2f18e2f1a7a51fa0e17c5331678d05",
+    "tests/widget.test.mjs": "2615838a5145cbaf0dca10a908c7456505c8c1adbd3a41c98d7704169c7ad85c"
+  },
+  "artifacts": {
+    "nova_slider_captcha-0.3.0.tar.gz": "d81f3aaf3b32c12d3387eb96d0cb5f0c786bf5fa8b1e9818e03f1d163b46b106",
+    "nova_slider_captcha-0.3.0-py3-none-any.whl": "b4d11f5b01fc266ef8bccd20be7399b886fe9159d521e8b9b1187af371c65bae"
+  },
+  "runtime": {
+    "python": "3.12.11",
+    "django": "5.2.17",
+    "pillow": "12.3.0",
+    "node": "v24.21.0",
+    "ruff": "0.17.2",
+    "coverage": "7.17.0",
+    "chrome": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36"
+  }
+}

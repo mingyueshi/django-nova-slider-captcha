@@ -1,0 +1,72 @@
+✖ form ARIA reaches the focusable slider and keeps keyboard instructions (41.6265ms)
+✖ form ARIA changes and removals do not reset proof or locale (5.310542ms)
+✖ form ARIA stays independent across widgets and reconnects (7.362708ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 269.537542
+
+✖ failing tests:
+
+test at aria-fix/source/tests/widget.test.mjs:113:1
+✖ form ARIA reaches the focusable slider and keeps keyboard instructions (41.6265ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+  -   'help',
+      'nsc-instructions-1'
+    ]
+
+      at TestContext.<anonymous> (file://$TASK/source/tests/widget.test.mjs:119:14)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'nsc-instructions-1' ],
+    expected: [ 'help', 'nsc-instructions-1' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at aria-fix/source/tests/widget.test.mjs:127:1
+✖ form ARIA changes and removals do not reset proof or locale (5.310542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'nsc-instructions-1'
+  - 'help nsc-instructions-1 error'
+
+      at TestContext.<anonymous> (file://$TASK/source/tests/widget.test.mjs:135:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'nsc-instructions-1',
+    expected: 'help nsc-instructions-1 error',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at aria-fix/source/tests/widget.test.mjs:151:1
+✖ form ARIA stays independent across widgets and reconnects (7.362708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'nsc-instructions-3'
+  - 'new-help nsc-instructions-3'
+
+      at TestContext.<anonymous> (file://$TASK/source/tests/widget.test.mjs:170:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'nsc-instructions-3',
+    expected: 'new-help nsc-instructions-3',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

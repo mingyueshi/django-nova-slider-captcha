@@ -110,6 +110,69 @@ function cleanup(c) {
   c.widget.remove();
   c.dom.window.close();
 }
+test("form ARIA reaches the focusable slider and keeps keyboard instructions", async () => {
+  for (const attrs of [{}, { "aria-describedby": "help" }, { "aria-describedby": "error", "aria-invalid": "true" }, { "aria-describedby": "help error help", "aria-invalid": "true" }]) {
+    const c = await setup(undefined, { attrs });
+    try {
+      const keyboard = c.widget.querySelector(".nsc-keyboard");
+      const external = [...new Set((attrs["aria-describedby"] || "").split(/\s+/).filter(Boolean))];
+      assert.deepEqual(c.widget.range.getAttribute("aria-describedby").split(" "), [...external, keyboard.id]);
+      assert.equal(c.widget.range.getAttribute("aria-invalid"), attrs["aria-invalid"] || null);
+      c.widget.range.focus();
+      assert.equal(c.w.document.activeElement, c.widget.range);
+      assert.ok(keyboard.textContent.length > 0);
+    } finally { cleanup(c); }
+  }
+});
+test("form ARIA changes and removals do not reset proof or locale", async () => {
+  const c = await setup();
+  try {
+    await c.widget.verify();
+    const token = c.widget.getToken(), seq = c.widget.seq, requests = c.calls.length;
+    const keyboard = c.widget.querySelector(".nsc-keyboard");
+    c.widget.setAttribute("aria-describedby", ` help\t${keyboard.id}\nerror help `);
+    c.widget.setAttribute("aria-invalid", "true");
+    assert.equal(c.widget.range.getAttribute("aria-describedby"), `help ${keyboard.id} error`);
+    assert.equal(c.widget.range.getAttribute("aria-invalid"), "true");
+    c.widget.setLocale("en");
+    assert.equal(c.widget.range.getAttribute("aria-label"), "Move the puzzle piece");
+    assert.equal(c.widget.range.getAttribute("aria-invalid"), "true");
+    c.widget.setAttribute("aria-invalid", "false");
+    assert.equal(c.widget.range.getAttribute("aria-invalid"), "false");
+    c.widget.removeAttribute("aria-invalid");
+    c.widget.removeAttribute("aria-describedby");
+    assert.equal(c.widget.range.hasAttribute("aria-invalid"), false);
+    assert.equal(c.widget.range.getAttribute("aria-describedby"), keyboard.id);
+    assert.equal(c.widget.getToken(), token);
+    assert.equal(c.widget.seq, seq);
+    assert.equal(c.calls.length, requests);
+  } finally { cleanup(c); }
+});
+test("form ARIA stays independent across widgets and reconnects", async () => {
+  const c = await setup(undefined, { attrs: { "aria-describedby": "first-help", "aria-invalid": "true" } });
+  const second = c.w.document.createElement("nova-slider");
+  try {
+    second.setAttribute("aria-describedby", "second-help");
+    c.w.document.body.append(second);
+    await flush();
+    const firstId = c.widget.querySelector(".nsc-keyboard").id;
+    const secondId = second.querySelector(".nsc-keyboard").id;
+    assert.notEqual(firstId, secondId);
+    c.widget.connectedCallback();
+    assert.equal(c.widget.querySelector(".nsc-keyboard").id, firstId);
+    c.widget.remove();
+    c.widget.setAttribute("aria-describedby", "new-help new-help");
+    c.widget.removeAttribute("aria-invalid");
+    c.w.document.body.append(c.widget);
+    await flush();
+    const newId = c.widget.querySelector(".nsc-keyboard").id;
+    assert.notEqual(newId, firstId);
+    assert.equal(c.widget.range.getAttribute("aria-describedby"), `new-help ${newId}`);
+    assert.equal(c.widget.range.hasAttribute("aria-invalid"), false);
+    assert.equal(second.range.getAttribute("aria-describedby"), `second-help ${secondId}`);
+    assert.equal(c.widget.querySelectorAll(".nsc-range").length, 1);
+  } finally { second.remove(); cleanup(c); }
+});
 test("missing decode waits for both load events and cleans listeners", async () => {
   const c = await setup(undefined, { images: imageEvents });
   const [background, piece] = c.images.images;
