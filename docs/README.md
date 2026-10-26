@@ -4,6 +4,10 @@
 
 | 文档 | 内容 |
 |---|---|
+| [后续接入与出图独立验收](2026-10-26-followup-independent.md) | 主控六组源码/wheel、真实浏览器、负向包检查与性能复测 |
+| [后续接入与出图实施自测](2026-10-26-followup-implementation.md) | 核心/演示拆分、依赖矩阵、宿主替代入口与图像优化 |
+| [可信代理、部署检查与清理监控](DEPLOYMENT.md) | ASGI/WSGI 的 REMOTE_ADDR 映射、生产 checks 和 prune 成功监控 |
+| [外部诊断逐项复核](2026-10-26-diagnostic-recheck.md) | 当前提交下的 17 项裁定、针对性实测、功能建议取舍与优先级 |
 | [发布准备与维护](RELEASING.md) | 0.3.0 待发布、版本检查、构建与首次 Trusted Publishing 步骤 |
 | [发布准备实施自测](2026-10-26-release-implementation.md) | 策略快照、主题修复、配对矩阵及安装包本地验证 |
 | [发布准备独立验收](2026-10-26-release-independent.md) | 主控独立矩阵、工作流/发布负向检查和真实浏览器验证 |

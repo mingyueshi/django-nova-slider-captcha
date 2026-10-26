@@ -1,0 +1,80 @@
+{
+  "artifact": {
+    "wheel": "/tmp/nova-slider-followup-impl-dist-uv-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl",
+    "sha256": "296414f4a4443590c5dc90bd5686bda69dcd344807f71fc58811cd3bec46ff51"
+  },
+  "cells": [
+    {
+      "python": "3.10",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.11",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12",
+      "django": "6.1.2",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.13",
+      "django": "6.1.2",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.14",
+      "django": "6.0.9",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "wheel",
+          "tests": 122,
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

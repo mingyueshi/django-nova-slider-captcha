@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.checks import Error, Tags, register
 
-from .conf import challenge_policy, purposes, rate_limit, rate_log_level
+from .conf import challenge_policy, configured_alternative_link, purposes, rate_limit, rate_log_level
 
 
 @register(Tags.security)
@@ -22,4 +22,8 @@ def captcha_settings_check(app_configs, **kwargs):
             validator()
         except ValueError as error:
             errors.append(Error(str(error), id=identifier))
+    try:
+        configured_alternative_link()
+    except ValueError as error:
+        errors.append(Error(str(error), id="nova_slider_captcha.E007"))
     return errors

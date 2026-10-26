@@ -252,3 +252,23 @@ nova-slider {
   background: var(--nsc-panel);
   color: var(--nsc-error);
 }
+
+/* Outside <nova-slider>: remains visible without JS and survives its render. */
+.nsc-alternative {
+  max-width: 100%;
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.nsc-alternative a {
+  color: var(--nsc-alternative-fg, var(--link-fg, var(--accent, var(--nsc-alternative-fallback, #1d4ed8))));
+  text-decoration: underline;
+}
+.nova-slider-form-widget { --nsc-alternative-fallback: #1d4ed8; }
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme="light"])) .nova-slider-form-widget { --nsc-alternative-fallback: #a8c7ff; }
+}
+:where(:root[data-theme="dark"]) .nova-slider-form-widget { --nsc-alternative-fallback: #a8c7ff; }
+:where(:root[data-theme="light"], .nova-mode-light) .nova-slider-form-widget { --nsc-alternative-fallback: #1d4ed8; }
+:where(.nova-mode-dark) .nova-slider-form-widget { --nsc-alternative-fallback: #a8c7ff; }

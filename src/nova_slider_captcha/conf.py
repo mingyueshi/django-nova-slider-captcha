@@ -3,6 +3,10 @@ import re
 from dataclasses import dataclass
 
 from django.conf import settings
+from urllib.parse import unquote, urlsplit
+
+from django.utils.encoding import force_str
+from django.utils.functional import Promise
 
 WIDTH = 320
 HEIGHT = 160
@@ -15,6 +19,30 @@ PURPOSES = frozenset(("demo", "login"))
 RATE_PERIOD_US = 60_000_000
 MAX_RATE_LIMIT = 60_000
 RATE_DEFAULTS = {"issue_session": 20, "issue_ip": 60, "verify_session": 60, "verify_ip": 120}
+
+
+def alternative_link(url=None, label=None):
+    """Only explicit host-owned local paths; never read request parameters."""
+    if url is None and label is None:
+        return None
+    if not isinstance(url, (str, Promise)) or not isinstance(label, (str, Promise)):
+        raise ValueError("CAPTCHA alternative URL and label must both be strings")
+    url, label = force_str(url), force_str(label)
+    decoded = unquote(url)
+    parsed = urlsplit(decoded)
+    if (not url or len(url) > 2048 or not url.startswith("/") or url.startswith("//")
+            or not decoded.startswith("/") or decoded.startswith("//")
+            or parsed.scheme or parsed.netloc or "\\" in decoded
+            or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in decoded)):
+        raise ValueError("CAPTCHA alternative URL must be a local absolute path without a scheme, host, whitespace or backslash")
+    if not label.strip() or len(label) > 200 or not label.isprintable():
+        raise ValueError("CAPTCHA alternative label must contain 1–200 printable characters")
+    return {"url": url, "label": label}
+
+
+def configured_alternative_link():
+    return alternative_link(getattr(settings, "NOVA_SLIDER_ALTERNATIVE_URL", None),
+                            getattr(settings, "NOVA_SLIDER_ALTERNATIVE_LABEL", None))
 
 
 @dataclass(frozen=True)

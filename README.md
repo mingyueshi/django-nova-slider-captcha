@@ -36,7 +36,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-打开 `/captcha/` 体验验证码，或 `/admin/login/` 测试 Admin 登录。示例默认 `LANGUAGE_CODE='zh-hans'`，只绑定本机主机名，含明确标记的开发用密钥，不能直接用作生产配置。生产环境需要自己的密钥、允许的主机、HTTPS、Cookie、安全代理设置和静态资源部署。
+打开 `/captcha-demo/` 体验显式启用的演示，或 `/admin/login/` 测试 Admin 登录。示例默认 `LANGUAGE_CODE='zh-hans'`，只绑定本机主机名，含明确标记的开发用密钥，不能直接用作生产配置。生产环境需要自己的密钥、允许的主机、HTTPS、Cookie、安全代理设置和静态资源部署。
 
 ## 接入已有 Django 项目
 
@@ -52,6 +52,28 @@ urlpatterns = [
 ]
 ```
 
+默认 URLConf 只有核心 API，`/captcha/` 返回简短 JSON 服务信息，不再提供演示页或消费接口。仅在开发/明确需要演示时显式挂载：
+
+```python
+path("captcha-demo/", include("nova_slider_captcha.demo_urls")),
+```
+
+演示页位于 `/captcha-demo/`，消费位于 `/captcha-demo/submit`（另保留该可选挂载下的 `demo` 别名）。本仓库开发示例已经显式启用。生产只挂核心 API 即可；demo 消费始终固定 purpose="demo"，不会保护任何真实业务操作。
+
+**接入迁移**：原 `nova_slider_captcha:demo` 改为 `nova_slider_captcha:api-root`，原 `/captcha/submit` 和 `/captcha/demo` 不再由核心 URLConf 提供。引用旧演示名称/路径的模板和脚本须改为上述显式演示挂载；演示脚本从 form.action 获取消费地址，与核心 endpoint 分离。init / challenge / verify 的 URL、JSON、CSRF 和会话协议保持不变，独立 `<nova-slider endpoint="/captcha/">` 继续调用核心 API。
+
+Widget 默认反解 `nova_slider_captcha:api-root`；URL 的挂载路径和 Django script prefix 会保留。多实例或嵌套 namespace 时显式选择完整根名称，避免依赖 Django 对同名实例的默认选择：
+
+```python
+from nova_slider_captcha.forms import SliderCaptchaWidget
+
+# urlpatterns：path("public-proof/", include("nova_slider_captcha.urls", namespace="public_captcha"))
+proof_widget = SliderCaptchaWidget(api_root="public_captcha:api-root", purpose="contact")
+# 如果外层还有 portal namespace：api_root="portal:public_captcha:api-root"
+```
+
+可选演示挂在另一个 namespace 时，其 submit 自动反解当前演示 namespace；若同时使用自定义 API namespace，可自行组合演示路由并为 views.demo 传可信的 api_root URL kwarg（见下面的维护文档）。
+
 3. 执行 `python manage.py migrate`，生产环境按自身流程执行 `collectstatic`。
 4. 在需要保护的业务接口中验证并消费凭证。前端的“验证成功”事件不能代替服务端检查。
 
@@ -66,6 +88,8 @@ urlpatterns = [
 ```
 
 使用 Django 模板时，静态路径应通过 `{% static %}` 生成。组件会调用 `GET /captcha/init` 初始化 session 与 CSRF，然后使用同源 JSON POST 请求。跨域 CORS 接入未提供；前后端分开开发时，通过同源反向代理接入。
+
+具体的 Nginx→Uvicorn ASGI、Nginx→uWSGI WSGI、生产检查和清理监控示例见 [可信代理部署说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/DEPLOYMENT.md)。代理传入 `X-Real-IP` 本身不会自动改变 REMOTE_ADDR；须由受信的应用服务器/协议参数完成映射。
 
 例如页面位于 `https://www.example.com/` 时，将浏览器可见的 `https://www.example.com/captcha/` 反代到 Django，并让组件使用 `endpoint="/captcha/"`。前端和验证码接口需要相同的 scheme、Host 和端口；`api.example.com` 仍是不同 origin。`same-site` 请求也被拒绝，增加 `CSRF_TRUSTED_ORIGINS` 不会放开这项约束。
 
@@ -100,7 +124,7 @@ NOVA_SLIDER_PURPOSES = ["demo", "login", "contact", "profile_update"]
 
 仅接受非空的 list、tuple、set 或 frozenset，不能用字符串或字典代替。名称遵循 `[a-z][a-z0-9_:-]{0,31}`，首位为小写英文字母，后续可用小写字母、数字、下划线、冒号和连字符，总长不超过数据库的 32 字符。非法配置会产生系统检查 `E004`，HTTP 接口返回 `503 configuration_invalid`，出题服务抛出 `ValueError`，消费拒绝放行。每次调用读取当前配置，支持 `override_settings`；移除某个用途后，其未完成挑战和未消费凭证也会被拒绝。
 
-前端 `purpose="contact"` 只选择题目绑定用途。业务服务端必须固定 `purpose="contact"`，不能直接使用 POST 中的 purpose 决定受保护操作。`/captcha/submit` 始终只消费 `demo`，不能用它消费自定义用途。所有用途共享对应 action 的 IP/session 额度，增加或切换 purpose 不会获得新额度。
+前端 `purpose="contact"` 只选择题目绑定用途。业务服务端必须固定 `purpose="contact"`，不能直接使用 POST 中的 purpose 决定受保护操作。可选演示的 `/captcha-demo/submit` 始终只消费 `demo`，不能用它消费自定义用途。所有用途共享对应 action 的 IP/session 额度，增加或切换 purpose 不会获得新额度。
 
 ## 挑战策略配置
 
@@ -120,7 +144,7 @@ NOVA_SLIDER_TOLERANCE = 4        # 0–10 原图像素，0 为精确匹配
 
 ## 通用 Form 与 ModelForm
 
-使用 `SliderCaptchaField` 和放在最左边的 `SliderCaptchaFormMixin`，在初始化时传入 `request=`。字段名可自由选择；Widget 的 `purpose`、完整隐藏字段名和资源由字段提供。只使用 Field 而遗漏 Mixin 会拒绝验证。字段必须保持 `required=True`、`disabled=False`。
+使用 `SliderCaptchaField` 和放在最左边的 `SliderCaptchaFormMixin`，在初始化时传入 `request=`。字段名可自由选择；Widget 的 `purpose`、完整隐藏字段名和资源由字段提供。只使用 Field 而遗漏 Mixin 会拒绝验证。字段必须保持 `required=True`、`disabled=False`；不支持的值在构造时抛出明确 ValueError，字段实例之后被改写仍会在运行时拒绝。
 
 普通 Form 示例（放进已有 Django app）：
 
@@ -278,7 +302,8 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 - `GET /captcha/init` → `{csrfToken}`
 - `POST /captcha/challenge`，请求 `{purpose:"demo"}`（或配置允许的其他用途），返回 `{challengeId,background,piece,width:320,height:160,pieceWidth:44,pieceY,expiresIn:120,maxAttempts:5}`
 - `POST /captcha/verify`，请求 `{challengeId,x}`，成功返回 `{ok:true,token,expiresIn:60}`；失败返回 `{ok:false,code,...}`
-- `POST /captcha/submit`，请求 `{token,purpose:"demo"}`，只演示消费凭证；`/captcha/demo` 是 Django 的别名
+- 核心 `GET /captcha/` 是命名 `api-root` 的 JSON 根路径，无演示消费
+- 仅显式启用 demo_urls 后：`GET /captcha-demo/` 为演示页；`POST /captcha-demo/submit` 请求 `{token,purpose:"demo"}`，只消费 demo 凭证，`/captcha-demo/demo` 为别名
 
 图片为扁平 PNG data URL，不包含数字答案、图片种子或可直接读取缺口位置的向量结构。人和程序仍可以从图像像素推断位置，因此不声称答案能对视觉分析保密。
 
@@ -332,9 +357,56 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 `SECRET_KEY` 轮换会使已有挑战与未消费凭证失效，也会改变 IP/session 限流身份，可能产生新额度。本组件的自定义 `salted_hmac` 不尝试 `SECRET_KEY_FALLBACKS`。应协调所有实例的密钥切换、提示用户重新完成验证码，并在轮换窗口保留独立的入口/账号限流；旧状态仍按上述安全条件清理，不能为轮换直接清空限流表。
 
+## 宿主安全替代入口
+
+视觉拼图不是非视觉验证。宿主有独立、受保护的替代流程时，可为所有 Django Widget（含 Admin）配置始终可见的导航链接：
+
+```python
+# settings.py：仅在宿主确实已实现该路由后设置。
+NOVA_SLIDER_ALTERNATIVE_URL = "/security/verification-options/"
+NOVA_SLIDER_ALTERNATIVE_LABEL = "使用其他安全验证方式"
+```
+
+不配置时不会显示链接，也不宣称已经存在替代服务。现有 noscript 提示保留；配置的链接放在组件之外，JS 开启、刷新重绘或关闭时都可见。
+
+普通表单可按 Widget 单独设置，覆盖全局入口：
+
+```python
+from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaWidget
+
+proof = SliderCaptchaField(
+    purpose="contact",
+    widget=SliderCaptchaWidget(
+        purpose="contact", api_root="nova_slider_captcha:api-root",
+        alternative_url="/contact/secure-alternative/",
+        alternative_label="联系表单的其他安全验证方式",
+    ),
+)
+```
+
+Admin 通常使用上方 settings 配置即可；需要只对某个 AdminSite 定制时，沿用原认证顺序并仅换 Widget：
+
+```python
+from nova_slider_captcha.forms import SliderAdminAuthenticationForm, SliderCaptchaWidget
+
+class SiteLoginForm(SliderAdminAuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["nova_slider_token"].widget = SliderCaptchaWidget(
+            purpose="login", alternative_url="/security/admin-verification/",
+            alternative_label="管理员的其他安全验证方式",
+        )
+
+admin_site.login_form = SiteLoginForm
+```
+
+URL 与标签均由可信宿主代码提供，不读取客户端参数或 HTML attrs。只允许原始值以单个 `/` 开头的本地绝对路径，不接受 scheme、外站、协议相对地址、编码的双斜杠/反斜杠、空白或控制字符；同时校验解码值。URL 最长 2048，标签必须为 1–200 个可打印字符，并始终转义（即使传 SafeString）。非法全局配置检查为 E007，Widget 渲染也会拒绝；标签和 URL 必须同时配置。
+
+这个链接只导航，不生成凭证、不跳过原验证，也不内置短信、邮件或音频服务。宿主替代页面及其提交接口仍须自行实施身份核验、授权、CSRF、限流、一次性证明与同等保护；不能把目的 URL 直接指向已免验证的业务操作。现有语言字典、默认语言和回退没有改动，链接标签由宿主明确选择。
+
 ## 主题与窄容器
 
-组件优先使用宿主语义变量（如 `--link-fg`、`--body-quiet-color`、`--error-fg`）及已有面板变量；没有宿主变量时提供独立明/暗色兜底。`html[data-theme="light"|"dark"]` 和 Nova 显式 mode 类优先于操作系统偏好；未指定或 auto 时跟随 `prefers-color-scheme`。宿主仍可在组件上覆盖 `--nsc-*`，例如 `--nsc-accent`、`--nsc-success`、`--nsc-error`、`--nsc-panel` 和 `--nsc-handle-size`。
+组件优先使用宿主语义变量（如 `--link-fg`、`--body-quiet-color`、`--error-fg`）及已有面板变量；没有宿主变量时提供独立明/暗色兜底。`html[data-theme="light"|"dark"]` 和 Nova 显式 mode 类优先于操作系统偏好；未指定或 auto 时跟随 `prefers-color-scheme`。宿主仍可在组件上覆盖 `--nsc-*`，例如 `--nsc-accent`、`--nsc-success`、`--nsc-error`、`--nsc-panel` 和 `--nsc-handle-size`。组件外的替代链接可通过 `--nsc-alternative-fg` 覆盖颜色。
 
 成功文案采用独立语义色及不透明深色背景，避免装饰 mint 色或透明图像背景导致低对比度。自定义颜色需要重新检查文字与实际背景的对比度。布局继续使用换行与流式尺寸；窄容器减少轨道文案横向留白，长文案允许换行。组件没有装饰性动画，不为无效果的 reduced-motion 查询增加额外规则。
 
@@ -386,7 +458,7 @@ LOGGING = {
 
 项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/README.md)。
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖为经边界验证的 Pillow >=12.2,<13（本轮实测 12.2.0 与当前 12.x 最新 12.3.0，未开放 10/11/13）。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
 
 ```sh
 python manage.py check
@@ -400,6 +472,6 @@ npm run test:worker
 
 Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。完整矩阵脚本要求显式提供精确运行时、Nova 源码路径及已构建 wheel；它不是适用于所有平台的一键 CI。
 
-需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/.github/workflows/tests.yml) 使用 Python/Django 配对矩阵 3.10/5.2.17、3.12/5.2.17、3.12/6.1.2、3.13/6.1.2，分别验证 source 与同一构建 wheel，并检查 sdist、元数据、迁移漂移、完整测试及组件/DOM/Worker。runner 临时路径放在合法的 step.env 上下文。新增配置与本地通过不代表远端 CI 通过；本轮结果见 [发布准备自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-release-implementation.md)。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
+需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/.github/workflows/tests.yml) 使用 Python/Django/Pillow 六格代表性矩阵：3.10/5.2.17/12.2.0、3.11/5.2.17/12.3.0、3.12/5.2.17/12.3.0、3.12/6.1.2/12.2.0、3.13/6.1.2/12.3.0、3.14/6.0.9/12.3.0，分别验证 source 与同一构建 wheel，并检查 sdist、元数据、迁移漂移、完整测试及组件/DOM/Worker。runner 临时路径放在合法的 step.env 上下文。新增配置与本地通过不代表远端 CI 通过；此前发布准备见 [发布准备自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-release-implementation.md)。当前接入改进见 [后续实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-followup-implementation.md)。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
 
 代码使用 MIT 许可证，原始法律文本保留在 [LICENSE](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/LICENSE)，不翻译其法律条款。

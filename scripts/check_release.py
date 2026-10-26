@@ -37,6 +37,10 @@ def source_version(root):
 
 
 def check_dist(root, directory, version):
+    from packaging.requirements import Requirement
+    def requirements(values):
+        return {(item.name.lower().replace("_", "-"), str(item.specifier), tuple(sorted(item.extras)), str(item.marker)) for item in map(Requirement, values)}
+    expected_dependencies = requirements(tomllib.loads((root / "pyproject.toml").read_text())["project"]["dependencies"])
     paths = sorted(directory.iterdir())
     require(len(paths) == 2, "Expected exactly one wheel and one sdist")
     wheel = directory / f"{PACKAGE}-{version}-py3-none-any.whl"
@@ -46,19 +50,23 @@ def check_dist(root, directory, version):
     runtime = {p.relative_to(root / "src").as_posix(): p.read_bytes() for p in (root / "src" / PACKAGE).rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"}
     require(runtime, "Empty runtime payload")
     with zipfile.ZipFile(wheel) as archive:
+        require({name for name in archive.namelist() if name.startswith(PACKAGE + "/") and not name.endswith("/")} == set(runtime), "Wheel runtime file set differs from source (stale or missing files)")
         for name, content in runtime.items():
             require(archive.read(name) == content, f"Wheel omitted or changed {name}")
         metadata = BytesParser().parsebytes(archive.read(f"{PACKAGE}-{version}.dist-info/METADATA"))
         require(metadata["Version"] == version and metadata["Name"] == "nova-slider-captcha", "Wheel metadata mismatch")
+        require(requirements(metadata.get_all("Requires-Dist", [])) == expected_dependencies, "Wheel dependency metadata differs from project")
         require(metadata["Description-Content-Type"] == "text/markdown", "README is not Markdown metadata")
         for match in re.finditer(r"\]\(([^)]+)\)", metadata.get_payload()):
             require(match[1].startswith(("https://", "http://", "#")), f"PyPI README has a relative link: {match[1]}")
     with tarfile.open(sdist) as archive:
         prefix = f"{PACKAGE}-{version}/"
+        require({name[len(prefix + "src/"):] for name in archive.getnames() if name.startswith(prefix + "src/" + PACKAGE + "/") and archive.getmember(name).isfile()} == set(runtime), "sdist runtime file set differs from source (stale or missing files)")
         for name, content in runtime.items():
             require(archive.extractfile(prefix + "src/" + name).read() == content, f"sdist omitted or changed {name}")
         metadata = BytesParser().parsebytes(archive.extractfile(prefix + "PKG-INFO").read())
         require(metadata["Version"] == version, "sdist metadata mismatch")
+        require(requirements(metadata.get_all("Requires-Dist", [])) == expected_dependencies, "sdist dependency metadata differs from project")
         for required in ("LICENSE", "README.md", "pyproject.toml", "scripts/test_policy_upgrade.py", "tests/test_policy.py"):
             require(prefix + required in archive.getnames(), f"sdist missing {required}")
     print(f"Verified {len(runtime)} runtime files in wheel and sdist for {version}")

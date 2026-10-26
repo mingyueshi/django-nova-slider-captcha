@@ -2,4 +2,5 @@
 <div class="nova-slider-form-widget">
   <nova-slider endpoint="{{ widget.endpoint }}" purpose="{{ widget.purpose }}" field-name="{{ widget.name }}" locale="{{ widget.locale }}"{% if widget.attrs.id %} id="{{ widget.attrs.id }}"{% endif %} aria-label="{% translate 'Security verification' %}"></nova-slider>
   <noscript>{% translate "JavaScript is required for this visual challenge. Use the site's equivalent secure nonvisual verification route or contact support." %}</noscript>
+  {% if widget.alternative %}<p class="nsc-alternative"><a href="{{ widget.alternative.url|force_escape }}">{{ widget.alternative.label|force_escape }}</a></p>{% endif %}
 </div>

@@ -5,7 +5,7 @@ from django.db import DatabaseError, router, transaction
 from django.urls import reverse
 from django.utils.translation import get_language, gettext_lazy as _
 
-from .conf import challenge_policy, purposes, valid_purpose
+from .conf import alternative_link, challenge_policy, configured_alternative_link, purposes, valid_purpose
 from .models import Challenge
 from .services import consume, session_binding
 
@@ -15,15 +15,19 @@ CAPTCHA_ERROR = _("Security verification is missing, expired, or already used. P
 class SliderCaptchaWidget(forms.Widget):
     template_name = "nova_slider_captcha/widget.html"
 
-    def __init__(self, attrs=None, *, purpose="login"):
+    def __init__(self, attrs=None, *, purpose="login", api_root="nova_slider_captcha:api-root",
+                 alternative_url=None, alternative_label=None):
         super().__init__(attrs)
         self.purpose = purpose
+        self.api_root = api_root
+        self.alternative = alternative_link(alternative_url, alternative_label)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, "", attrs)
-        context["widget"]["endpoint"] = reverse("nova_slider_captcha:demo")
+        context["widget"]["endpoint"] = reverse(self.api_root)
         context["widget"]["locale"] = context["widget"]["attrs"].get("locale") or get_language() or "zh-hans"
         context["widget"]["purpose"] = self.purpose
+        context["widget"]["alternative"] = self.alternative or configured_alternative_link()
         return context
 
     class Media:
@@ -40,6 +44,10 @@ class SliderCaptchaField(forms.CharField):
         kwargs.setdefault("max_length", 128)
         kwargs.setdefault("widget", SliderCaptchaWidget(purpose=purpose))
         super().__init__(**kwargs)
+        if not self.required:
+            raise ValueError("SliderCaptchaField requires required=True; optional CAPTCHA fields are unsupported")
+        if self.disabled:
+            raise ValueError("SliderCaptchaField requires disabled=False; disabled CAPTCHA fields are unsupported")
         if not isinstance(self.widget, SliderCaptchaWidget):
             raise ValueError("SliderCaptchaField requires SliderCaptchaWidget")
         self.widget.purpose = purpose
@@ -91,6 +99,8 @@ class SliderCaptchaFormMixin:
 
     @property
     def errors(self):
+        # Django caches validation in _errors. Even when full_clean is skipped,
+        # revisit a consumed proof's context; a detected change latches failure.
         errors = super().errors
         if (self._captcha_success is not None and not getattr(self, "_captcha_cleaning", False)
                 and not getattr(self, "_captcha_check_errors", False)):
@@ -102,12 +112,17 @@ class SliderCaptchaFormMixin:
             if self._captcha_invalidated and not errors.get("__all__"):
                 self._captcha_check_errors = True
                 try:
+                    # add_error itself reads errors. This flag prevents reentry
+                    # while recording this one context-change error.
                     self.add_error(None, ValidationError(CAPTCHA_ERROR, code="captcha_context_changed"))
                 finally:
                     self._captcha_check_errors = False
         return errors
 
     def full_clean(self):
+        # BaseForm/ModelForm consult errors while rebuilding cleaned_data. Do
+        # not compare a half-built context with the successful snapshot; compare
+        # once at _captcha_finish_clean, after all field/model validation.
         self._captcha_cleaning = True
         try:
             super().full_clean()

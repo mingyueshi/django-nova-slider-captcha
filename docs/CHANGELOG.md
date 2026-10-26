@@ -4,6 +4,16 @@
 
 Python 包与前端开发包版本同步为 **0.3.0**。以下变化尚未发布到 PyPI；源码已修改或本地测试通过不等于远端 CI 通过、线上部署或已上传。
 
+### 接入默认值与出图改进（2026-10-26，待发布）
+
+- 核心 urls 只提供 api-root / init / challenge / verify；演示页和 demo 消费迁至显式 demo_urls。Widget 使用 api-root，支持完整命名空间配置，演示 submit 从 form.action 读取；旧接入迁移见 README。
+- Pillow 改为 >=12.2,<13，测试 12.2.0 和实际最新 12.x 12.3.0。CI 六格覆盖 Python 3.10–3.14、Django 5.2/6.0/6.1 和 Pillow 两端；各格 source / 同一 wheel 检查，仍只构建一次。
+- required=False / disabled=True 在字段构造时明确抛配置异常，保留字段后改写的运行时拒绝；补 errors/full_clean 两种重入保护与永久失效的设计注释。删除空 templatetags 壳，包检查拒绝多余/缺失运行文件及依赖元数据漂移。
+- 把逐像素 Python 循环改为 Pillow C 层渐变、纹理与混合，保留安全坐标、独立新鲜种子、PNG、尺寸和透明轮廓；新增局部图像不变量与交错耗时/PNG 大小基准，不宣称增强抗自动化。
+- Widget 新增由宿主明确提供、JS 开关均可见的本地安全替代链接，严格 URL/标签校验与转义、显式主题兜底。链接只导航，不自动提供或绕过验证；未配置时不虚构服务。
+- 新增可信 Nginx/Uvicorn 与 Nginx/uWSGI 部署示例，明确 REMOTE_ADDR 映射责任、check --deploy 和 prune 成功/表增长监控。未新增可信 header 开关、后台线程或外部验证服务。
+- 保持版本 0.3.0 待首次发布；本轮不改语言字典、语言继承/回退或翻译策略。
+
 ### 发布准备与策略快照（2026-10-26）
 
 - CI 改为明确配对：3.10/5.2.17、3.12/5.2.17、3.12/6.1.2、3.13/6.1.2，实际安装 matrix.django。修复 job.env 非法引用 runner.temp 的解析问题，临时数据库/DOM 输出使用 step.env，source/wheel 数据库区分两维。

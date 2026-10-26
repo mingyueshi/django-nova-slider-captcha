@@ -6,7 +6,7 @@
 <script defer src="{% static 'nova_slider_captcha/slider.js' %}"></script>
 <script defer src="{% static 'nova_slider_captcha/demo.js' %}"></script>
 </head><body><main><h1>Nova Slider CAPTCHA</h1><p>{% translate "Self-hosted, server-verified puzzle challenge." %}</p>
-<form id="captcha-demo">{% csrf_token %}<nova-slider endpoint="{% url 'nova_slider_captcha:demo' %}" purpose="demo" locale="{{ LANGUAGE_CODE }}"></nova-slider>
+<form id="captcha-demo" action="{{ submit_endpoint }}">{% csrf_token %}<nova-slider endpoint="{{ captcha_endpoint }}" purpose="demo" locale="{{ LANGUAGE_CODE }}"></nova-slider>
 <button id="demo-submit" type="submit" disabled>{% translate "Submit protected request" %}</button><p id="demo-result" role="status" aria-live="polite"></p></form>
 <p>{% translate "This visual puzzle is not a complete bot-defense system. A production site must also provide an equivalent secure nonvisual route." %}</p>
 <a href="/admin/login/">{% translate "Try the protected Django Admin login" %}</a></main></body></html>

@@ -1,0 +1,10 @@
+Using CPython 3.14.7 interpreter at: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/python-runtimes/cpython-3.14.7-macos-aarch64-none/bin/python3.14
+Creating virtual environment at: /tmp/nova-slider-followup-impl-py314-dj609-pil123-20261026
+Activate with: source /tmp/nova-slider-followup-impl-py314-dj609-pil123-20261026/bin/activate
+Using Python 3.14.7 environment at: /tmp/nova-slider-followup-impl-py314-dj609-pil123-20261026
+Resolved 4 packages in 0.76ms
+Installed 4 packages in 213ms
+ + asgiref==3.13.0
+ + django==6.0.9
+ + pillow==12.3.0
+ + sqlparse==0.6.0

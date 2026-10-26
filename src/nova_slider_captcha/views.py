@@ -6,6 +6,7 @@ from django.db import DatabaseError
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET
@@ -88,6 +89,13 @@ def json_post(view):
 
 @never_cache
 @require_GET
+def api_root(request):
+    """Stable mount name for clients; no proof issuance or session creation."""
+    return JsonResponse({"service": "nova_slider_captcha", "endpoints": ["init", "challenge", "verify"]})
+
+
+@never_cache
+@require_GET
 @ensure_csrf_cookie
 def init(request):
     if not same_origin(request):
@@ -138,6 +146,10 @@ def submit(request, data):
 @never_cache
 @ensure_csrf_cookie
 @require_GET
-def demo(request):
+def demo(request, api_root="nova_slider_captcha:api-root"):
     services.session_binding(request, create=True)
-    return render(request, "nova_slider_captcha/demo.html")
+    namespace = request.resolver_match.namespace
+    submit_name = f"{namespace}:submit" if namespace else "submit"
+    return render(request, "nova_slider_captcha/demo.html", {
+        "captcha_endpoint": reverse(api_root), "submit_endpoint": reverse(submit_name),
+    })

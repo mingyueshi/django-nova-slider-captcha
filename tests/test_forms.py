@@ -7,7 +7,7 @@ from nova_slider_captcha.forms import SliderCaptchaWidget
 
 # Deliberately use a different challenge path: the endpoint belongs to the root.
 urlpatterns = [path("mounted/challenge-prefix/", include(([
-    path("", views.demo, name="demo"),
+    path("", views.api_root, name="api-root"),
     path("puzzle", views.challenge, name="challenge"),
 ], "nova_slider_captcha")))]
 
@@ -15,7 +15,7 @@ urlpatterns = [path("mounted/challenge-prefix/", include(([
 class WidgetEndpointTests(SimpleTestCase):
     def test_default_endpoint_uses_existing_root_route(self):
         endpoint = SliderCaptchaWidget().get_context("proof", "", {})["widget"]["endpoint"]
-        self.assertEqual(endpoint, reverse("nova_slider_captcha:demo"))
+        self.assertEqual(endpoint, reverse("nova_slider_captcha:api-root"))
         self.assertEqual(endpoint, "/captcha/")
 
     @override_settings(ROOT_URLCONF=__name__)

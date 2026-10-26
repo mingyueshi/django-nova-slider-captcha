@@ -1,0 +1,18 @@
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+....................................F.................
+======================================================================
+FAIL: test_url_and_label_are_escaped_even_if_host_uses_safe_string (tests.test_alternative.AlternativeLinkTests.test_url_and_label_are_escaped_even_if_host_uses_safe_string)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_alternative.py", line 34, in test_url_and_label_are_escaped_even_if_host_uses_safe_string
+    self.assertNotIn("<img", html)
+AssertionError: '<img' unexpectedly found in '<div class="nova-slider-form-widget">\n  <nova-slider endpoint="/captcha/" purpose="login" field-name="proof" locale="zh-hans" aria-label="安全验证"></nova-slider>\n  <noscript>此图形验证需要 JavaScript。请使用本站提供的同等安全的非视觉验证方式，或联系支持人员。</noscript>\n  <p class="nsc-alternative"><a href="/secure/?x="<b>"><img src=x onerror="x"></a></p>\n</div>'
+
+----------------------------------------------------------------------
+Ran 54 tests in 0.951s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
+Found 54 test(s).
+System check identified no issues (0 silenced).

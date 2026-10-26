@@ -1,0 +1,159 @@
+[
+  {
+    "mode": "light",
+    "os": "dark",
+    "width": 240,
+    "background": "rgb(255, 255, 255)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(29, 78, 216)",
+        "contrast": 6.701618401398807,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      },
+      {
+        "color": "rgb(29, 78, 216)",
+        "contrast": 6.701618401398807,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      }
+    ],
+    "scrollWidth": 320,
+    "viewport": 320
+  },
+  {
+    "mode": "dark",
+    "os": "light",
+    "width": 160,
+    "background": "rgb(17, 23, 34)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 171.6171875
+      },
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 171.6171875
+      }
+    ],
+    "scrollWidth": 320,
+    "viewport": 320
+  },
+  {
+    "mode": "nova-light",
+    "os": "dark",
+    "width": 240,
+    "background": "rgb(255, 255, 255)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(29, 78, 216)",
+        "contrast": 6.701618401398807,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      },
+      {
+        "color": "rgb(29, 78, 216)",
+        "contrast": 6.701618401398807,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      }
+    ],
+    "scrollWidth": 320,
+    "viewport": 320
+  },
+  {
+    "mode": "nova-dark",
+    "os": "light",
+    "width": 240,
+    "background": "rgb(17, 23, 34)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      },
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      }
+    ],
+    "scrollWidth": 320,
+    "viewport": 320
+  },
+  {
+    "mode": "auto",
+    "os": "dark",
+    "width": 160,
+    "background": "rgb(17, 23, 34)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 171.6171875
+      },
+      {
+        "color": "rgb(168, 199, 255)",
+        "contrast": 10.498869336351891,
+        "href": "/audit/assistance/",
+        "right": 171.6171875
+      }
+    ],
+    "scrollWidth": 320,
+    "viewport": 320
+  },
+  {
+    "mode": "dark",
+    "os": "dark",
+    "width": 240,
+    "host": "django",
+    "background": "rgb(17, 23, 34)",
+    "fields": [
+      "first-proof",
+      "second-proof"
+    ],
+    "links": [
+      {
+        "color": "rgb(129, 212, 250)",
+        "contrast": 10.886139080254326,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      },
+      {
+        "color": "rgb(129, 212, 250)",
+        "contrast": 10.886139080254326,
+        "href": "/audit/assistance/",
+        "right": 249.5390625
+      }
+    ],
+    "scrollWidth": 305,
+    "viewport": 320
+  }
+]

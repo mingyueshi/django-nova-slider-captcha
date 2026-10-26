@@ -31,7 +31,7 @@ async function page(url, demo=false){
 }
 (async()=>{
  const results=[];
- let p=await page('/captcha/',true);let {w,slider}=p;
+ let p=await page('/captcha-demo/',true);let {w,slider}=p;
  assert.equal(w.document.querySelectorAll('[name=nova_slider_token]').length,1);
  assert.equal(slider.locale, 'zh-CN');assert.equal(slider.status.textContent,'拖动拼图，对齐图中的缺口');assert.equal(w.document.documentElement.lang,'zh-hans');assert.equal(w.document.querySelector('#demo-submit').textContent,'提交受保护的请求');results.push('Django Chinese locale renders translated demo and initializes Chinese widget');
  slider.move(0);await slider.verify();assert.equal(slider.state,'ready');assert.match(slider.status.textContent,/4/);results.push('wrong guess keeps widget usable with four attempts');
@@ -42,7 +42,7 @@ async function page(url, demo=false){
  assert.equal(w.document.querySelector('#demo-submit').disabled,true);results.push('protected demo consumes token and displays local Chinese result');
  slider.setLocale('en');assert.equal(slider.status.textContent.includes('Verified.'),true);assert.equal(w.document.querySelector('#demo-result').textContent,'Request accepted. The verification token has been used.');assert.equal(slider.getToken(),token);results.push('dynamic English locale translates success and demo result without losing proof');
  const csrf=(await call({path:'/captcha/init'}));const csrfToken=JSON.parse(csrf.text).csrfToken;
- const replay=await call({path:'/captcha/submit',method:'POST',headers:{'X-CSRFToken':csrfToken},body:JSON.stringify({token,purpose:'demo'})});assert.equal(replay.status,403);results.push('real Django rejects protected replay');
+ const replay=await call({path:'/captcha-demo/submit',method:'POST',headers:{'X-CSRFToken':csrfToken},body:JSON.stringify({token,purpose:'demo'})});assert.equal(replay.status,403);results.push('real Django rejects protected replay');
  await slider.refresh();assert.equal(slider.getToken(),'');assert.equal(w.document.querySelector('#demo-submit').disabled,true);
  await Promise.all([slider.refresh(),slider.refresh()]);assert.equal(slider.state,'ready');results.push('repeated refresh keeps newest challenge and clears proof');
  let currentSolution=(await call({op:'solution',id:slider.challenge.challengeId})).x;slider.move(currentSolution);await slider.verify();

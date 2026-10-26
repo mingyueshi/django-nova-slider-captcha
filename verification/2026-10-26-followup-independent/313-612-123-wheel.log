@@ -1,0 +1,31 @@
+$ uv pip install --python /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python --no-deps /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/dist/nova_slider_captcha-0.3.0-py3-none-any.whl
+Using Python 3.13.12 environment at: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123
+Resolved 1 package in 0.80ms
+Installed 1 package in 2ms
+ + nova-slider-captcha==0.3.0 (from file:///var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/dist/nova_slider_captcha-0.3.0-py3-none-any.whl)
+
+$ uv pip check --python /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python
+Using Python 3.13.12 environment at: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123
+Checked 5 packages in 0.39ms
+All installed packages are compatible
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python -c import pathlib,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(p); assert p.is_relative_to(pathlib.Path('src').resolve()) is False
+/private/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/lib/python3.13/site-packages/nova_slider_captcha/__init__.py
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python -m django check
+System check identified no issues (0 silenced).
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python -m django test tests --noinput -v 1
+Found 122 test(s).
+System check identified no issues (0 silenced).
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+..........................................................................................................................
+----------------------------------------------------------------------
+Ran 122 tests in 2.240s
+
+OK
+Destroying test database for alias 'default'...

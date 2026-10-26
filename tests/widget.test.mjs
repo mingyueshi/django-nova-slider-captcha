@@ -30,7 +30,7 @@ function response(body, status = 200, type = "application/json") {
   };
 }
 async function setup(handler, options = {}) {
-  const dom = new JSDOM(`<!doctype html><html lang="${options.documentLang || "en"}"><body>${options.demo ? '<form id="captcha-demo"><input name="csrfmiddlewaretoken" value="csrf"><button id="demo-submit" disabled></button><p id="demo-result"></p></form>' : ""}</body></html>`, {
+  const dom = new JSDOM(`<!doctype html><html lang="${options.documentLang || "en"}"><body>${options.demo ? '<form id="captcha-demo" action="/captcha-demo/submit"><input name="csrfmiddlewaretoken" value="csrf"><button id="demo-submit" disabled></button><p id="demo-result"></p></form>' : ""}</body></html>`, {
     url: "https://demo.test/",
     runScripts: "outside-only",
   });
@@ -835,4 +835,23 @@ test("default light and dark state palettes meet text contrast on fallback surfa
   // the opaque-panel contract above isolates it from arbitrary puzzle pixels.
   assert.ok(ratio("#e35f5f", "#212121") >= 4.5);
   assert.ok(ratio("#ba2121", "#f8f8f8") >= 4.5);
+});
+
+test("host alternative links outside the component survive render and refresh", async () => {
+  const c = await setup();
+  const wrapper = c.w.document.createElement("div");
+  wrapper.className = "nova-slider-form-widget";
+  const link = c.w.document.createElement("a");
+  link.href = "/security/other/";
+  link.textContent = "Use another secure method";
+  c.w.document.body.append(wrapper);
+  wrapper.append(c.widget, link);
+  await flush();
+  await c.widget.verify();
+  await c.widget.refresh();
+  assert.equal(wrapper.querySelector("a"), link);
+  assert.equal(link.href, "https://demo.test/security/other/");
+  assert.equal(link.closest("noscript"), null);
+  assert.equal(link.closest("nova-slider"), null);
+  cleanup(c);
 });

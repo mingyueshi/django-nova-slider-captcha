@@ -17,7 +17,7 @@ python3.12 -m venv /tmp/nova-slider-build
 
 输出目录必须为空或新建，只接受一个对应版本的 wheel 和一个 sdist。版本检查比对 pyproject.toml、Python `__version__`、package.json / lock 和 README；拒绝不完全匹配的 tag 及预发布格式。构建物检查逐文件比对整个 app，包含静态、模板、翻译和全部迁移，检查 README 无相对 Markdown 链接，并检查核心 sdist 文件。twine check 通过仅说明分发元数据可解析，不代表 PyPI 已接收、项目名可用或账号有权限。
 
-CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一份 wheel/sdist，检查后保存为不可变的 `python-distributions` artifact；四格 Python/Django source 测试和 wheel 安装测试使用同一份构建物。源码与 wheel 测试各有独立临时数据库；只有 step.env 使用 runner.temp，避免 job.env 不支持该上下文造成工作流未启动。另保留组件、Django-client DOM 和 Worker 检查。GitHub 的上下文可用范围见 [官方上下文表](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)。
+CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一份 wheel/sdist，检查后保存为不可变的 `python-distributions` artifact；六格 Python/Django/Pillow source 测试和 wheel 安装测试使用同一份构建物。源码与 wheel 测试各有独立临时数据库；只有 step.env 使用 runner.temp，避免 job.env 不支持该上下文造成工作流未启动。另保留组件、Django-client DOM 和 Worker 检查。GitHub 的上下文可用范围见 [官方上下文表](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)。
 
 首次本地矩阵、真实浏览器与远端 CI 的状态分别记录，不能互相代替。旧 0002→0003 迁移回归使用独立临时 SQLite；生产升级需先停止旧写入，执行 migrate，再恢复服务。不要把旧行快照改成当前更宽松配置。
 
@@ -40,3 +40,28 @@ CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一�
 ## 未来版本维护
 
 每次版本同步项目元数据、`__version__`、前端 package/lock、README 和 CHANGELOG；tag 必须严格为 `v` + 稳定版本。改工作流 filename 或 environment 后也需更新 PyPI publisher。不要删除 RateBucket 或开放 TOKEN_TTL 来凑版本；这些需要独立迁移/清理设计和验证。单一 mask 不阻碍本次发布，随机形状不能替代服务端限流、单次凭证和业务授权。
+
+## 当前 0.3.0 待发布接入变化
+
+默认挂载仅核心 API，演示须显式 include nova_slider_captcha.demo_urls，旧 demo 反解名改 api-root，演示消费移到单独挂载。自定义 namespace 通过 Widget.api_root 明确指定；init/challenge/verify 协议不变。首次发布前按 README 迁移现有源码接入，不能仅更新包后保留旧演示 URL。
+
+兼容范围为 Pillow >=12.2,<13，CI 精确锁定两端 12.2.0 / 12.3.0；六格代表性配对覆盖 Python 3.10–3.14 和 Django 5.2 / 6.0 / 6.1。不是声明所有交叉组合均已实测。空 templatetags 已删除；check_release 会比对运行文件集合和依赖元数据，防止旧文件残留。演示 URLConf、模板、静态、翻译和全部迁移必须一起进入 wheel/sdist。
+
+[部署说明](DEPLOYMENT.md) 包含 ASGI/WSGI REMOTE_ADDR 的具体映射责任和生产 check --deploy、prune 监控；替代入口由宿主实现，未提供可用替代流程时不要配置占位链接。语言回退行为本轮保持不变。新结果见 [后续实施自测](2026-10-26-followup-implementation.md)；远端 CI/账号/上传仍留待实际发布授权。
+
+嵌套命名空间下，宿主可显式组合可选演示：
+
+```python
+from django.urls import include, path
+from nova_slider_captcha import views
+
+preview_patterns = [
+    path("", views.demo, {"api_root": "portal:public_captcha:api-root"}, name="index"),
+    path("submit", views.submit, name="submit"),
+]
+# 放在 portal 的 urlpatterns 之中：
+urlpatterns = [
+    path("proof/", include("nova_slider_captcha.urls", namespace="public_captcha")),
+    path("preview/", include((preview_patterns, "nova_slider_captcha_demo"), namespace="preview")),
+]
+```

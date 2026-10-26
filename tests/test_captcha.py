@@ -28,7 +28,7 @@ class CaptchaHelpers:
         return client
 
     def post(self, client, endpoint, data, **extra):
-        return client.post("/captcha/" + endpoint, json.dumps(data), content_type="application/json", HTTP_X_CSRFTOKEN=client.csrf, **extra)
+        return client.post(("/captcha-demo/" if endpoint in ("submit", "demo") else "/captcha/") + endpoint, json.dumps(data), content_type="application/json", HTTP_X_CSRFTOKEN=client.csrf, **extra)
 
     def challenge(self, client, purpose="demo"):
         result = self.post(client, "challenge", {"purpose": purpose})
@@ -181,12 +181,12 @@ class CaptchaTests(CaptchaHelpers, TestCase):
     def test_csrf_is_required_for_every_post_route(self):
         client = self.client_with_init(csrf=True)
         for endpoint in ("challenge", "verify", "submit", "demo"):
-            self.assertEqual(client.post("/captcha/" + endpoint, "{}", content_type="application/json").status_code, 403)
+            self.assertEqual(client.post(("/captcha-demo/" if endpoint in ("submit", "demo") else "/captcha/") + endpoint, "{}", content_type="application/json").status_code, 403)
         self.assertEqual(self.post(client, "challenge", {"purpose": "demo"}).status_code, 200)
 
     def test_only_post_mutates(self):
         for endpoint in ("challenge", "verify", "submit", "demo"):
-            self.assertEqual(self.client.get("/captcha/" + endpoint).status_code, 405)
+            self.assertEqual(self.client.get(("/captcha-demo/" if endpoint in ("submit", "demo") else "/captcha/") + endpoint).status_code, 405)
         self.assertFalse(Challenge.objects.exists())
 
     @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_session": 2})

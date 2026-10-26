@@ -1,0 +1,12 @@
+[
+  {
+    "case": "stale-runtime",
+    "rejected": true,
+    "reason": "Wheel runtime file set differs from source (stale or missing files)"
+  },
+  {
+    "case": "dependency-drift",
+    "rejected": true,
+    "reason": "Wheel dependency metadata differs from project"
+  }
+]

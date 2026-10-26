@@ -1,0 +1,27 @@
+$ uv pip install --python /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python --no-deps --reinstall /tmp/nova-slider-followup-impl-dist-uv-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl
+Using Python 3.13.12 environment at: /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026
+Resolved 1 package in 0.57ms
+Prepared 1 package in 0.12ms
+Installed 1 package in 1ms
+ + nova-slider-captcha==0.3.0 (from file:///tmp/nova-slider-followup-impl-dist-uv-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl)
+$ /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python -c import platform,pathlib,django,PIL,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(platform.python_version(),django.get_version(),PIL.__version__,p); assert platform.python_version().startswith('3.13'+'.'); assert django.get_version()=='6.1.2'; assert PIL.__version__=='12.3.0'; assert p.is_relative_to(pathlib.Path('/private/tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026'))
+3.13.12 6.1.2 12.3.0 /private/tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/lib/python3.13/site-packages/nova_slider_captcha/__init__.py
+$ /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python -m django check
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+..........................................................................................................................
+----------------------------------------------------------------------
+Ran 122 tests in 3.223s
+
+OK
+Destroying test database for alias 'default'...
+Found 122 test(s).
+System check identified no issues (0 silenced).
+$ uv pip check --python /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026/bin/python
+Using Python 3.13.12 environment at: /tmp/nova-slider-followup-impl-py313-dj612-pil123-20261026
+Checked 5 packages in 0.36ms
+All installed packages are compatible

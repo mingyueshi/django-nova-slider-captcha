@@ -1,0 +1,1 @@
+{"uvicorn": "0.54.0", "django": "5.2.17", "trusted_proxy_maps_scope_to_meta": true, "untrusted_peer_cannot_forge_meta": true, "x_real_ip_does_not_override": true, "limitations": "Synthetic middleware/ASGIRequest contract only; no Nginx, uWSGI or actual deployment tested"}
