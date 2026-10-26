@@ -1,0 +1,38 @@
+
+> nova-slider-captcha-dev@0.3.0 test:worker
+> node --test examples/worker-api/tests/backend.test.mjs
+
+✔ contract: opaque challenge raster images and exact dimensions (30.925125ms)
+✔ solve + purpose-bound single-use business consumption (14.578417ms)
+✔ five wrong attempts then challenge locked (14.13375ms)
+✔ tolerance 4 inclusive and 5 exclusive (15.07725ms)
+✔ session and CSRF boundaries (11.023417ms)
+✔ expiry of challenges, tokens and sessions (18.251791ms)
+✔ parallel success issues a single proof; parallel submit consumes once (11.899375ms)
+✔ parallel wrong attempts never exceed five (11.5895ms)
+✔ challenge issuance rate limited per session (131.782292ms)
+✔ session creation rate limited by trusted edge IP (5.089625ms)
+✔ malformed inputs, giant numbers and bounded bodies fail closed (10.722458ms)
+✔ multiple challenges do not invalidate another tab (19.570875ms)
+✔ PNG contains no plaintext answer metadata (9.064583ms)
+✔ GCRA blocks minute-boundary double burst and admits exact refill (0.530583ms)
+✔ GCRA concurrency claims at most configured capacity (0.657667ms)
+✔ backwards clock cannot reset debt and rejected requests do not extend it (0.258292ms)
+✔ fractional refill rounds toward stricter rate; invalid configs fail closed (0.559542ms)
+✔ legacy active fixed window inherits cooldown without reopening quota (0.2615ms)
+✔ stable IP quota is shared by new sessions; retry accounts for charged IP (0.44875ms)
+✔ cleanup only removes fully replenished states; pruning never grants while debt remains (0.225917ms)
+✔ HTTP rate-limited responses carry computed Retry-After and machine code (130.540375ms)
+Captcha operation unavailable
+✔ database limiter failure returns stable unavailable response, never a challenge (0.798292ms)
+✔ shared Django/Worker fixture agrees at each microsecond boundary (0.6525ms)
+✔ changing purpose does not reset the shared issuance quota (133.407667ms)
+✔ legacy lookup uses indexed exact-prefix range without long LIKE patterns (0.542792ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 612.561625

@@ -1,5 +1,6 @@
 import logging
 import re
+from dataclasses import dataclass
 
 from django.conf import settings
 
@@ -14,6 +15,28 @@ PURPOSES = frozenset(("demo", "login"))
 RATE_PERIOD_US = 60_000_000
 MAX_RATE_LIMIT = 60_000
 RATE_DEFAULTS = {"issue_session": 20, "issue_ip": 60, "verify_session": 60, "verify_ip": 120}
+
+
+@dataclass(frozen=True)
+class ChallengePolicy:
+    ttl: int
+    max_attempts: int
+    tolerance: int
+
+
+def challenge_policy():
+    """Validate dynamically; persist these values when issuing each challenge."""
+    values = []
+    for name, default, minimum, maximum in (
+        ("NOVA_SLIDER_CHALLENGE_TTL", CHALLENGE_TTL, 30, 600),
+        ("NOVA_SLIDER_MAX_ATTEMPTS", MAX_ATTEMPTS, 1, 20),
+        ("NOVA_SLIDER_TOLERANCE", TOLERANCE, 0, 10),
+    ):
+        value = getattr(settings, name, default)
+        if type(value) is not int or not minimum <= value <= maximum:
+            raise ValueError(f"{name} must be an integer from {minimum} to {maximum}")
+        values.append(value)
+    return ChallengePolicy(*values)
 
 
 def purposes():

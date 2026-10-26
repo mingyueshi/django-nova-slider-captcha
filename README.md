@@ -1,19 +1,20 @@
-# Nova Slider CAPTCHA 0.2.0
+# Nova Slider CAPTCHA 0.3.0（待发布）
 
 可自行部署、方便接入 Django 的拼图滑块验证码。提供可安装的 Django app、原生 JavaScript Web Component、模板与 Django Admin 示例，以及可选的 Worker/D1 API 示例。适配 Nova Admin Theme 0.6.0，不修改 Django 或 Nova 的全局行为。
 
-[公开交互演示](https://nova-slider-captcha.mingyueshi.chatgpt.site)使用 Worker + D1 服务端；本仓库根目录是 Django 组件。`examples/worker-api/` 保留演示的 API 逻辑、数据库 schema 和最小入口，托管演示的 React 展示页面、Sites 脚手架、部署绑定和运行数据不在仓库中。克隆代码不会复制线上服务。详见 [源码范围](docs/SOURCE_PROVENANCE.md)。
+[公开交互演示](https://nova-slider-captcha.mingyueshi.chatgpt.site)使用 Worker + D1 服务端；本仓库根目录是 Django 组件。`examples/worker-api/` 保留演示的 API 逻辑、数据库 schema 和最小入口，托管演示的 React 展示页面、Sites 脚手架、部署绑定和运行数据不在仓库中。克隆代码不会复制线上服务。详见 [源码范围](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/SOURCE_PROVENANCE.md)。
 
-## 0.2.0 的变化
+## 0.3.0 的变化（待发布）
 
-- 主要说明、安装、接入、安全与兼容文档改为中文
-- 前端文案集中到 `zh-CN`、`en` 字典，支持显式语言、动态切换和自定义文案；原有默认中文保持不变
-- 固定窗口计数改为数据库原子 GCRA 令牌桶：连续补充额度，不再于整分钟同时恢复全部额度
-- `429` 返回计算出的 `Retry-After` 与 `retryAfter`；新增迁移保守保留旧限流状态的冷却期
+当前源码为首次 PyPI 发布准备，**尚未上传 PyPI**。新增公开配置/API 与迁移，因此从 0.2.0 进入 0.3.0；本地构建和验证不代表远端 CI 或线上发布完成。
 
-未发布改进（版本号仍为 0.2.0）包括自定义 purpose、通用 Form/ModelForm 集成、响应几何驱动和基础业务日志，详见 [CHANGELOG](docs/CHANGELOG.md)。
+- 自定义 purpose、request-aware Form/ModelForm、前缀与 formset 字段、结构化业务日志
+- 有界的挑战 TTL / 尝试次数 / 容差设置；每个挑战持久化签发时策略，旧挑战保留原 5/4
+- 响应几何驱动；独立嵌入的暗色兜底、显式主题优先级与状态文字对比度修复
+- 明确的 Python/Django 配对 CI，构建 wheel/sdist 并运行安装包测试
+- 首次 Trusted Publishing 发布流程准备，版本/tag 检查后复用同一已验证构建物
 
-升级前请先阅读下方“从 0.1.0 升级”，不要直接让新旧限流代码同时运行。
+完整变化见 [CHANGELOG](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/CHANGELOG.md)，发布维护步骤见 [发布准备说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/RELEASING.md)。从 0.2.0 升级时执行迁移 0003；从 0.1.0 升级还需阅读下方的限流升级边界，不能并行运行新旧限流代码。
 
 ## 安装与本地试用
 
@@ -100,6 +101,22 @@ NOVA_SLIDER_PURPOSES = ["demo", "login", "contact", "profile_update"]
 仅接受非空的 list、tuple、set 或 frozenset，不能用字符串或字典代替。名称遵循 `[a-z][a-z0-9_:-]{0,31}`，首位为小写英文字母，后续可用小写字母、数字、下划线、冒号和连字符，总长不超过数据库的 32 字符。非法配置会产生系统检查 `E004`，HTTP 接口返回 `503 configuration_invalid`，出题服务抛出 `ValueError`，消费拒绝放行。每次调用读取当前配置，支持 `override_settings`；移除某个用途后，其未完成挑战和未消费凭证也会被拒绝。
 
 前端 `purpose="contact"` 只选择题目绑定用途。业务服务端必须固定 `purpose="contact"`，不能直接使用 POST 中的 purpose 决定受保护操作。`/captcha/submit` 始终只消费 `demo`，不能用它消费自定义用途。所有用途共享对应 action 的 IP/session 额度，增加或切换 purpose 不会获得新额度。
+
+## 挑战策略配置
+
+默认行为仍为 120 秒、最多 5 次尝试、±4 原图像素容差。可在宿主 settings.py 中配置：
+
+```python
+NOVA_SLIDER_CHALLENGE_TTL = 120  # 30–600 秒
+NOVA_SLIDER_MAX_ATTEMPTS = 5     # 1–20 次（成功验证也计一次）
+NOVA_SLIDER_TOLERANCE = 4        # 0–10 原图像素，0 为精确匹配
+```
+
+仅接受范围内的整数，拒绝 bool、字符串、浮点数、负值和超限值。系统检查错误 `E006` 会阻止正常启动检查；运行时 HTTP API 返回 `503 configuration_invalid`，直接 issue/verify 抛 ValueError，consume 拒绝放行。配置每次动态读取，支持 `override_settings`；错误配置修复前不会重新解释或扩大已有挑战策略。
+
+签发时，TTL 写入 `expires_at`，尝试上限和容差写入 Challenge 的 `max_attempts` / `tolerance` 快照。之后更改配置只影响新挑战，旧挑战继续按原策略校验，既不扩大也不缩小额度。迁移 `0003_challenge_policy` 将所有已有行填为原 5/4，不重置 attempts、过期时间或凭证状态。不要通过旧代码与新代码混跑来绕过快照；升级前停止旧写入，再迁移和恢复。回退删除快照字段会丢失在途策略，应先停写并排空在途挑战/凭证，再采用经审查的回退流程。
+
+配置能力不代表更强安全性。更长 TTL、更大次数或容差可能改善完成率，也增加猜测或自动解题的机会；按实际用户、入口限流与风险要求选择。TOKEN_TTL 仍固定 60 秒，不提供设置；图片固定 320×160 / 44，本轮不开放尺寸设置。prune 按已持久化 expires_at 清理，并保留足够覆盖固定 60 秒凭证的时间。
 
 ## 通用 Form 与 ModelForm
 
@@ -265,7 +282,7 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 
 图片为扁平 PNG data URL，不包含数字答案、图片种子或可直接读取缺口位置的向量结构。人和程序仍可以从图像像素推断位置，因此不声称答案能对视觉分析保密。
 
-`x` 是拼图块在原始图像中的左边坐标；默认 320×160、拼图块 44，范围 0–276，容差 ±4 像素。组件根据响应的 `width`、`height`、`pieceWidth` 计算范围、移动比例、ARIA 和图片宽高比，拒绝非数、零值或越界几何。交互手柄的 48px 由 CSS `--nsc-handle-size` 统一控制，与拼图尺寸独立。本轮未开放后端图片尺寸配置。缩放显示时应换算到原始坐标；`pieceY` 是公开值。挑战有效 120 秒，最多 5 次错误猜测；验证成功后凭证从服务端签发时起有效 60 秒。格式错误不扣拼图尝试次数，但计入验证码校验限流。
+`x` 是拼图块在原始图像中的左边坐标；默认 320×160、拼图块 44，范围 0–276，容差 ±4 像素。组件根据响应的 `width`、`height`、`pieceWidth` 计算范围、移动比例、ARIA 和图片宽高比，拒绝非数、零值或越界几何。交互手柄的 48px 由 CSS `--nsc-handle-size` 统一控制，与拼图尺寸独立。本轮未开放后端图片尺寸配置。缩放显示时应换算到原始坐标；`pieceY` 是公开值。挑战有效 120 秒，最多 5 次错误猜测；验证成功后凭证从服务端签发时起有效 60 秒。前述挑战 TTL、次数及容差为默认值，可在上方范围内配置，签发后按快照执行。格式错误不扣拼图尝试次数，但计入验证码校验限流。
 
 常见错误代码包括 `init_required`、`rate_limited`、`invalid_position`、`invalid_challenge`、`expired`、`already_verified`、`incorrect`、`attempts_exhausted`、`invalid_token`、`rate_limit_unavailable`。具体后端还可能返回通用 `unavailable`。Django 中间件的 CSRF 拒绝可以是 HTML 403，客户端已做非 JSON 失败处理。
 
@@ -315,6 +332,12 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 `SECRET_KEY` 轮换会使已有挑战与未消费凭证失效，也会改变 IP/session 限流身份，可能产生新额度。本组件的自定义 `salted_hmac` 不尝试 `SECRET_KEY_FALLBACKS`。应协调所有实例的密钥切换、提示用户重新完成验证码，并在轮换窗口保留独立的入口/账号限流；旧状态仍按上述安全条件清理，不能为轮换直接清空限流表。
 
+## 主题与窄容器
+
+组件优先使用宿主语义变量（如 `--link-fg`、`--body-quiet-color`、`--error-fg`）及已有面板变量；没有宿主变量时提供独立明/暗色兜底。`html[data-theme="light"|"dark"]` 和 Nova 显式 mode 类优先于操作系统偏好；未指定或 auto 时跟随 `prefers-color-scheme`。宿主仍可在组件上覆盖 `--nsc-*`，例如 `--nsc-accent`、`--nsc-success`、`--nsc-error`、`--nsc-panel` 和 `--nsc-handle-size`。
+
+成功文案采用独立语义色及不透明深色背景，避免装饰 mint 色或透明图像背景导致低对比度。自定义颜色需要重新检查文字与实际背景的对比度。布局继续使用换行与流式尺寸；窄容器减少轨道文案横向留白，长文案允许换行。组件没有装饰性动画，不为无效果的 reduced-motion 查询增加额外规则。
+
 ## 基础业务日志
 
 Django app 使用命名 logger `nova_slider_captcha`；不添加第三方依赖。所有记录的消息固定为 `CAPTCHA business event`，排障数据位于 `extra` 字段 `captcha_event`、`captcha_reason`、`captcha_status`、`captcha_purpose`、`captcha_action`。purpose 只记录已配置允许的名字，其他情况为 `unknown`。机器原因码包括 `database_unavailable`、`configuration_invalid`、`invalid_proof`、`binding_missing`、`proof_rejected`、`rate_limited`；`proof_rejected` 不区分过期、重放、用途或会话不匹配，避免泄露凭证状态。
@@ -355,15 +378,15 @@ LOGGING = {
 - 生产必须设置 HTTPS、安全的 session/CSRF Cookie、强密钥、可信 Host/代理和独立登录/账号限流，必要时配合 MFA。
 - CSP 需允许同源脚本、样式和连接，以及 `img-src 'self' data:`；不能关闭 CSRF 或相信客户端的成功布尔值。
 - 不记录原始凭证、session 绑定秘密、答案位置或鼠标轨迹；不要把挑战表暴露在普通管理后台。
-- 拼图仅提供辅助防滥用成本，可能被图像匹配、视觉模型或人工解题绕过，不保证商业风控或生产抗滥用能力。
+- 拼图仅提供辅助防滥用成本，可能被图像匹配、视觉模型或人工解题绕过，不保证商业风控或生产抗滥用能力。当前保留单一 mask；随机形状最多提高对固定模板的适配成本，不能阻止通用像素匹配或视觉识别，不作为发布前置条件。
 - 键盘可以调节和提交，但视觉拼图不等于盲人可独立使用。接入方须提供同等安全的非视觉替代流程并做用户测试，不能按屏幕阅读器检测、URL 参数或“无障碍跳过”按钮免验证。
 - PostgreSQL/MySQL、生产压力、多主机代理部署、真机触控和辅助技术，仅在对应版本的验证报告确有记录时才视为已测。
 
 ## 验证与兼容
 
-项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](docs/README.md)。
+项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/README.md)。
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
 
 ```sh
 python manage.py check
@@ -377,6 +400,6 @@ npm run test:worker
 
 Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。完整矩阵脚本要求显式提供精确运行时、Nova 源码路径及已构建 wheel；它不是适用于所有平台的一键 CI。
 
-需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](.github/workflows/tests.yml) 在 push、pull request 和手动触发时检查 Django、迁移漂移、完整测试及组件/DOM/Worker 测试；本地新增配置不代表远端 CI 已运行或通过。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
+需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/.github/workflows/tests.yml) 使用 Python/Django 配对矩阵 3.10/5.2.17、3.12/5.2.17、3.12/6.1.2、3.13/6.1.2，分别验证 source 与同一构建 wheel，并检查 sdist、元数据、迁移漂移、完整测试及组件/DOM/Worker。runner 临时路径放在合法的 step.env 上下文。新增配置与本地通过不代表远端 CI 通过；本轮结果见 [发布准备自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-release-implementation.md)。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
 
-代码使用 MIT 许可证，原始法律文本保留在 [LICENSE](LICENSE)，不翻译其法律条款。
+代码使用 MIT 许可证，原始法律文本保留在 [LICENSE](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/LICENSE)，不翻译其法律条款。

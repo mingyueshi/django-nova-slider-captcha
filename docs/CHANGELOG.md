@@ -1,8 +1,17 @@
 # Changelog
 
-## Unreleased
+## Unreleased — 0.3.0（待首次 PyPI 发布）
 
-以下内容尚未单独发布；Python 包与前端开发包版本号仍为 **0.2.0**。源码已修改或本地测试通过不等于已发布、远端 CI 通过或线上部署完成。
+Python 包与前端开发包版本同步为 **0.3.0**。以下变化尚未发布到 PyPI；源码已修改或本地测试通过不等于远端 CI 通过、线上部署或已上传。
+
+### 发布准备与策略快照（2026-10-26）
+
+- CI 改为明确配对：3.10/5.2.17、3.12/5.2.17、3.12/6.1.2、3.13/6.1.2，实际安装 matrix.django。修复 job.env 非法引用 runner.temp 的解析问题，临时数据库/DOM 输出使用 step.env，source/wheel 数据库区分两维。
+- 构建 wheel/sdist、twine check、逐文件检查模板/静态/翻译/迁移完整性；每格 source 与同一 wheel 完整测试，保留 DOM/Worker。
+- 新增 NOVA_SLIDER_CHALLENGE_TTL（30–600）、MAX_ATTEMPTS（1–20）、TOLERANCE（0–10），默认 120/5/4，动态严格整数检查与失败关闭。Challenge 持久化每题 max_attempts/tolerance，迁移 0003 旧行固定为 5/4；TTL 沿用 expires_at。TOKEN_TTL 固定 60，图片尺寸固定。
+- 独立嵌入提供暗色兜底，Django/Nova 显式主题优先于 OS；语义 link/error 优先于装饰色，成功采用独立高对比色与不透明背景，缩窄容器文案留白。
+- 更新 0.3.0 元数据、真实 repository URLs 与 PyPI 可导航 README 链接；新增最小 Trusted Publishing 工作流，仅正式 Release 触发，版本/tag 一致，测试后上传同一构建物，只有 pypi job 获得 OIDC 权限。补首次 pending publisher 配置说明，本轮不配置账号、不上传、不推送、不打 tag。
+- 保留单一 mask，说明随机形状收益边界，不承诺提升抗自动解题能力。
 
 ### 通用接入与排障（2026-10-26）
 

@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "scope": "Local release preparation only; user explicitly deferred PyPI upload",
+  "baseline": "2aca457",
+  "version": "0.3.0 pending release",
+  "implementation_thread": "01a17598-dca2-7783-ad1e-27713d10800a",
+  "implementation_model": "gpt-6.1-sol",
+  "matrix": [
+    {
+      "python": "3.10.20",
+      "django": "5.2.17",
+      "source_tests": 110,
+      "wheel_tests": 110
+    },
+    {
+      "python": "3.12.14",
+      "django": "5.2.17",
+      "source_tests": 110,
+      "wheel_tests": 110
+    },
+    {
+      "python": "3.12.14",
+      "django": "6.1.2",
+      "source_tests": 110,
+      "wheel_tests": 110
+    },
+    {
+      "python": "3.13.12",
+      "django": "6.1.2",
+      "source_tests": 110,
+      "wheel_tests": 110
+    }
+  ],
+  "component_tests": 40,
+  "dom_checks": 12,
+  "worker_tests": 25,
+  "independent_policy_checks": 5,
+  "independent_release_checks": 5,
+  "browser_cases": 11,
+  "min_status_contrast": 5.413410608075362,
+  "min_overlay_contrast": 4.653001988181565,
+  "browser_host_css": "Django 5.2.17 and local django-nova-admin theme.css/tokens.css",
+  "actionlint": "1.7.12; expression/action validation; shellcheck/pyflakes disabled",
+  "runtime_files_in_wheel_and_sdist": 29,
+  "remote_ci_current_revision": "not run",
+  "previous_remote_run": "https://github.com/mingyueshi/django-nova-slider-captcha/actions/runs/40251422456",
+  "pypi_upload": false,
+  "commit_push_tag": false
+}

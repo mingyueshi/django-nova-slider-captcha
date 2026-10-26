@@ -1,0 +1,22 @@
+COMMAND /tmp/nova-slider-release-review-20261026/py313/bin/python -c import pathlib,nova_slider_captcha,django; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(p); print(nova_slider_captcha.__version__,django.get_version()); assert "site-packages" in p.parts
+/private/tmp/nova-slider-release-review-20261026/py313/lib/python3.13/site-packages/nova_slider_captcha/__init__.py
+0.3.0 6.1.2
+COMMAND /tmp/nova-slider-release-review-20261026/py313/bin/python -m django check
+System check identified no issues (0 silenced).
+COMMAND /tmp/nova-slider-release-review-20261026/py313/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+COMMAND /tmp/nova-slider-release-review-20261026/py313/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+..............................................................................................................
+----------------------------------------------------------------------
+Ran 110 tests in 7.003s
+
+OK
+Destroying test database for alias 'default'...
+Found 110 test(s).
+System check identified no issues (0 silenced).
+COMMAND uv pip check --python /tmp/nova-slider-release-review-20261026/py313/bin/python
+Using Python 3.13.12 environment at: /tmp/nova-slider-release-review-20261026/py313
+Checked 31 packages in 0.95ms
+All installed packages are compatible

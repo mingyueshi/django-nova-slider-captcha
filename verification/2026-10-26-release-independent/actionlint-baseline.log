@@ -1,0 +1,12 @@
+../../../../../tmp/nova-slider-release-review-20261026/baseline-tests.yml:22:25: context "runner" is not allowed here. available contexts are "github", "inputs", "matrix", "needs", "secrets", "strategy", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+22 |       NOVA_TEST_DB: ${{ runner.temp }}/nova-django-${{ matrix.python }}.sqlite3
+   |                         ^~~~~~~~~~~
+../../../../../tmp/nova-slider-release-review-20261026/baseline-tests.yml:40:25: context "runner" is not allowed here. available contexts are "github", "inputs", "matrix", "needs", "secrets", "strategy", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+40 |       NOVA_TEST_DB: ${{ runner.temp }}/nova-web.sqlite3
+   |                         ^~~~~~~~~~~
+../../../../../tmp/nova-slider-release-review-20261026/baseline-tests.yml:41:28: context "runner" is not allowed here. available contexts are "github", "inputs", "matrix", "needs", "secrets", "strategy", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+41 |       NOVA_DOM_REPORT: ${{ runner.temp }}/nova-dom-results.json
+   |                            ^~~~~~~~~~~

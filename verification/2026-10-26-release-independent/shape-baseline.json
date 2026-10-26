@@ -1,0 +1,12 @@
+{
+  "status": "completed",
+  "samples": 24,
+  "exact_coordinate_matches": 24,
+  "mean_match_ms": 10.5834131248533,
+  "method": "Use response piece alpha contour and public pieceY; correlate the renderer's fixed highlight border across the response background. No fixed shape template is needed.",
+  "limitations": [
+    "Small local baseline on current procedural images only.",
+    "This does not measure every solver or a proposed shape-library implementation.",
+    "No public endpoint was requested."
+  ]
+}

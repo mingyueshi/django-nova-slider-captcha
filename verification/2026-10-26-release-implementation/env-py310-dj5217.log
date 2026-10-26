@@ -1,0 +1,15 @@
+Using CPython 3.10.20 interpreter at: /tmp/nova-slider-implementation-20261026-py310/bin/python
+Creating virtual environment at: /tmp/nova-slider-release-impl-py310-dj5217-20261026
+Activate with: source /tmp/nova-slider-release-impl-py310-dj5217-20261026/bin/activate
+Using Python 3.10.20 environment at: /tmp/nova-slider-release-impl-py310-dj5217-20261026
+WARN Retry attempt #0. Sleeping 1.27312326s before the next attempt
+Resolved 5 packages in 18.52s
+Downloading pillow (4.5MiB)
+ Downloaded pillow
+Prepared 1 package in 23.76s
+Installed 5 packages in 76ms
+ + asgiref==3.12.1
+ + django==5.2.17
+ + pillow==12.2.0
+ + sqlparse==0.6.0
+ + typing-extensions==4.16.0

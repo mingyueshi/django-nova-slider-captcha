@@ -1,0 +1,22 @@
+COMMAND /tmp/nova-slider-review-20261026/bin/python -c import sys,django,PIL; print(sys.version); print("Django",django.get_version(),"Pillow",PIL.__version__)
+3.12.14 (main, Oct 10 2026, 08:47:40) [Clang 21.0.0 (clang-2100.3.34.2)]
+Django 5.2.17 Pillow 12.2.0
+COMMAND /tmp/nova-slider-review-20261026/bin/python -m django check
+System check identified no issues (0 silenced).
+COMMAND /tmp/nova-slider-review-20261026/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+COMMAND /tmp/nova-slider-review-20261026/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+..............................................................................................................
+----------------------------------------------------------------------
+Ran 110 tests in 8.060s
+
+OK
+Destroying test database for alias 'default'...
+Found 110 test(s).
+System check identified no issues (0 silenced).
+COMMAND uv pip check --python /tmp/nova-slider-review-20261026/bin/python
+Using Python 3.12.14 environment at: /tmp/nova-slider-review-20261026
+Checked 4 packages in 0.39ms
+All installed packages are compatible

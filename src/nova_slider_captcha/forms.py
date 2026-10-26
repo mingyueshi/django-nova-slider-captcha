@@ -5,7 +5,7 @@ from django.db import DatabaseError, router, transaction
 from django.urls import reverse
 from django.utils.translation import get_language, gettext_lazy as _
 
-from .conf import purposes, valid_purpose
+from .conf import challenge_policy, purposes, valid_purpose
 from .models import Challenge
 from .services import consume, session_binding
 
@@ -73,6 +73,7 @@ class SliderCaptchaFormMixin:
                 field._captcha_managed = True
 
     def _captcha_context(self):
+        challenge_policy()
         fields = [(name, field) for name, field in self.fields.items() if isinstance(field, SliderCaptchaField)]
         allowed = purposes()
         if not fields or self.request is None or not session_binding(self.request):

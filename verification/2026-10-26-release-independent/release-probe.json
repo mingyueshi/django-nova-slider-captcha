@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checks": [
+    "reject mismatched tag v0.3.1",
+    "reject mismatched tag v0.3.0rc1",
+    "reject mismatched tag 0.3.0",
+    "reject wheel missing policy migration",
+    "release-only gate, four version pairs, least-privilege upload and same artifact across tests/publication"
+  ],
+  "workflow_sha256": {
+    ".github/workflows/publish.yml": "a887dee449e472b65eb89f683de5c907584afd50eb80a7ca76cb13178de2567d",
+    ".github/workflows/tests.yml": "c65c4eb428633c27eeda9511ef14442f1a2d92fd50dc365547a3916c31b55325",
+    "scripts/check_release.py": "e53eedf09db284a62e8c96846b1d697cee4d8bb6d1d34de5ccfb5f403648f28e"
+  },
+  "limitations": [
+    "Static and local checks only; no GitHub runner or PyPI OIDC exchange was invoked."
+  ]
+}

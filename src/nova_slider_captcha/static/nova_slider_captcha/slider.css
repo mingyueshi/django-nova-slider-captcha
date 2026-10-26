@@ -1,13 +1,73 @@
 nova-slider {
   display: block;
   width: 100%;
+  min-width: 0;
   --nsc-handle-size: 48px;
-  --nsc-accent: var(--accent, var(--link-fg, #1d4ed8));
-  --nsc-muted: var(--muted, var(--body-quiet-color, #667389));
-  --nsc-panel: var(--panel2, var(--darkened-bg, #f7f8fc));
-  --nsc-line: var(--line, var(--border-color, #e7eaf2));
-  --nsc-text: var(--text, var(--body-fg, #23283a));
+  --nsc-fallback-accent: #1d4ed8;
+  --nsc-fallback-muted: #526078;
+  --nsc-fallback-panel: #f7f8fc;
+  --nsc-fallback-line: #c5cede;
+  --nsc-fallback-text: #23283a;
+  --nsc-fallback-handle: #fff;
+  --nsc-fallback-success: #176348;
+  --nsc-fallback-error: #b1223c;
+  /* Semantic link/error tokens precede Django's decorative yellow --accent. */
+  --nsc-accent: var(--link-fg, var(--accent, var(--nsc-fallback-accent)));
+  --nsc-muted: var(--body-quiet-color, var(--muted, var(--nsc-fallback-muted)));
+  --nsc-panel: var(--panel2, var(--darkened-bg, var(--nsc-fallback-panel)));
+  --nsc-line: var(--line, var(--border-color, var(--nsc-fallback-line)));
+  --nsc-text: var(--text, var(--body-fg, var(--nsc-fallback-text)));
+  --nsc-handle-bg: var(--panel, var(--nova-panel, var(--body-bg, var(--nsc-fallback-handle))));
+  --nsc-success: var(--nsc-fallback-success);
+  --nsc-error: var(--error-fg, var(--danger, var(--nsc-fallback-error)));
+  --nsc-success-panel: #164b3a;
+  --nsc-success-text: #fff;
 }
+/* OS preference supplies standalone fallbacks, never overrides host tokens. */
+@media (prefers-color-scheme: dark) {
+  :where(:root:not([data-theme="light"])) nova-slider {
+    --nsc-fallback-accent: #a8c7ff;
+    --nsc-fallback-muted: #b4c1d6;
+    --nsc-fallback-panel: #253246;
+    --nsc-fallback-line: #53647e;
+    --nsc-fallback-text: #e7edf5;
+    --nsc-fallback-handle: #1b2534;
+    --nsc-fallback-success: #78e0b4;
+    --nsc-fallback-error: #ff9aaf;
+  }
+}
+:where(:root[data-theme="dark"]) nova-slider {
+  --nsc-fallback-accent: #a8c7ff;
+  --nsc-fallback-muted: #b4c1d6;
+  --nsc-fallback-panel: #253246;
+  --nsc-fallback-line: #53647e;
+  --nsc-fallback-text: #e7edf5;
+  --nsc-fallback-handle: #1b2534;
+  --nsc-fallback-success: #78e0b4;
+  --nsc-fallback-error: #ff9aaf;
+}
+/* Explicit Django/Nova appearance wins over OS defaults. */
+:where(:root[data-theme="light"], .nova-mode-light) nova-slider {
+  --nsc-fallback-accent: #1d4ed8;
+  --nsc-fallback-muted: #526078;
+  --nsc-fallback-panel: #f7f8fc;
+  --nsc-fallback-line: #c5cede;
+  --nsc-fallback-text: #23283a;
+  --nsc-fallback-handle: #fff;
+  --nsc-fallback-success: #176348;
+  --nsc-fallback-error: #b1223c;
+}
+:where(.nova-mode-dark) nova-slider {
+  --nsc-fallback-accent: #a8c7ff;
+  --nsc-fallback-muted: #b4c1d6;
+  --nsc-fallback-panel: #253246;
+  --nsc-fallback-line: #53647e;
+  --nsc-fallback-text: #e7edf5;
+  --nsc-fallback-handle: #1b2534;
+  --nsc-fallback-success: #78e0b4;
+  --nsc-fallback-error: #ff9aaf;
+}
+
 .nsc {
   color: var(--nsc-text);
   overflow-wrap: anywhere;
@@ -70,7 +130,7 @@ nova-slider {
   position: relative;
   display: block;
   min-height: calc(var(--nsc-handle-size) - 2px);
-  padding: 12px calc(var(--nsc-handle-size) + 4px);
+  padding: 12px min(calc(var(--nsc-handle-size) + 4px), 20%);
   text-align: center;
   line-height: 1.6;
   font-size: 12px;
@@ -114,7 +174,7 @@ nova-slider {
   height: var(--nsc-handle-size);
   border: 1px solid var(--nsc-line);
   border-radius: 8px;
-  background: var(--panel, var(--nova-panel, var(--body-bg, #fff)));
+  background: var(--nsc-handle-bg);
   display: grid;
   place-items: center;
   font-size: 23px;
@@ -167,27 +227,28 @@ nova-slider {
   line-height: 1.8;
 }
 .nsc[data-state="success"] .nsc-overlay {
-  background: #163b3294;
-  color: #fff;
-  backdrop-filter: blur(3px);
+  background: var(--nsc-success-panel);
+  color: var(--nsc-success-text);
   font-size: 20px;
   font-weight: 600;
 }
 .nsc[data-state="success"] .nsc-status {
   min-width: 0;
   flex: 1 1 160px;
-  color: var(--mint, #208660);
+  color: var(--nsc-success);
 }
 .nsc[data-state="error"] .nsc-status,
 .nsc[data-state="expired"] .nsc-status {
   min-width: 0;
   flex: 1 1 160px;
-  color: var(--danger, var(--error-fg, #b1223c));
+  color: var(--nsc-error);
 }
 .nsc[data-state="checking"] .nsc-handle {
   opacity: 0.6;
 }
 .nsc[data-state="error"] .nsc-overlay,
 .nsc[data-state="expired"] .nsc-overlay {
-  background: color-mix(in srgb, var(--nsc-panel) 93%, transparent);
+  /* Opaque: a bright puzzle must not lower host error-text contrast. */
+  background: var(--nsc-panel);
+  color: var(--nsc-error);
 }

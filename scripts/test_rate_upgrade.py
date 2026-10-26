@@ -44,7 +44,10 @@ with tempfile.TemporaryDirectory(prefix="nova-slider-upgrade-") as directory:
     before.pop("_state")
     executor = MigrationExecutor(connection)
     executor.migrate(new_target)
-    from nova_slider_captcha.models import Challenge, RateBucket, RateLimitState
+    # This regression intentionally stops at 0002. Use its historical Challenge
+    # schema rather than the current model (which may have later snapshot fields).
+    Challenge = executor.loader.project_state(new_target).apps.get_model(app, "Challenge")
+    from nova_slider_captcha.models import RateBucket, RateLimitState
     migrated = RateLimitState.objects.get()
     assert migrated.key == f"issue:ip:{ip_hash}"
     assert migrated.tat_us == 0

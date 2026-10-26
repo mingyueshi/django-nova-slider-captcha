@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks": [
+    "0002 to current migration preserves old data and literal 5/4 policy despite new 20/10 settings",
+    "old tolerance stays 4 and old fifth attempt exhausts despite relaxed current policy",
+    "new strict policy and 600-second lifetime survive later settings changes; token remains 60-second and one-use",
+    "all three settings reject bool/string/non-integer/out-of-range and accept both boundaries",
+    "challenge expires at exact configured timestamp"
+  ]
+}

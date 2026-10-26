@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 
 from . import services
-from .conf import WIDTH, PIECE_SIZE, purposes, valid_purpose
+from .conf import WIDTH, PIECE_SIZE, challenge_policy, purposes, valid_purpose
 from .events import event, rate_denied
 
 
@@ -74,6 +74,7 @@ def json_post(view):
         if not services.session_binding(request):
             return _failure("init_required", 409)
         try:
+            challenge_policy()
             purposes()
             return view(request, data)
         except ValueError:

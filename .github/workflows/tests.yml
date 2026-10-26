@@ -4,22 +4,51 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
 jobs:
-  django:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check --strict dist/*
+      - run: python scripts/check_release.py --dist dist
+      - uses: actions/upload-artifact@v6
+        with:
+          name: python-distributions
+          path: dist/*
+          if-no-files-found: error
+
+  django:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.12']
+        include:
+          - python: '3.10'
+            django: '5.2.17'
+          - python: '3.12'
+            django: '5.2.17'
+          - python: '3.12'
+            django: '6.1.2'
+          - python: '3.13'
+            django: '6.1.2'
     env:
       DJANGO_SETTINGS_MODULE: tests.settings
-      PYTHONPATH: src:.
-      NOVA_TEST_DB: ${{ runner.temp }}/nova-django-${{ matrix.python }}.sqlite3
+      DJANGO_VERSION: ${{ matrix.django }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -27,18 +56,38 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
-      - run: python -m pip install -e . 'Django==5.2.17'
+      - uses: actions/download-artifact@v6
+        with:
+          name: python-distributions
+          path: dist/
+      - run: python -m pip install -e . "Django==$DJANGO_VERSION"
       - run: python -m pip check
-      - run: python -m django check
-      - run: python -m django makemigrations nova_slider_captcha --check --dry-run
-      - run: python -m django test tests --noinput -v 1
+      - name: Source checks and complete tests
+        env:
+          PYTHONPATH: src:.
+          NOVA_TEST_DB: ${{ runner.temp }}/nova-source-${{ matrix.python }}-${{ matrix.django }}.sqlite3
+        run: |
+          python -m django check
+          python -m django makemigrations nova_slider_captcha --check --dry-run
+          python -m django test tests --noinput -v 1
+      - name: Install the built wheel
+        run: |
+          python -m pip uninstall -y nova-slider-captcha
+          python -m pip install --no-deps dist/*.whl
+          python -m pip check
+      - name: Wheel checks and complete tests
+        env:
+          PYTHONPATH: .
+          NOVA_TEST_DB: ${{ runner.temp }}/nova-wheel-${{ matrix.python }}-${{ matrix.django }}.sqlite3
+        run: |
+          python -c "import pathlib,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(p); assert not p.is_relative_to(pathlib.Path('src').resolve())"
+          python -m django check
+          python -m django makemigrations nova_slider_captcha --check --dry-run
+          python -m django test tests --noinput -v 1
 
   web:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      NOVA_TEST_DB: ${{ runner.temp }}/nova-web.sqlite3
-      NOVA_DOM_REPORT: ${{ runner.temp }}/nova-dom-results.json
     steps:
       - uses: actions/checkout@v5
         with:
@@ -54,4 +103,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run test:dom
+        env:
+          NOVA_TEST_DB: ${{ runner.temp }}/nova-web.sqlite3
+          NOVA_DOM_REPORT: ${{ runner.temp }}/nova-dom-results.json
       - run: npm run test:worker

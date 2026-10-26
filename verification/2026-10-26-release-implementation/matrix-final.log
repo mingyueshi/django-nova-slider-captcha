@@ -1,0 +1,4 @@
+{"python": "3.12.14", "django": "5.2.17", "profiles": [{"mode": "source", "tests": 110, "status": "passed"}, {"mode": "wheel", "tests": 110, "status": "passed"}]}
+{"python": "3.10.20", "django": "5.2.17", "profiles": [{"mode": "source", "tests": 110, "status": "passed"}, {"mode": "wheel", "tests": 110, "status": "passed"}]}
+{"python": "3.13.12", "django": "6.1.2", "profiles": [{"mode": "source", "tests": 110, "status": "passed"}, {"mode": "wheel", "tests": 110, "status": "passed"}]}
+{"python": "3.12.14", "django": "6.1.2", "profiles": [{"mode": "source", "tests": 110, "status": "passed"}, {"mode": "wheel", "tests": 110, "status": "passed"}]}

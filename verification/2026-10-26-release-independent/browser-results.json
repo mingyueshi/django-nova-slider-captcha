@@ -1,0 +1,483 @@
+{
+  "status": "passed",
+  "cases": [
+    {
+      "system": "dark",
+      "background": "rgb(27, 37, 52)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(180, 193, 214)",
+          "contrast": 8.479950268612196,
+          "handle": "rgb(27, 37, 52)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 9.641223952061107,
+          "handle": "rgb(27, 37, 52)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(255, 154, 175)",
+          "contrast": 7.71101191325352,
+          "handle": "rgb(27, 37, 52)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 6.463987539154874,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=standalone&mode=auto&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(255, 255, 255)",
+      "panelWidth": 160,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(82, 96, 120)",
+          "contrast": 6.357607659477405,
+          "handle": "rgb(255, 255, 255)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(23, 99, 72)",
+          "contrast": 7.204750197304639,
+          "handle": "rgb(255, 255, 255)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(177, 34, 60)",
+          "contrast": 6.638254594332529,
+          "handle": "rgb(255, 255, 255)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 6.254957673830102,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=standalone&mode=light&width=160&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(255, 255, 255)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(102, 102, 102)",
+          "contrast": 5.74183648145415,
+          "handle": "rgb(255, 255, 255)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(248, 248, 248)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(23, 99, 72)",
+          "contrast": 7.204750197304639,
+          "handle": "rgb(255, 255, 255)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(248, 248, 248)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(186, 33, 33)",
+          "contrast": 6.311377510104498,
+          "handle": "rgb(255, 255, 255)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 5.942827496333712,
+          "track": "rgb(248, 248, 248)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=django&mode=light&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(18, 18, 18)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(208, 208, 208)",
+          "contrast": 12.145786087437893,
+          "handle": "rgb(18, 18, 18)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 11.704020000925174,
+          "handle": "rgb(18, 18, 18)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(227, 95, 95)",
+          "contrast": 5.413410608075362,
+          "handle": "rgb(18, 18, 18)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 4.653001988181565,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=django&mode=dark&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(255, 255, 255)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(90, 102, 124)",
+          "contrast": 5.790982668890909,
+          "handle": "rgb(255, 255, 255)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(238, 241, 247)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(23, 99, 72)",
+          "contrast": 7.204750197304639,
+          "handle": "rgb(255, 255, 255)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(238, 241, 247)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(177, 34, 60)",
+          "contrast": 6.638254594332529,
+          "handle": "rgb(255, 255, 255)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 5.867150962229363,
+          "track": "rgb(238, 241, 247)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=nova&mode=light&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(19, 26, 42)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(155, 168, 194)",
+          "contrast": 7.257766520112921,
+          "handle": "rgb(19, 26, 42)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 10.852959845332036,
+          "handle": "rgb(19, 26, 42)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(255, 145, 166)",
+          "contrast": 8.150344921796185,
+          "handle": "rgb(19, 26, 42)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 8.373887388425878,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=nova&mode=dark&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "dark",
+      "background": "rgb(19, 26, 42)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(155, 168, 194)",
+          "contrast": 7.257766520112921,
+          "handle": "rgb(19, 26, 42)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 10.852959845332036,
+          "handle": "rgb(19, 26, 42)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(255, 145, 166)",
+          "contrast": 8.150344921796185,
+          "handle": "rgb(19, 26, 42)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 8.373887388425878,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=nova&mode=auto&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "light",
+      "background": "rgb(255, 255, 255)",
+      "panelWidth": 240,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(82, 96, 120)",
+          "contrast": 6.357607659477405,
+          "handle": "rgb(255, 255, 255)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(23, 99, 72)",
+          "contrast": 7.204750197304639,
+          "handle": "rgb(255, 255, 255)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(177, 34, 60)",
+          "contrast": 6.638254594332529,
+          "handle": "rgb(255, 255, 255)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 6.254957673830102,
+          "track": "rgb(247, 248, 252)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=standalone&mode=auto&width=240&long=1",
+      "width": 320
+    },
+    {
+      "system": "light",
+      "background": "rgb(27, 37, 52)",
+      "panelWidth": 160,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(180, 193, 214)",
+          "contrast": 8.479950268612196,
+          "handle": "rgb(27, 37, 52)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 9.641223952061107,
+          "handle": "rgb(27, 37, 52)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(255, 154, 175)",
+          "contrast": 7.71101191325352,
+          "handle": "rgb(27, 37, 52)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 6.463987539154874,
+          "track": "rgb(37, 50, 70)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=standalone&mode=dark&width=160&long=1",
+      "width": 320
+    },
+    {
+      "system": "light",
+      "background": "rgb(18, 18, 18)",
+      "panelWidth": 160,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(208, 208, 208)",
+          "contrast": 12.145786087437893,
+          "handle": "rgb(18, 18, 18)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 11.704020000925174,
+          "handle": "rgb(18, 18, 18)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(227, 95, 95)",
+          "contrast": 5.413410608075362,
+          "handle": "rgb(18, 18, 18)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 4.653001988181565,
+          "track": "rgb(33, 33, 33)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=django&mode=dark&width=160&long=1",
+      "width": 320
+    },
+    {
+      "system": "light",
+      "background": "rgb(19, 26, 42)",
+      "panelWidth": 160,
+      "rows": [
+        {
+          "animation": "none",
+          "color": "rgb(155, 168, 194)",
+          "contrast": 7.257766520112921,
+          "handle": "rgb(19, 26, 42)",
+          "id": "ready",
+          "overflow": false,
+          "overlayContrast": null,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(120, 224, 180)",
+          "contrast": 10.852959845332036,
+          "handle": "rgb(19, 26, 42)",
+          "id": "success",
+          "overflow": false,
+          "overlayContrast": 9.9921818202502,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        },
+        {
+          "animation": "none",
+          "color": "rgb(255, 145, 166)",
+          "contrast": 8.150344921796185,
+          "handle": "rgb(19, 26, 42)",
+          "id": "error",
+          "overflow": false,
+          "overlayContrast": 8.373887388425878,
+          "track": "rgb(16, 23, 41)",
+          "transition": "0s"
+        }
+      ],
+      "scrollWidth": 320,
+      "url": "http://127.0.0.1:8877/?host=nova&mode=dark&width=160&long=1",
+      "width": 320
+    }
+  ],
+  "limitations": [
+    "Component is real; HTTP responses and rendered states are local fixtures.",
+    "Actual host CSS is loaded; no live Admin authentication workflow.",
+    "Contrast ratios cover these defaults; custom host tokens require their own checks."
+  ]
+}

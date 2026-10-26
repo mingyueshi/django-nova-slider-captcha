@@ -1,0 +1,8 @@
+==> Downloading Homebrew API data
+✔︎ JSON API packages.arm64_golden_gate.jws.json
+==> Fetching actionlint from homebrew/core
+✔︎ Bottle actionlint (1.7.12)
+✘ Bottle Manifest actionlint (1.7.12)
+Error: Failed to download resource "actionlint (1.7.12)"
+Download failed: https://ghcr.io/v2/homebrew/core/actionlint/manifests/1.7.12-1
+curl: (35) LibreSSL SSL_connect: SSL_ERROR_SYSCALL in connection to ghcr.io:443

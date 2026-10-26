@@ -1,0 +1,54 @@
+name: Publish to PyPI
+
+# No PR, push or manual-dispatch publication. Publish a reviewed stable Release.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pypi-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    if: ${{ !github.event.release.prerelease && !github.event.release.draft && startsWith(github.event.release.tag_name, 'v') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Require stable tag and matching metadata
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: python scripts/check_release.py --tag "$RELEASE_TAG"
+
+  verify:
+    needs: version
+    uses: ./.github/workflows/tests.yml
+    permissions:
+      contents: read
+
+  publish:
+    needs: [version, verify]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/nova-slider-captcha
+    permissions:
+      id-token: write
+    steps:
+      # Download the same immutable artifact used by every wheel test; no build,
+      # source checkout, package installation or arbitrary scripts in this job.
+      - uses: actions/download-artifact@v6
+        with:
+          name: python-distributions
+          path: dist/
+      - name: Publish verified distributions using Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@release/v1

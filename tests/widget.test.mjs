@@ -790,3 +790,49 @@ test("two widgets submit distinct configurable hidden field names safely", async
   assert.equal(c.w.document.querySelectorAll("x").length, 0);
   cleanup(c);
 });
+
+test("theme fallback contracts retain explicit appearance and semantic host overrides", async () => {
+  const css = readFileSync(new URL("../src/nova_slider_captcha/static/nova_slider_captcha/slider.css", import.meta.url), "utf8");
+  assert.match(css, /@media\s*\(prefers-color-scheme:\s*dark\)/);
+  assert.match(css, /:root:not\(\[data-theme="light"\]\)/);
+  assert.match(css, /:root\[data-theme="dark"\]/);
+  assert.match(css, /:root\[data-theme="light"\], \.nova-mode-light/);
+  assert.match(css, /:where\(\.nova-mode-dark\)/);
+  assert.match(css, /--nsc-accent:\s*var\(--link-fg,\s*var\(--accent,/);
+  assert.match(css, /--nsc-error:\s*var\(--error-fg,\s*var\(--danger,/);
+  assert.doesNotMatch(css, /color:\s*var\(--mint/);
+  assert.match(css, /\.nsc\[data-state="expired"\] \.nsc-overlay\s*\{[^}]*background:\s*var\(--nsc-panel\);[^}]*color:\s*var\(--nsc-error\);/);
+  const c = await setup();
+  const style = c.w.document.createElement("style");
+  style.textContent = css;
+  c.w.document.head.append(style);
+  c.widget.style.setProperty("--nsc-success", "#123456");
+  assert.equal(c.w.getComputedStyle(c.widget).getPropertyValue("--nsc-success"), "#123456");
+  cleanup(c);
+});
+
+test("default light and dark state palettes meet text contrast on fallback surfaces", () => {
+  const css = readFileSync(new URL("../src/nova_slider_captcha/static/nova_slider_captcha/slider.css", import.meta.url), "utf8");
+  const palettes = [...css.matchAll(/--nsc-fallback-accent:[\s\S]*?--nsc-fallback-error:\s*(#[0-9a-f]+);/g)]
+    .slice(0, 2).map(match => Object.fromEntries([...match[0].matchAll(/--nsc-fallback-([a-z]+):\s*(#[0-9a-f]+);/g)].map(item => [item[1], item[2]])));
+  const luminance = hex => {
+    if (hex.length === 4) hex = "#" + [...hex.slice(1)].map(v => v + v).join("");
+    const rgb = hex.slice(1).match(/../g).map(v => parseInt(v, 16) / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4);
+    return rgb[0] * .2126 + rgb[1] * .7152 + rgb[2] * .0722;
+  };
+  const ratio = (a, b) => (Math.max(luminance(a), luminance(b)) + .05) / (Math.min(luminance(a), luminance(b)) + .05);
+  assert.equal(palettes.length, 2);
+  for (const palette of palettes) {
+    for (const role of ["muted", "text", "success", "error"]) {
+      for (const surface of ["panel", "handle"])
+        assert.ok(ratio(palette[role], palette[surface]) >= 4.5, `${role}/${surface} ${JSON.stringify(palette)}`);
+    }
+  }
+  const successPanel = css.match(/--nsc-success-panel:\s*(#[0-9a-f]+);/)[1];
+  const successText = css.match(/--nsc-success-text:\s*(#[0-9a-f]+);/)[1];
+  assert.ok(ratio(successText, successPanel) >= 4.5);
+  // Native Django's error token has little margin on a translucent overlay;
+  // the opaque-panel contract above isolates it from arbitrary puzzle pixels.
+  assert.ok(ratio("#e35f5f", "#212121") >= 4.5);
+  assert.ok(ratio("#ba2121", "#f8f8f8") >= 4.5);
+});

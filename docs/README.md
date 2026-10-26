@@ -4,7 +4,10 @@
 
 | 文档 | 内容 |
 |---|---|
-| [更新记录](CHANGELOG.md) | Unreleased 与 0.2.0 / 0.1.0 变更，发布边界 |
+| [发布准备与维护](RELEASING.md) | 0.3.0 待发布、版本检查、构建与首次 Trusted Publishing 步骤 |
+| [发布准备实施自测](2026-10-26-release-implementation.md) | 策略快照、主题修复、配对矩阵及安装包本地验证 |
+| [发布准备独立验收](2026-10-26-release-independent.md) | 主控独立矩阵、工作流/发布负向检查和真实浏览器验证 |
+| [更新记录](CHANGELOG.md) | Unreleased 0.3.0 与 0.2.0 / 0.1.0 变更，发布边界 |
 | [通用接入实施自测](2026-10-26-integration-implementation.md) | 自定义 purpose、Form/ModelForm、几何、业务日志的本地验证 |
 | [通用接入独立验收](2026-10-26-integration-independent.md) | 主控复核、跨版本测试、安装包及真实浏览器验证 |
 | [源码范围与版本记录](SOURCE_PROVENANCE.md) | 仓库内容、来源和发布边界 |

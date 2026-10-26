@@ -1,0 +1,12 @@
+Using CPython 3.12.14 interpreter at: /tmp/nova-slider-review-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-release-impl-py312-dj612-20261026
+Activate with: source /tmp/nova-slider-release-impl-py312-dj612-20261026/bin/activate
+Using Python 3.12.14 environment at: /tmp/nova-slider-release-impl-py312-dj612-20261026
+WARN Retry attempt #0. Sleeping 1.630141725s before the next attempt
+WARN Retry attempt #0. Sleeping 1.391084997s before the next attempt
+Resolved 4 packages in 12.36s
+Installed 4 packages in 79ms
+ + asgiref==3.13.0
+ + django==6.1.2
+ + pillow==12.2.0
+ + sqlparse==0.6.0

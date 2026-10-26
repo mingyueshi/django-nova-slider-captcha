@@ -11,6 +11,10 @@ class Challenge(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(db_index=True)
     attempts = models.PositiveSmallIntegerField(default=0)
+    # Literal legacy defaults are deliberate: migrations and old rows must not
+    # inherit a later host configuration. services.issue writes current policy.
+    max_attempts = models.PositiveSmallIntegerField(default=5)
+    tolerance = models.PositiveSmallIntegerField(default=4)
     solved = models.BooleanField(default=False)
     token_hash = models.CharField(max_length=64, null=True, unique=True)
     token_expires_at = models.DateTimeField(null=True)

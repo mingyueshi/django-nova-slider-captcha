@@ -1,0 +1,72 @@
+{
+  "wheel": {
+    "path": "/tmp/nova-slider-release-impl-candidate-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl",
+    "sha256": "4e4274f570e6aa89fbb8506d34fa6cf5bc18167419be6a197b8a1b64a55e6d3e"
+  },
+  "cells": [
+    {
+      "python": "3.10.20",
+      "django": "5.2.17",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 110,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 110,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12.14",
+      "django": "5.2.17",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 110,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 110,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12.14",
+      "django": "6.1.2",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 110,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 110,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.13.12",
+      "django": "6.1.2",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 110,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 110,
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

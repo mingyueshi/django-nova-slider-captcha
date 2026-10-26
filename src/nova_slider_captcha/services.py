@@ -13,7 +13,7 @@ from django.db.models.functions import Greatest
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 
-from .conf import CHALLENGE_TTL, HEIGHT, MAX_ATTEMPTS, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, TOLERANCE, WIDTH, purposes, rate_limit, valid_purpose
+from .conf import HEIGHT, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, WIDTH, challenge_policy, purposes, rate_limit, valid_purpose
 from .events import event
 from .images import make_puzzle
 from .models import Challenge, RateLimitState
@@ -110,15 +110,17 @@ def allow_request(request, action):
 
 
 def issue(request, purpose):
+    policy = challenge_policy()
     if not valid_purpose(purpose):
         raise ValueError("Unsupported CAPTCHA purpose")
     binding = session_binding(request, create=True)
     target_x, piece_y, background, piece = make_puzzle()
-    challenge = Challenge.objects.create(session_hash=binding, purpose=purpose, target_x=target_x, expires_at=timezone.now() + timedelta(seconds=CHALLENGE_TTL))
-    return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": WIDTH, "height": HEIGHT, "pieceWidth": PIECE_SIZE, "pieceY": piece_y, "expiresIn": CHALLENGE_TTL, "maxAttempts": MAX_ATTEMPTS}
+    challenge = Challenge.objects.create(session_hash=binding, purpose=purpose, target_x=target_x, expires_at=timezone.now() + timedelta(seconds=policy.ttl), max_attempts=policy.max_attempts, tolerance=policy.tolerance)
+    return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": WIDTH, "height": HEIGHT, "pieceWidth": PIECE_SIZE, "pieceY": piece_y, "expiresIn": policy.ttl, "maxAttempts": policy.max_attempts}
 
 
 def verify(request, challenge_id, x):
+    challenge_policy()  # Invalid current configuration fails closed; never reinterpret the snapshot.
     allowed = purposes()
     now = timezone.now()
     binding = session_binding(request)
@@ -129,10 +131,10 @@ def verify(request, challenge_id, x):
         return {"ok": False, "code": "expired", "attemptsRemaining": 0}
     if challenge.solved:
         return {"ok": False, "code": "already_verified", "attemptsRemaining": 0}
-    if challenge.attempts >= MAX_ATTEMPTS:
+    if challenge.attempts >= challenge.max_attempts:
         return {"ok": False, "code": "attempts_exhausted", "attemptsRemaining": 0}
-    active = Challenge.objects.filter(pk=challenge.pk, session_hash=binding, expires_at__gt=now, solved=False, attempts__lt=MAX_ATTEMPTS)
-    if abs(challenge.target_x - x) <= TOLERANCE:
+    active = Challenge.objects.filter(pk=challenge.pk, session_hash=binding, expires_at__gt=now, solved=False, attempts__lt=F("max_attempts"), max_attempts=challenge.max_attempts, tolerance=challenge.tolerance)
+    if abs(challenge.target_x - x) <= challenge.tolerance:
         token = secrets.token_urlsafe(TOKEN_BYTES)
         updated = active.update(attempts=F("attempts") + 1, solved=True, token_hash=_hash(token, "token"), token_expires_at=now + timedelta(seconds=TOKEN_TTL))
         if updated:
@@ -141,7 +143,7 @@ def verify(request, challenge_id, x):
         updated = active.update(attempts=F("attempts") + 1)
         if updated:
             challenge.refresh_from_db(fields=["attempts"])
-            remaining = max(0, MAX_ATTEMPTS - challenge.attempts)
+            remaining = max(0, challenge.max_attempts - challenge.attempts)
             return {"ok": False, "code": "incorrect", "attemptsRemaining": remaining}
     return {"ok": False, "code": "invalid_challenge", "attemptsRemaining": 0}
 
@@ -154,6 +156,7 @@ def consume(token, request, purpose):
     failures propagate (fail closed). Business transactions remain your concern.
     """
     try:
+        challenge_policy()
         supported = valid_purpose(purpose)
     except ValueError:
         event("consume", "configuration_invalid", 503)

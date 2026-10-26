@@ -1,0 +1,12 @@
+{
+  "nova_slider_captcha-0.3.0.tar.gz": {
+    "path": "/tmp/nova-slider-release-impl-candidate-20261026/nova_slider_captcha-0.3.0.tar.gz",
+    "bytes": 145825,
+    "sha256": "3014e253c84a45b4a2fbcf7ac4dcfc0af2b406b9bdb4f8568318de761f0302eb"
+  },
+  "nova_slider_captcha-0.3.0-py3-none-any.whl": {
+    "path": "/tmp/nova-slider-release-impl-candidate-20261026/nova_slider_captcha-0.3.0-py3-none-any.whl",
+    "bytes": 49346,
+    "sha256": "4e4274f570e6aa89fbb8506d34fa6cf5bc18167419be6a197b8a1b64a55e6d3e"
+  }
+}

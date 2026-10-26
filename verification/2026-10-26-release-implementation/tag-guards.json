@@ -1,0 +1,26 @@
+[
+  {
+    "tag": "v0.3.0",
+    "accepted": true
+  },
+  {
+    "tag": "0.3.0",
+    "accepted": false
+  },
+  {
+    "tag": "v0.2.0",
+    "accepted": false
+  },
+  {
+    "tag": "v0.3.0rc1",
+    "accepted": false
+  },
+  {
+    "tag": "v0.3.0\n",
+    "accepted": false
+  },
+  {
+    "tag": "v0.3.0;echo injected",
+    "accepted": false
+  }
+]
