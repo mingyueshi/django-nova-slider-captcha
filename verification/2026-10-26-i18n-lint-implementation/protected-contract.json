@@ -1,0 +1,17 @@
+{
+  "src/nova_slider_captcha/conf.py": "7ecb89ef04d2ee0f612e60f55de686210da1a5f8d25c6871a6699f8df642c7c5",
+  "src/nova_slider_captcha/checks.py": "2c8e444818c151ad4fd0f20ecb5870784edf8049298c5492f0525618dfbc9256",
+  "src/nova_slider_captcha/services.py": "0ee9ccd6c76662519e68069bfb69199dfac9996873f6882c0ee2c6b995234ab4",
+  "src/nova_slider_captcha/models.py": "2a7d776ea139452b4597e0ed4b4f3b20d73c7010c9ed86efcdec340727886389",
+  "src/nova_slider_captcha/forms.py": "83c01b21f909ef232e7849eb71c6d1c0dd724d7f796392ae9ba093fac9bbf8c5",
+  "src/nova_slider_captcha/events.py": "244bccc89d351d669596c70c85c3ba30f5d0bfcc03e4b45dea8b66d6412c1d76",
+  "src/nova_slider_captcha/images.py": "95ce95650c5b1d240ebf74e0640c29be08d51eddd6cba23249d2b2aa68cb7db0",
+  "src/nova_slider_captcha/urls.py": "bec5987f2079e1fd2da8c3bd933f2c56b5cbcb474ae5272466130c408e160848",
+  "src/nova_slider_captcha/demo_urls.py": "8c49e1eb2f1f8fd873e74d3964fb1d12f975892ab1aad4c2ea0ac10111491a17",
+  "src/nova_slider_captcha/migrations/0002_ratelimitstate.py": "cf102185d206440858e4ff599ab03f1f6367e6fb3255eeed94a41c057812a5a5",
+  "src/nova_slider_captcha/migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "src/nova_slider_captcha/migrations/0003_challenge_policy.py": "00ef047a2f41a99c741b61a9e405e3d766780e87b67e3a2c66c3b2e84298f6ee",
+  "src/nova_slider_captcha/migrations/0001_initial.py": "66e3ca8bd567d0b1b9b0cf48d6c8e338156ad867de355e81ea95f4c1d3fa805a",
+  "src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo": "d6e8ac5c4ac7ee1354b479e5e8a240b50e198232bfee670f0dbc07402e1eb799",
+  "src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po": "a8bcb29989779a78d505918dc661dc89f0785a869beeadf46ecf54983599b644"
+}

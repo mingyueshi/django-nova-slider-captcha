@@ -47,7 +47,7 @@ CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一�
 
 兼容范围为 Pillow >=12.2,<13，CI 精确锁定两端 12.2.0 / 12.3.0；六格代表性配对覆盖 Python 3.10–3.14 和 Django 5.2 / 6.0 / 6.1。不是声明所有交叉组合均已实测。空 templatetags 已删除；check_release 会比对运行文件集合和依赖元数据，防止旧文件残留。演示 URLConf、模板、静态、翻译和全部迁移必须一起进入 wheel/sdist。
 
-[部署说明](DEPLOYMENT.md) 包含 ASGI/WSGI REMOTE_ADDR 的具体映射责任和生产 check --deploy、prune 监控；替代入口由宿主实现，未提供可用替代流程时不要配置占位链接。语言回退行为本轮保持不变。新结果见 [后续实施自测](2026-10-26-followup-implementation.md)；远端 CI/账号/上传仍留待实际发布授权。
+[部署说明](DEPLOYMENT.md) 包含 ASGI/WSGI REMOTE_ADDR 的具体映射责任和生产 check --deploy、prune 监控；替代入口由宿主实现，未提供可用替代流程时不要配置占位链接。显式未知但格式有效的语言现回退英文，未指定/空白或格式非法输入仍默认简中；zh系列简中，en系列英文。未新增Django翻译目录，迁移语言规则见README。新结果见 [后续实施自测](2026-10-26-followup-implementation.md)；远端 CI/账号/上传仍留待实际发布授权。
 
 嵌套命名空间下，宿主可显式组合可选演示：
 
@@ -65,3 +65,11 @@ urlpatterns = [
     path("preview/", include((preview_patterns, "nova_slider_captcha_demo"), namespace="preview")),
 ]
 ```
+
+## 开发静态检查
+
+首次发布前运行 `python -m pip install -r requirements-lint.txt` 与 `ruff check .`。Ruff精确锁定0.17.2、target py310，选择错误类规则，未启用格式化/mypy，详情见 [STATIC_CHECKS.md](STATIC_CHECKS.md)。sdist包含requirements-lint.txt和pyproject配置；不增加运行依赖。独立lint job无OIDC权限，发布job仍只下载同一已测构建物和上传，不运行新的检查代码。
+
+本轮实施自测见 [i18n与Ruff实施记录](2026-10-26-i18n-lint-implementation.md)；以实际记录区分本地和远端CI，不因配置存在就宣称检查在GitHub已通过。
+
+主控最终复核见 [i18n与Ruff独立验收](2026-10-26-i18n-lint-independent.md)，包含独立构建、六格source/同一wheel、真实浏览器和静态检查反例。本轮仍未提交、推送或发布。

@@ -459,10 +459,12 @@ test("locale aliases, invalid locales, and dynamic labels retain proof and reque
   assert.equal(c.widget.seq, seq);
   assert.equal(c.calls.length, count);
   assert.equal([...c.timers.keys()][0], timer);
-  for (const locale of ["fr", "", "en-<script>", null, {}, 123, "__proto__"]) {
+  for (const locale of ["", " ", "en-<script>", null, {}, 123, "__proto__"]) {
     c.widget.setLocale(locale);
     assert.equal(c.widget.locale, "zh-CN");
   }
+  for (const locale of ["fr", "fr-FR", "ja", "ja-JP", "de", "ar"])
+    assert.equal(c.widget.setLocale(locale), "en");
   c.widget.setAttribute("locale", "EN_gb");
   assert.equal(c.widget.locale, "en");
   assert.match(c.widget.status.textContent, /^Verified\. Valid for \d+ seconds$/);
@@ -853,5 +855,61 @@ test("host alternative links outside the component survive render and refresh", 
   assert.equal(link.href, "https://demo.test/security/other/");
   assert.equal(link.closest("noscript"), null);
   assert.equal(link.closest("nova-slider"), null);
+  cleanup(c);
+});
+
+test("explicit unsupported locales use English through attributes and property entry points", async () => {
+  for (const locale of ["fr", "fr-FR", "ja", "ja-JP", "de", "ar"]) {
+    for (const options of [{ attrs: { locale } }, { localeProperty: locale }]) {
+      const c = await setup(undefined, options);
+      assert.equal(c.widget.locale, "en", locale);
+      assert.equal(c.widget.lang, "en");
+      assert.equal(c.widget.querySelector(".nsc").lang, "en");
+      assert.equal(c.widget.getAttribute("aria-label"), "Security verification");
+      assert.equal(c.widget.range.getAttribute("aria-label"), "Move the puzzle piece");
+      assert.equal(c.widget.status.textContent, "Slide the piece to fit the gap");
+      assert.equal(c.widget.querySelector(".nsc-background").alt, "Landscape with a missing puzzle piece");
+      c.widget.move(138);
+      assert.equal(c.widget.range.getAttribute("aria-valuetext"), "50%, press Enter to verify");
+      cleanup(c);
+    }
+  }
+});
+
+test("locale grammar keeps Chinese defaults and aliases without claiming BCP47 validation", async () => {
+  const c = await setup();
+  for (const value of [undefined, null, true, 123, {}, [], "", " \t ", "e", "en--US", "fr FR", "-ja", "en-123456789", "__proto__"]) {
+    c.widget.locale = value;
+    assert.equal(c.widget.locale, "zh-CN", String(value));
+  }
+  for (const value of ["zh", "zh-CN", "zh_Hans", "zh-Hant", "zh-TW", " ZH_hant_TW "]) {
+    assert.equal(c.widget.setLocale(value), "zh-CN", value);
+    assert.equal(c.widget.getAttribute("aria-label"), "安全验证");
+  }
+  for (const value of ["en", "en-US", "EN_gb", "fr_Latn_FR", " ja-JP "])
+    assert.equal(c.widget.setLocale(value), "en", value);
+  cleanup(c);
+});
+
+test("unsupported-language switches retain proof, requests, generation and exact expiry callback", async () => {
+  const c = await setup();
+  await c.widget.verify();
+  const proof = c.widget.getToken(), seq = c.widget.seq, calls = c.calls.length;
+  const [timerId, timer] = [...c.timers.entries()][0];
+  for (const change of [() => c.widget.setAttribute("locale", "fr-FR"), () => { c.widget.locale = "ja-JP"; }, () => c.widget.setLocale("ar")]) {
+    change();
+    assert.equal(c.widget.locale, "en");
+    assert.match(c.widget.status.textContent, /^Verified\. Valid for \d+ seconds$/);
+    assert.equal(c.widget.overlay.textContent, "✓ Verified");
+    assert.equal(c.widget.getToken(), proof);
+    assert.equal(c.widget.seq, seq);
+    assert.equal(c.calls.length, calls);
+    assert.equal(c.timers.size, 1);
+    assert.equal(c.timers.get(timerId), timer);
+  }
+  timer.fn();
+  assert.equal(c.widget.getToken(), "");
+  assert.equal(c.widget.state, "expired");
+  assert.equal(c.widget.status.textContent, "Your verification expired. Please verify again.");
   cleanup(c);
 });

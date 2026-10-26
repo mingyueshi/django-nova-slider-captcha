@@ -1,0 +1,13 @@
+✔ missing and empty locale retain Chinese despite document language (48.371458ms)
+✔ explicit unsupported language tags use English including accessible labels (34.124792ms)
+✔ Chinese and English aliases retain their supported dictionaries (24.480958ms)
+✔ malformed and non-string property values fail safely to the default (7.800333ms)
+✔ pre-upgrade locale property and dynamic fallback preserve proof and expiry (5.575667ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 335.831125

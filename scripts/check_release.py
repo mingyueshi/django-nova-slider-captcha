@@ -68,7 +68,7 @@ def check_dist(root, directory, version):
         require(metadata["Version"] == version, "sdist metadata mismatch")
         require(requirements(metadata.get_all("Requires-Dist", [])) == expected_dependencies, "sdist dependency metadata differs from project")
         for required in ("LICENSE", "README.md", "pyproject.toml", "scripts/test_policy_upgrade.py", "tests/test_policy.py",
-                         ".coveragerc", "requirements-coverage.txt", "scripts/check_coverage.py", "scripts/test_coverage_gate.py"):
+                         ".coveragerc", "requirements-coverage.txt", "scripts/check_coverage.py", "scripts/test_coverage_gate.py", "requirements-lint.txt"):
             require(prefix + required in archive.getnames(), f"sdist missing {required}")
     print(f"Verified {len(runtime)} runtime files in wheel and sdist for {version}")
 

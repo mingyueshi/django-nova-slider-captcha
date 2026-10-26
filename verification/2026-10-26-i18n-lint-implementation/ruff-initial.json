@@ -1,0 +1,433 @@
+[
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 14,
+      "row": 20
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 20
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 20,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 11,
+      "row": 22
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 22
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 22,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 33,
+      "row": 23
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 23
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 23,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 52,
+      "row": 24
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 24
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 24,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 49,
+      "row": 25
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 25
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 25,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 54,
+      "row": 26
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_hotpaths.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 26
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 26,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 39,
+      "row": 20
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/benchmark_images.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 20
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 20,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 33,
+      "row": 12
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 12
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 12,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 14,
+      "row": 15
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 15
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 15,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 31,
+      "row": 17
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 17
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 17,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 48,
+      "row": 18
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 18
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 18,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "E402",
+    "end_location": {
+      "column": 61,
+      "row": 20
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 20
+    },
+    "message": "Module level import not at top of file",
+    "name": "module-import-not-at-top-of-file",
+    "noqa_row": 20,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/module-import-not-at-top-of-file"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 61,
+      "row": 20
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/scripts/dom_bridge.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from nova_slider_captcha.models import Challenge",
+          "end_location": {
+            "column": 61,
+            "row": 20
+          },
+          "location": {
+            "column": 1,
+            "row": 20
+          }
+        }
+      ],
+      "message": "Remove unused import: `nova_slider_captcha.models.RateBucket`"
+    },
+    "location": {
+      "column": 51,
+      "row": 20
+    },
+    "message": "`nova_slider_captcha.models.RateBucket` imported but unused",
+    "name": "unused-import",
+    "noqa_row": 20,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F403",
+    "end_location": {
+      "column": 29,
+      "row": 1
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/nova_settings.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 1
+    },
+    "message": "`from tests.settings import *` used; unable to detect undefined names",
+    "name": "undefined-local-with-import-star",
+    "noqa_row": 1,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 48,
+      "row": 2
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/nova_settings.py",
+    "fix": null,
+    "location": {
+      "column": 34,
+      "row": 2
+    },
+    "message": "`INSTALLED_APPS` may be undefined, or defined from star imports",
+    "name": "undefined-local-with-import-star-usage",
+    "noqa_row": 2,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 10,
+      "row": 3
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/nova_settings.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 3
+    },
+    "message": "`TEMPLATES` may be undefined, or defined from star imports",
+    "name": "undefined-local-with-import-star-usage",
+    "noqa_row": 3,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F403",
+    "end_location": {
+      "column": 28,
+      "row": 1
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/settings.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 1
+    },
+    "message": "`from demo.settings import *` used; unable to detect undefined names",
+    "name": "undefined-local-with-import-star",
+    "noqa_row": 1,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 10,
+      "row": 3
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/settings.py",
+    "fix": null,
+    "location": {
+      "column": 1,
+      "row": 3
+    },
+    "message": "`DATABASES` may be undefined, or defined from star imports",
+    "name": "undefined-local-with-import-star-usage",
+    "noqa_row": 3,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F405",
+    "end_location": {
+      "column": 41,
+      "row": 3
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/settings.py",
+    "fix": null,
+    "location": {
+      "column": 32,
+      "row": 3
+    },
+    "message": "`DATABASES` may be undefined, or defined from star imports",
+    "name": "undefined-local-with-import-star-usage",
+    "noqa_row": 3,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/undefined-local-with-import-star-usage"
+  },
+  {
+    "cell": null,
+    "code": "F401",
+    "end_location": {
+      "column": 102,
+      "row": 16
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_integration.py",
+    "fix": {
+      "applicability": "safe",
+      "edits": [
+        {
+          "content": "from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin",
+          "end_location": {
+            "column": 102,
+            "row": 16
+          },
+          "location": {
+            "column": 1,
+            "row": 16
+          }
+        }
+      ],
+      "message": "Remove unused import: `nova_slider_captcha.forms.SliderCaptchaWidget`"
+    },
+    "location": {
+      "column": 83,
+      "row": 16
+    },
+    "message": "`nova_slider_captcha.forms.SliderCaptchaWidget` imported but unused",
+    "name": "unused-import",
+    "noqa_row": 16,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/unused-import"
+  },
+  {
+    "cell": null,
+    "code": "F402",
+    "end_location": {
+      "column": 17,
+      "row": 28
+    },
+    "filename": "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_urls.py",
+    "fix": null,
+    "location": {
+      "column": 13,
+      "row": 28
+    },
+    "message": "Import `path` from line 2 shadowed by loop variable",
+    "name": "import-shadowed-by-loop-var",
+    "noqa_row": 28,
+    "severity": "error",
+    "url": "https://docs.astral.sh/ruff/rules/import-shadowed-by-loop-var"
+  }
+]

@@ -246,7 +246,9 @@ Admin 继续使用下文的 `SliderAdminAuthenticationForm`，不组合这个 Mi
 <nova-slider endpoint="/captcha/" purpose="demo" locale="en"></nova-slider>
 ```
 
-支持 `zh-CN` 和 `en` 两个实际字典。`en-US`、`en_GB` 等英语地区标记回退为 `en`；中文地区标记、未知或无效语言回退为简体中文。没有繁体中文专用字典，也不声明 RTL 语言支持。组件不会根据浏览器语言悄悄改变旧版的默认中文行为。
+仅有 `zh-CN` 和 `en` 两个实际字典。未指定、空白、非字符串属性输入及格式非法值仍使用简中默认；组件不会自动读取浏览器或 document.lang 来更换默认语言。主标记为 `zh` 的系列（包括 zh-Hans、zh-Hant、zh-TW）统一简中，`en` 系列统一英文。显式、格式有效但不支持的语言（如 fr/fr-FR、ja/ja-JP、de、ar）现在回退英文，避免法语/日语站点因缺字典显示中文。没有新增繁体或其他语言包，也不声明 RTL 布局支持。
+
+接受的轻量标记格式为：trim 后主标记2–8个ASCII字母，后续可用单个 `-` 或 `_` 分隔1–8个ASCII字母/数字的子标记；不区分大小写。不查询语言注册表，也不承诺完整BCP47、私用或祖父标记校验。HTML属性本身是字符串；非字符串兼容规则针对 JavaScript locale / setLocale 输入。Django Widget 继续传当前Django语言或显式attrs.locale，由同一个前端规则归一化，不另建Python语言映射。
 
 ```javascript
 const slider = document.querySelector('nova-slider');
@@ -471,6 +473,8 @@ npm test
 NOVA_PYTHON=python npm run test:dom
 npm run test:worker
 ```
+
+基础静态检查使用独立的 `requirements-lint.txt`（Ruff 0.17.2，target Python3.10）。仅检查选定错误规则，不自动格式化，不接入mypy；源码、测试、脚本、Python示例和项目配置均在明确范围内，历史verification不扫描。规则、两处测试settings窄豁免、命令和正反验收见 [静态检查说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/STATIC_CHECKS.md)。
 
 开发/CI 分支覆盖率使用独立的 `requirements-coverage.txt`（coverage.py 7.17.0），不增加运行依赖。稳定 coverage profile 为 Python 3.12 / Django 5.2.17 / Pillow 12.3.0，包含升级脚本子进程，不排除包内文件。门槛分别检查纯语句/纯分支：包整体97%/95%，forms.py 99%/97%；不把 coverage report 的组合百分比当成纯分支。CI 无论测试成功或失败都尝试生成并上传 HTML/JSON/XML 和原始覆盖率数据，测试失败不会被报告步骤掩盖。基线、命令、缺失分支和负向检查见 [覆盖率维护说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/COVERAGE.md)。
 

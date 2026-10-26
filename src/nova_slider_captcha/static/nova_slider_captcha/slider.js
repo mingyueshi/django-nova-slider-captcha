@@ -86,9 +86,15 @@
     "challenge_unavailable", "init_required", "expired", "already_verified",
     "attempts_exhausted",
   ]);
-  const normalizeLocale = (value) =>
-    typeof value === "string" && /^en(?:[-_][a-z0-9]+)*$/i.test(value.trim())
-      ? "en" : "zh-CN";
+  const normalizeLocale = (value) => {
+    if (typeof value !== "string") return "zh-CN";
+    const tag = value.trim();
+    // A small locale-tag grammar, not a BCP47 registry/semantic validator.
+    // Missing/malformed input retains the historical Chinese default; explicit
+    // well-formed unsupported languages use the available English dictionary.
+    if (!/^[a-z]{2,8}(?:[-_][a-z0-9]{1,8})*$/i.test(tag)) return "zh-CN";
+    return /^zh(?:[-_]|$)/i.test(tag) ? "zh-CN" : "en";
+  };
   const bounded = (value, max) =>
     typeof value === "number" && Number.isFinite(value)
       ? Math.min(max, Math.max(0, Math.ceil(value))) : 0;

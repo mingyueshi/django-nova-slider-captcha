@@ -1,0 +1,24 @@
+{
+  "checks": [
+    {
+      "step": "Django fr initial",
+      "state": "Browser tab: 3, Title: \"Local locale review\", URL: \"http://127.0.0.1:57501/locale-review/?lang=fr\".\n0 AXWebArea Local locale review, URL: 127.0.0.1:57501/locale-review/?lang=fr\n\t1 heading Local language fallback review, Value: 1\n\t\t2 text Local language fallback review\n\t3 text Django language: fr\n\t4 container Security verification\n\t\t5 container\n\t\t\t6 image Landscape with a missing puzzle piece\n\t\t\t7 image Movable puzzle piece\n\t\t8 container\n\t\t\t9 slider (settable, integer) Description: Move the puzzle piece, Value: 0\n\t\t10 text Slide the piece to fit the gap\n\t\t11 button Get a new puzzle\n\t\t\t12 text New puzzle\n\t\t13 text Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.\n\t14 container Review language controls\n\t\t15 button Français\n\t\t16 button 日本語\n\t\t17 button 简体中文\n\t\t18 button Default\n\nThe focused UI element is 0 AXWebArea Local locale review, URL: 127.0.0.1:57501/locale-review/?lang=fr"
+    },
+    {
+      "step": "switch Chinese",
+      "state": "Browser tab: 3, Title: \"Local locale review\", URL: \"http://127.0.0.1:57501/locale-review/?lang=fr\".\n0 AXWebArea Local locale review, URL: 127.0.0.1:57501/locale-review/?lang=fr\n\t1 heading Local language fallback review, Value: 1\n\t\t2 text Local language fallback review\n\t3 text Django language: fr\n\t4 container 安全验证\n\t\t5 container\n\t\t\t6 image 带有一处拼图缺口的山水图案\n\t\t\t7 image 可移动拼图块\n\t\t8 container\n\t\t\t9 slider (settable, integer) Description: 移动拼图块, Value: 0\n\t\t19 text 拖动拼图，对齐图中的缺口\n\t\t11 button 换一张拼图\n\t\t\t20 text 换一张\n\t\t21 text 可用方向键微调，Enter 提交；也支持触屏拖动。\n\t14 container Review language controls\n\t\t15 button Français\n\t\t16 button 日本語\n\t\t17 button 简体中文\n\t\t18 button Default\n\nThe focused UI element is 17 button 简体中文"
+    },
+    {
+      "step": "Japanese property fallback",
+      "state": "Browser tab: 3, Title: \"Local locale review\", URL: \"http://127.0.0.1:57501/locale-review/?lang=fr\".\n0 AXWebArea Local locale review, URL: 127.0.0.1:57501/locale-review/?lang=fr\n\t1 heading Local language fallback review, Value: 1\n\t\t2 text Local language fallback review\n\t3 text Django language: fr\n\t4 container Security verification\n\t\t5 container\n\t\t\t6 image Landscape with a missing puzzle piece\n\t\t\t7 image Movable puzzle piece\n\t\t8 container\n\t\t\t9 slider (settable, integer) Description: Move the puzzle piece, Value: 0\n\t\t19 text Slide the piece to fit the gap\n\t\t11 button Get a new puzzle\n\t\t\t20 text New puzzle\n\t\t21 text Use the arrow keys to adjust and Enter to submit, or drag on a touchscreen.\n\t14 container Review language controls\n\t\t15 button Français\n\t\t16 button 日本語\n\t\t17 button 简体中文\n\t\t18 button Default\n\nThe focused UI element is 16 button 日本語"
+    },
+    {
+      "step": "Remove explicit locale restores default",
+      "state": "Browser tab: 3, Title: \"Local locale review\", URL: \"http://127.0.0.1:57501/locale-review/?lang=fr\".\n0 AXWebArea Local locale review, URL: 127.0.0.1:57501/locale-review/?lang=fr\n\t1 heading Local language fallback review, Value: 1\n\t\t2 text Local language fallback review\n\t3 text Django language: fr\n\t4 container 安全验证\n\t\t5 container\n\t\t\t6 image 带有一处拼图缺口的山水图案\n\t\t\t7 image 可移动拼图块\n\t\t8 container\n\t\t\t9 slider (settable, integer) Description: 移动拼图块, Value: 0\n\t\t19 text 拖动拼图，对齐图中的缺口\n\t\t11 button 换一张拼图\n\t\t\t20 text 换一张\n\t\t21 text 可用方向键微调，Enter 提交；也支持触屏拖动。\n\t14 container Review language controls\n\t\t15 button Français\n\t\t16 button 日本語\n\t\t17 button 简体中文\n\t\t18 button Default\n\nThe focused UI element is 18 button Default"
+    }
+  ],
+  "limitations": [
+    "No CAPTCHA completed or login submitted",
+    "No screen-reader or real-touch verification"
+  ]
+}

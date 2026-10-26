@@ -1,5 +1,6 @@
 include LICENSE README.md pyproject.toml package.json package-lock.json manage.py
 include .coveragerc requirements-coverage.txt
+include requirements-lint.txt
 recursive-include src/nova_slider_captcha *.py *.html *.css *.js *.po *.mo
 recursive-include tests *.py *.mjs *.json
 recursive-include scripts *.py *.cjs

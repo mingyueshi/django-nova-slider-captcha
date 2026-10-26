@@ -25,9 +25,9 @@ class CoreURLTests(SimpleTestCase):
         self.assertNotIn(b"captcha-demo", response.content)
         self.assertNotIn("sessionid", response.cookies)
         self.assertIn("no-store", response["Cache-Control"])
-        for path in ("/api/submit", "/api/demo"):
-            self.assertEqual(self.client.get(path).status_code, 404)
-            self.assertEqual(self.client.post(path).status_code, 404)
+        for url_path in ("/api/submit", "/api/demo"):
+            self.assertEqual(self.client.get(url_path).status_code, 404)
+            self.assertEqual(self.client.post(url_path).status_code, 404)
         self.assertEqual(self.client.post("/api/").status_code, 405)
 
     def test_widget_explicit_nested_namespace_selects_the_matching_api_root(self):

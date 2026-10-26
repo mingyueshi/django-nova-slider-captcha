@@ -1,0 +1,51 @@
+✔ missing and empty locale retain Chinese despite document language (43.571541ms)
+✖ explicit unsupported language tags use English including accessible labels (4.466667ms)
+✔ Chinese and English aliases retain their supported dictionaries (27.11575ms)
+✔ malformed and non-string property values fail safely to the default (4.5015ms)
+✖ pre-upgrade locale property and dynamic fallback preserve proof and expiry (3.397541ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 291.373083
+
+✖ failing tests:
+
+test at ../../../../../private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:44:1
+✖ explicit unsupported language tags use English including accessible labels (4.466667ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'zh-CN' !== 'en'
+
+      at ready (file:///private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:33:10)
+      at TestContext.<anonymous> (file:///private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:45:113)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'zh-CN',
+    expected: 'en',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:57:1
+✖ pre-upgrade locale property and dynamic fallback preserve proof and expiry (3.397541ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  'zh-CN' !== 'en'
+
+      at ready (file:///private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:33:10)
+      at TestContext.<anonymous> (file:///private/tmp/nova-slider-i18n-independent-20261026-cGZx5G/locale-probe.mjs:59:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'zh-CN',
+    expected: 'en',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

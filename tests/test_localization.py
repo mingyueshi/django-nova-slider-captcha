@@ -23,6 +23,15 @@ class LocalizationTests(SimpleTestCase):
             self.assertEqual(str(field.label), "Security verification")
             self.assertEqual(str(field.error_messages["required"]), "Complete the security verification before signing in.")
 
+    def test_unsupported_active_languages_are_passed_to_the_component(self):
+        # Do not introduce a second Python normalization rule: browser tests
+        # exercise this raw locale through the component's single normalizer.
+        for locale in ("fr", "fr-fr", "ja", "ja-jp", "de", "ar"):
+            with self.subTest(locale=locale), override(locale):
+                widget = SliderCaptchaWidget()
+                self.assertEqual(widget.get_context("proof", "", {})["widget"]["locale"], locale)
+                self.assertIn(f'locale="{locale}"', widget.render("proof", ""))
+
     def test_widget_inherits_active_django_locale_and_translates_noscript(self):
         for locale, label, instruction in [
             ("en", "Security verification", "JavaScript is required"),

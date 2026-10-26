@@ -16,8 +16,8 @@ readline.createInterface({input:bridge.stdout}).on('line',line=>{let d=JSON.pars
 function call(body){return new Promise((resolve,reject)=>{const requestId=++id;pending.set(requestId,{resolve,reject});bridge.stdin.write(JSON.stringify({...body,requestId})+'\n')})}
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 async function wait(fn){for(let i=0;i<300;i++){if(fn())return;await delay(10)}throw Error('Wait timed out')}
-async function page(url, demo=false){
- const response=await call({path:url});assert.equal(response.status,200);
+async function page(url, demo=false, language){
+ const response=await call({path:url,language});assert.equal(response.status,200);
  const dom=new JSDOM(response.text,{url:'http://testserver'+url,runScripts:'outside-only'});const w=dom.window;
  w.HTMLImageElement.prototype.decode=async()=>{};
  w.fetch=async(url,opts={})=>{const r=await call({path:new URL(url,w.location.href).pathname,method:opts.method||'GET',headers:opts.headers||{},body:opts.body});return{ok:r.status>=200&&r.status<300,status:r.status,headers:{get:()=>r.text.startsWith('{')?'application/json':'text/html'},json:async()=>JSON.parse(r.text)}};
@@ -65,6 +65,16 @@ async function page(url, demo=false){
  const expiry=[...p.timers.values()].find(t=>t.ms>=50000 && t.ms<=60000);assert.ok(expiry);expiry.fn();assert.equal(slider.getToken(),'');assert.equal(slider.state,'expired');results.push('proof expiration clears Admin hidden field');
  await slider.refresh();for(let i=0;i<5;i++){slider.move(0);await slider.verify()}assert.equal(slider.state,'error');assert.equal(slider.getToken(),'');results.push('fifth mismatch locks widget and leaves no proof');
  p.dom.window.close();
+ for (const language of ['fr-fr','ja-jp','de','ar']) {
+  p=await page('/admin/login/',false,language);({w,slider}=p);
+  assert.equal(slider.getAttribute('locale'),language);
+  assert.equal(slider.locale,'en');assert.equal(slider.lang,'en');
+  assert.equal(slider.getAttribute('aria-label'),'Security verification');
+  assert.equal(slider.range.getAttribute('aria-label'),'Move the puzzle piece');
+  assert.equal(slider.status.textContent,'Slide the piece to fit the gap');
+  results.push('Django '+language+' inheritance renders English fallback labels and ARIA');
+  p.dom.window.close();
+ }
  if(process.env.NOVA_DOM_REPORT) fs.writeFileSync(process.env.NOVA_DOM_REPORT,JSON.stringify({status:'passed',engine:'jsdom 26.1.0 + real Django test client',checks:results,limitations:['No browser layout, pixels, pointer/touch rendering, or assistive-technology testing']},null,2)+'\n');
  console.log(JSON.stringify(results));bridge.stdin.end();
 })().catch(error=>{console.error(error);bridge.kill();process.exitCode=1});

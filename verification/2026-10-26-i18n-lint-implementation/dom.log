@@ -1,0 +1,6 @@
+
+> nova-slider-captcha-dev@0.3.0 test:dom
+> node scripts/test_dom.cjs
+
+Forbidden: /captcha-demo/submit
+["Django Chinese locale renders translated demo and initializes Chinese widget","wrong guess keeps widget usable with four attempts","keyboard Enter verifies through real Django API","protected demo consumes token and displays local Chinese result","dynamic English locale translates success and demo result without losing proof","real Django rejects protected replay","repeated refresh keeps newest challenge and clears proof","late submit A cannot clear or overwrite refreshed proof B, which remains usable","Django Admin widget label and nonvisual fallback are translated","Admin has exactly one populated login proof field","proof expiration clears Admin hidden field","fifth mismatch locks widget and leaves no proof","Django fr-fr inheritance renders English fallback labels and ARIA","Django ja-jp inheritance renders English fallback labels and ARIA","Django de inheritance renders English fallback labels and ARIA","Django ar inheritance renders English fallback labels and ARIA"]

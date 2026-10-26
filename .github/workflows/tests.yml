@@ -96,6 +96,19 @@ jobs:
           python -m django makemigrations nova_slider_captcha --check --dry-run
           python -m django test tests --noinput -v 1
 
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-lint.txt
+      - run: ruff check .
+
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 15

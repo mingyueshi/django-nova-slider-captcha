@@ -13,7 +13,7 @@ from PIL import Image
 from nova_slider_captcha import services
 from nova_slider_captcha.checks import captcha_settings_check
 from nova_slider_captcha.conf import purposes
-from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin, SliderCaptchaWidget
+from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin
 from nova_slider_captcha.models import Challenge, RateLimitState
 from tests.test_captcha import CaptchaHelpers
 

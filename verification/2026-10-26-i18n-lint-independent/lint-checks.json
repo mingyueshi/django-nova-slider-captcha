@@ -1,0 +1,106 @@
+{
+  "ruff": "0.17.2",
+  "checks": [
+    {
+      "check": "exact current Python scope",
+      "files": 48,
+      "passed": true
+    },
+    {
+      "check": "runtime undefined name",
+      "code": "F821",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "tests unused import",
+      "code": "F401",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "scripts bare except",
+      "code": "E722",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "demo undefined name",
+      "code": "F821",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "examples undefined name",
+      "code": "F821",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "star import outside settings remains rejected",
+      "code": "F403",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "syntax error rejected",
+      "exit": 1,
+      "passed": true
+    },
+    {
+      "check": "wrong executable version rejected",
+      "exit": 2,
+      "passed": true
+    }
+  ],
+  "scope": [
+    "demo/__init__.py",
+    "demo/settings.py",
+    "demo/urls.py",
+    "manage.py",
+    "pyproject.toml",
+    "scripts/benchmark_hotpaths.py",
+    "scripts/benchmark_images.py",
+    "scripts/check_coverage.py",
+    "scripts/check_release.py",
+    "scripts/dom_bridge.py",
+    "scripts/test_coverage_gate.py",
+    "scripts/test_matrix.py",
+    "scripts/test_policy_upgrade.py",
+    "scripts/test_rate_upgrade.py",
+    "src/nova_slider_captcha/__init__.py",
+    "src/nova_slider_captcha/admin.py",
+    "src/nova_slider_captcha/apps.py",
+    "src/nova_slider_captcha/checks.py",
+    "src/nova_slider_captcha/conf.py",
+    "src/nova_slider_captcha/demo_urls.py",
+    "src/nova_slider_captcha/events.py",
+    "src/nova_slider_captcha/forms.py",
+    "src/nova_slider_captcha/images.py",
+    "src/nova_slider_captcha/management/__init__.py",
+    "src/nova_slider_captcha/management/commands/__init__.py",
+    "src/nova_slider_captcha/management/commands/prune_slider_captcha.py",
+    "src/nova_slider_captcha/migrations/0001_initial.py",
+    "src/nova_slider_captcha/migrations/0002_ratelimitstate.py",
+    "src/nova_slider_captcha/migrations/0003_challenge_policy.py",
+    "src/nova_slider_captcha/migrations/__init__.py",
+    "src/nova_slider_captcha/models.py",
+    "src/nova_slider_captcha/services.py",
+    "src/nova_slider_captcha/urls.py",
+    "src/nova_slider_captcha/views.py",
+    "tests/__init__.py",
+    "tests/nova_settings.py",
+    "tests/settings.py",
+    "tests/test_alternative.py",
+    "tests/test_captcha.py",
+    "tests/test_forms.py",
+    "tests/test_images.py",
+    "tests/test_integration.py",
+    "tests/test_localization.py",
+    "tests/test_logging.py",
+    "tests/test_optional_link_fallback.py",
+    "tests/test_policy.py",
+    "tests/test_rate_limit.py",
+    "tests/test_urls.py"
+  ]
+}

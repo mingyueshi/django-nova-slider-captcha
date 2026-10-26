@@ -1,0 +1,57 @@
+[
+  {
+    "name": "valid",
+    "exit": 0,
+    "codes": []
+  },
+  {
+    "name": "compact",
+    "exit": 0,
+    "codes": []
+  },
+  {
+    "name": "bootstrap",
+    "exit": 0,
+    "codes": []
+  },
+  {
+    "name": "undefined",
+    "exit": 1,
+    "codes": [
+      "F821"
+    ]
+  },
+  {
+    "name": "unused",
+    "exit": 1,
+    "codes": [
+      "F401"
+    ]
+  },
+  {
+    "name": "syntax",
+    "exit": 1,
+    "codes": [
+      "invalid-syntax",
+      "invalid-syntax"
+    ]
+  },
+  {
+    "name": "none_comparison",
+    "exit": 1,
+    "codes": [
+      "E711"
+    ]
+  },
+  {
+    "name": "star_outside_settings",
+    "exit": 1,
+    "codes": [
+      "F403"
+    ]
+  },
+  {
+    "name": "wrong_required_version",
+    "exit": 2
+  }
+]

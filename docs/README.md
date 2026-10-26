@@ -4,6 +4,9 @@
 
 | 文档 | 内容 |
 |---|---|
+| [基础静态检查](STATIC_CHECKS.md) | Ruff精确版本、最小规则、范围与窄豁免 |
+| [i18n与Ruff实施自测](2026-10-26-i18n-lint-implementation.md) | 语言回退、动态状态、六格source/wheel、覆盖率及构建物身份 |
+| [i18n与Ruff独立验收](2026-10-26-i18n-lint-independent.md) | 主控语言探针、真实浏览器、Ruff反例、同一wheel六格与差异复核 |
 | [可选链接与覆盖率独立验收](2026-10-26-residual-independent.md) | 主控降级/日志/覆盖率反例、六格源码与wheel及浏览器检查 |
 | [可选链接与覆盖率实施自测](2026-10-26-residual-implementation.md) | 渲染降级、告警节制、覆盖率门槛与实施验证 |
 | [分支覆盖率维护](COVERAGE.md) | 统计范围、实测基线、纯语句/分支门槛与CI报告 |
