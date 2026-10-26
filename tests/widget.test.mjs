@@ -590,7 +590,8 @@ test("long translated text uses wrapping CSS rather than fixed track and button 
   assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-meta")).flexWrap, "wrap");
   assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-refresh")).whiteSpace, "normal");
   assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-track-text")).position, "relative");
-  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-track")).minHeight, "48px");
+  assert.equal(c.w.getComputedStyle(c.widget.querySelector(".nsc-track")).minHeight, "var(--nsc-handle-size)");
+  assert.equal(c.w.getComputedStyle(c.widget).getPropertyValue("--nsc-handle-size"), "48px");
   cleanup(c);
 });
 
@@ -716,5 +717,76 @@ test("expiry, keyboard checking, and disconnect release active pointer capture",
   await flush();
   assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 1);
   assert.equal(c.widget.state, "ready");
+  cleanup(c);
+});
+
+test("nondefault geometry controls max, piece position, ratio and ARIA", async () => {
+  const c = await setup(url => response(url.endsWith("init") ? { csrfToken: "csrf" } : url.endsWith("challenge")
+    ? { ...puzzle(), width: 480, height: 240, pieceWidth: 60, pieceY: 90 }
+    : { ok: true, token: "proof", expiresIn: 60 }), { attrs: { locale: "en", "field-name": "form-2-proof", purpose: "contact" } });
+  const { widget } = c;
+  assert.equal(widget.state, "ready");
+  assert.equal(widget.maxX, 420);
+  assert.equal(widget.range.max, "420");
+  assert.equal(widget.querySelector(".nsc-image").style.aspectRatio, "480 / 240");
+  assert.equal(widget.querySelector(".nsc-piece").style.width, "12.5%");
+  assert.equal(widget.querySelector(".nsc-piece").style.top, "37.5%");
+  widget.move(210);
+  assert.equal(widget.range.value, "210");
+  assert.equal(widget.querySelector(".nsc-piece").style.left, "43.75%");
+  assert.equal(widget.range.getAttribute("aria-valuetext"), "50%, press Enter to verify");
+  assert.match(widget.querySelector(".nsc-handle").style.left, /var\(--nsc-handle-size\)/);
+  widget.setLocale("zh-CN");
+  assert.equal(widget.range.getAttribute("aria-valuetext"), "50%，按 Enter 校验");
+  widget.move(Infinity);
+  assert.equal(widget.x, 0);
+  widget.move(1000);
+  assert.equal(widget.x, 420);
+  assert.equal(widget.querySelector(".nsc-piece").style.left, "87.5%");
+  await widget.verify();
+  assert.equal(JSON.parse(c.calls.find(call => call.url.endsWith("verify")).options.body).x, 420);
+  const form = c.w.document.createElement("form");
+  c.w.document.body.append(form);
+  form.append(widget); // Reconnect initializes a fresh, empty proof.
+  await flush();
+  await widget.verify();
+  assert.equal(new c.w.FormData(form).get("form-2-proof"), "proof");
+  assert.equal(new c.w.FormData(form).has("nova_slider_token"), false);
+  cleanup(c);
+});
+
+test("invalid or hostile geometry fails closed before image loading or verification", async () => {
+  const invalid = [
+    { width: 0 }, { width: -1 }, { width: "320" }, { width: null }, { width: Infinity }, { width: NaN },
+    { width: 1e100 }, { width: 8193 }, { width: {} }, { height: 0 }, { height: "160" }, { height: [] },
+    { height: true }, { height: 10.5 }, { pieceWidth: 0 }, { pieceWidth: 320 }, { pieceWidth: 161 },
+    { pieceWidth: "44" }, { pieceWidth: -44 }, { pieceWidth: NaN }, { pieceY: -1 }, { pieceY: 117 },
+    { pieceY: "56" }, { pieceY: Infinity }, { pieceY: null }, { width: undefined },
+  ];
+  for (const geometry of invalid) {
+    const c = await setup(url => response(url.endsWith("init") ? { csrfToken: "csrf" } : { ...puzzle(), ...geometry }), { images: imageEvents });
+    assert.equal(c.widget.state, "error", JSON.stringify(geometry));
+    assert.equal(c.widget.range.disabled, true);
+    assert.equal(c.widget.getToken(), "");
+    assert.equal(c.images.images.length, 0);
+    await c.widget.verify();
+    assert.equal(c.calls.some(call => call.url.endsWith("verify")), false);
+    cleanup(c);
+  }
+});
+
+test("two widgets submit distinct configurable hidden field names safely", async () => {
+  const c = await setup(undefined, { demo: true, attrs: { "field-name": 'form-0-proof"<x>' } });
+  const second = c.w.document.createElement("nova-slider");
+  second.setAttribute("field-name", "form-1-proof");
+  c.w.document.querySelector("form").append(second);
+  await flush();
+  await c.widget.verify();
+  await second.verify();
+  const data = new c.w.FormData(c.w.document.querySelector("form"));
+  assert.equal(data.getAll('form-0-proof"<x>').length, 1);
+  assert.equal(data.get('form-0-proof"<x>'), "proof");
+  assert.equal(data.get("form-1-proof"), "proof");
+  assert.equal(c.w.document.querySelectorAll("x").length, 0);
   cleanup(c);
 });

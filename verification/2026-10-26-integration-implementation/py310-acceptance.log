@@ -1,0 +1,21 @@
+$ /tmp/nova-slider-implementation-20261026-py310/bin/python -c import platform,django,PIL,sqlite3; print(platform.python_version(),django.get_version(),PIL.__version__,sqlite3.sqlite_version)
+3.10.20 5.2.17 12.2.0 3.54.0
+$ /tmp/nova-slider-implementation-20261026-py310/bin/python -m django check
+System check identified no issues (0 silenced).
+$ /tmp/nova-slider-implementation-20261026-py310/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ /tmp/nova-slider-implementation-20261026-py310/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+...................................................................................................
+----------------------------------------------------------------------
+Ran 99 tests in 6.889s
+
+OK
+Destroying test database for alias 'default'...
+Found 99 test(s).
+System check identified no issues (0 silenced).
+$ uv pip check --python /tmp/nova-slider-implementation-20261026-py310/bin/python
+Using Python 3.10.20 environment at: /tmp/nova-slider-implementation-20261026-py310
+Checked 8 packages in 0.28ms
+All installed packages are compatible

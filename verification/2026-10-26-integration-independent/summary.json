@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "date": "2026-10-26",
+  "baseline": "11dde38",
+  "implementation_thread": "01a17598-dca2-7783-ad1e-27713d10800a",
+  "implementation_model": "gpt-6.1-sol",
+  "source_tests": [
+    {
+      "python": "3.10.20",
+      "django": "5.2.17",
+      "tests": 99
+    },
+    {
+      "python": "3.12.14",
+      "django": "5.2.17",
+      "tests": 99
+    },
+    {
+      "python": "3.12.14",
+      "django": "6.1.1",
+      "tests": 99
+    }
+  ],
+  "wheel_tests": {
+    "python": "3.12.14",
+    "django": "6.1.1",
+    "tests": 99,
+    "runtime_files_matching_source_and_implementation_freeze": 28
+  },
+  "node": "24.21.0",
+  "jsdom": "26.1.0",
+  "component_tests": 38,
+  "worker_tests": 25,
+  "dom_checks": 12,
+  "independent_form_checks": 7,
+  "independent_protocol_checks": 5,
+  "independent_custom_form_dom_checks": 6,
+  "browser": "Chromium 155.0.8059.86",
+  "browser_http": "mocked",
+  "version": "0.2.0 unchanged",
+  "commit_push_deploy": false
+}

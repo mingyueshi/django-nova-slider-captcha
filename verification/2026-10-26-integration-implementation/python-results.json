@@ -1,0 +1,12 @@
+[
+  {
+    "runtime": "py310",
+    "python": "/tmp/nova-slider-implementation-20261026-py310/bin/python",
+    "status": "passed"
+  },
+  {
+    "runtime": "py312",
+    "python": "/tmp/nova-slider-review-20261026/bin/python",
+    "status": "passed"
+  }
+]

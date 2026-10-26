@@ -18,6 +18,7 @@ class Challenge(models.Model):
 
 
 class RateBucket(models.Model):
+    """Legacy upgrade/cleanup only. Removal requires a separate migration."""
     key = models.CharField(max_length=128, primary_key=True)
     count = models.PositiveIntegerField(default=0)
     expires_at = models.DateTimeField(db_index=True)

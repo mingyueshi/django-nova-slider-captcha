@@ -1,0 +1,1 @@
+{"status":"passed","checks":["real Django rendered configurable-purpose widget","prefixed hidden field submits under exact Django field name","CSRF-backed custom-purpose issuance and solve","other field error retains proof","corrected form consumes once","replay denied"],"limitations":["jsdom replaces image decode; no browser layout claim"]}

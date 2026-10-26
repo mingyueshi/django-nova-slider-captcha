@@ -1,0 +1,61 @@
+### Result
+{
+  "status": "passed",
+  "viewport": {
+    "width": 390,
+    "scrollWidth": 390
+  },
+  "widgets": [
+    {
+      "id": "first",
+      "state": "success",
+      "max": "420",
+      "x": 419,
+      "aria": "100%, press Enter to verify",
+      "handleWidth": 48,
+      "aspectRatio": "480 / 200"
+    },
+    {
+      "id": "second",
+      "state": "success",
+      "max": "420",
+      "x": 420,
+      "aria": "100%, press Enter to verify",
+      "handleWidth": 56,
+      "aspectRatio": "480 / 200"
+    }
+  ],
+  "fields": [
+    [
+      "join-security",
+      "proof-4"
+    ],
+    [
+      "recover-security",
+      "proof-5"
+    ]
+  ],
+  "verifyCalls": [
+    {
+      "url": "/captcha/verify",
+      "body": {
+        "challengeId": "integration-geometry",
+        "x": 419
+      }
+    },
+    {
+      "url": "/captcha/verify",
+      "body": {
+        "challengeId": "integration-geometry",
+        "x": 420
+      }
+    }
+  ],
+  "limitations": [
+    "HTTP is mocked; real PNG decode and Chromium layout"
+  ]
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (({status:Array.from(document.querySelectorAll(\'nova-slider\')).every(w=>w.state===\'success\')?\'passed\':\'unexpected\',viewport:{width:innerWidth,scrollWidth:document.documentElement.scrollWidth},widgets:Array.from(document.querySelectorAll(\'nova-slider\')).map(w=>({id:w.id,state:w.state,max:w.range.max,x:w.x,aria:w.range.getAttribute(\'aria-valuetext\'),handleWidth:w.querySelector(\'.nsc-handle\').getBoundingClientRect().width,aspectRatio:getComputedStyle(w.querySelector(\'.nsc-image\')).aspectRatio})),fields:Array.from(new FormData(document.querySelector(\'form\')).entries()),verifyCalls:window.calls.filter(c=>c.url.endsWith(\'verify\')),limitations:[\'HTTP is mocked; real PNG decode and Chromium layout\']}))');
+```

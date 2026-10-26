@@ -1,0 +1,5 @@
+Using Python 3.12.14 environment at: /tmp/nova-slider-integration-review-20261026/django61
+Resolved 1 package in 1ms
+Prepared 1 package in 4ms
+Installed 1 package in 1ms
+ + nova-slider-captcha==0.2.0 (from file:///tmp/nova-slider-integration-review-20261026/dist/nova_slider_captcha-0.2.0-py3-none-any.whl)

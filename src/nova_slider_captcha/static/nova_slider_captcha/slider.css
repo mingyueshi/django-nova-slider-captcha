@@ -1,6 +1,7 @@
 nova-slider {
   display: block;
   width: 100%;
+  --nsc-handle-size: 48px;
   --nsc-accent: var(--accent, var(--link-fg, #1d4ed8));
   --nsc-muted: var(--muted, var(--body-quiet-color, #667389));
   --nsc-panel: var(--panel2, var(--darkened-bg, #f7f8fc));
@@ -52,7 +53,7 @@ nova-slider {
 .nsc-track {
   position: relative;
   margin-top: 18px;
-  min-height: 48px;
+  min-height: var(--nsc-handle-size);
   border-radius: 8px;
   background: var(--nsc-panel);
   border: 1px solid var(--nsc-line);
@@ -63,13 +64,13 @@ nova-slider {
   inset: 0 auto 0 0;
   background: color-mix(in srgb, var(--nsc-accent) 9%, transparent);
   border-radius: 7px;
-  width: 48px;
+  width: var(--nsc-handle-size);
 }
 .nsc-track-text {
   position: relative;
   display: block;
-  min-height: 46px;
-  padding: 12px 52px;
+  min-height: calc(var(--nsc-handle-size) - 2px);
+  padding: 12px calc(var(--nsc-handle-size) + 4px);
   text-align: center;
   line-height: 1.6;
   font-size: 12px;
@@ -91,12 +92,12 @@ nova-slider {
 }
 .nsc-range::-webkit-slider-thumb {
   appearance: none;
-  width: 48px;
-  height: 48px;
+  width: var(--nsc-handle-size);
+  height: var(--nsc-handle-size);
 }
 .nsc-range::-moz-range-thumb {
-  width: 48px;
-  height: 48px;
+  width: var(--nsc-handle-size);
+  height: var(--nsc-handle-size);
 }
 .nsc-range:active {
   cursor: grabbing;
@@ -109,8 +110,8 @@ nova-slider {
   position: absolute;
   left: 0;
   top: -1px;
-  width: 48px;
-  height: 48px;
+  width: var(--nsc-handle-size);
+  height: var(--nsc-handle-size);
   border: 1px solid var(--nsc-line);
   border-radius: 8px;
   background: var(--panel, var(--nova-panel, var(--body-bg, #fff)));

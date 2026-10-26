@@ -1,0 +1,353 @@
+Building source distribution...
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+running sdist
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+running check
+creating nova_slider_captcha-0.2.0
+creating nova_slider_captcha-0.2.0/demo
+creating nova_slider_captcha-0.2.0/docs
+creating nova_slider_captcha-0.2.0/examples/worker-api
+creating nova_slider_captcha-0.2.0/examples/worker-api/tests
+creating nova_slider_captcha-0.2.0/scripts
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/management
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/management/commands
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/migrations
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/static/nova_slider_captcha
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/templates/nova_slider_captcha
+creating nova_slider_captcha-0.2.0/src/nova_slider_captcha/templatetags
+creating nova_slider_captcha-0.2.0/tests
+creating nova_slider_captcha-0.2.0/tests/fixtures
+creating nova_slider_captcha-0.2.0/verification
+creating nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+creating nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+creating nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+creating nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying files to nova_slider_captcha-0.2.0...
+copying LICENSE -> nova_slider_captcha-0.2.0
+copying MANIFEST.in -> nova_slider_captcha-0.2.0
+copying README.md -> nova_slider_captcha-0.2.0
+copying manage.py -> nova_slider_captcha-0.2.0
+copying package-lock.json -> nova_slider_captcha-0.2.0
+copying package.json -> nova_slider_captcha-0.2.0
+copying pyproject.toml -> nova_slider_captcha-0.2.0
+copying demo/__init__.py -> nova_slider_captcha-0.2.0/demo
+copying demo/settings.py -> nova_slider_captcha-0.2.0/demo
+copying demo/urls.py -> nova_slider_captcha-0.2.0/demo
+copying docs/2026-10-26-implementation.md -> nova_slider_captcha-0.2.0/docs
+copying docs/2026-10-26-independent.md -> nova_slider_captcha-0.2.0/docs
+copying docs/2026-10-26-integration-implementation.md -> nova_slider_captcha-0.2.0/docs
+copying docs/CHANGELOG.md -> nova_slider_captcha-0.2.0/docs
+copying docs/DIAGNOSTIC_REPORT.md -> nova_slider_captcha-0.2.0/docs
+copying docs/README.md -> nova_slider_captcha-0.2.0/docs
+copying docs/SOURCE_PROVENANCE.md -> nova_slider_captcha-0.2.0/docs
+copying docs/VERIFICATION.md -> nova_slider_captcha-0.2.0/docs
+copying examples/worker-api/README.md -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/captcha.mjs -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/migrations-0002-gcra.sql -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/puzzle.mjs -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/rate-limit.mjs -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/schema.sql -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/worker.mjs -> nova_slider_captcha-0.2.0/examples/worker-api
+copying examples/worker-api/tests/backend.test.mjs -> nova_slider_captcha-0.2.0/examples/worker-api/tests
+copying scripts/benchmark_hotpaths.py -> nova_slider_captcha-0.2.0/scripts
+copying scripts/dom_bridge.py -> nova_slider_captcha-0.2.0/scripts
+copying scripts/test_dom.cjs -> nova_slider_captcha-0.2.0/scripts
+copying scripts/test_matrix.py -> nova_slider_captcha-0.2.0/scripts
+copying scripts/test_rate_upgrade.py -> nova_slider_captcha-0.2.0/scripts
+copying src/nova_slider_captcha/__init__.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/admin.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/apps.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/checks.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/conf.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/events.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/forms.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/images.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/models.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/services.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/urls.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/views.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha
+copying src/nova_slider_captcha.egg-info/PKG-INFO -> nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/SOURCES.txt -> nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/dependency_links.txt -> nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/requires.txt -> nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/top_level.txt -> nova_slider_captcha-0.2.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/management/__init__.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/management
+copying src/nova_slider_captcha/management/commands/__init__.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/prune_slider_captcha.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/migrations/0001_initial.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0002_ratelimitstate.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/__init__.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.css -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.js -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.css -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.js -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templatetags/__init__.py -> nova_slider_captcha-0.2.0/src/nova_slider_captcha/templatetags
+copying tests/__init__.py -> nova_slider_captcha-0.2.0/tests
+copying tests/nova_settings.py -> nova_slider_captcha-0.2.0/tests
+copying tests/settings.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_captcha.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_forms.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_images.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_integration.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_localization.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_logging.py -> nova_slider_captcha-0.2.0/tests
+copying tests/test_rate_limit.py -> nova_slider_captcha-0.2.0/tests
+copying tests/widget.test.mjs -> nova_slider_captcha-0.2.0/tests
+copying tests/fixtures/gcra.json -> nova_slider_captcha-0.2.0/tests/fixtures
+copying verification/artifact-sha256.json -> nova_slider_captcha-0.2.0/verification
+copying verification/dom-node-22.23.3.log -> nova_slider_captcha-0.2.0/verification
+copying verification/dom-node-24.21.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/dom-node-26.10.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/dom-results.json -> nova_slider_captcha-0.2.0/verification
+copying verification/export-checks.json -> nova_slider_captcha-0.2.0/verification
+copying verification/matrix-results.json -> nova_slider_captcha-0.2.0/verification
+copying verification/node-downloads.json -> nova_slider_captcha-0.2.0/verification
+copying verification/node-results.json -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.11.17-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.12.15-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.12.15-django-6.0.8.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.12.15-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.13.16-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.14.8-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-3.14.8-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification
+copying verification/python-runtime-versions.json -> nova_slider_captcha-0.2.0/verification
+copying verification/source-runtime-sha256.json -> nova_slider_captcha-0.2.0/verification
+copying verification/widget-node-22.23.3.log -> nova_slider_captcha-0.2.0/verification
+copying verification/widget-node-24.21.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/widget-node-26.10.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/worker-node-22.23.3.log -> nova_slider_captcha-0.2.0/verification
+copying verification/worker-node-24.21.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/worker-node-26.10.0.log -> nova_slider_captcha-0.2.0/verification
+copying verification/2026-10-26-implementation/component-final.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/component.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/dom-results.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/dom.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/hotpaths.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/install-editable-py310.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/node-commands.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/npm-ci.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/py310.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/py312-uv-pip-check.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/py312.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/python-commands.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/versions.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-implementation/worker.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-implementation
+copying verification/2026-10-26-independent/baseline.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/browser.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/component.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/django-py310.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/django-py312.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/dom.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/dom.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/gcra-trace.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/hotpaths.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/summary.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/wheel-runtime.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/wheel-tests.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-independent/worker.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-independent
+copying verification/2026-10-26-integration-implementation/component-final.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/component.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/dom-results.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/dom.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py310-acceptance.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py310-complete.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py312-acceptance.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py312-complete.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py312-final.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/py312-initial.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/python-acceptance-results.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/python-results.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/runtime-source-sha256.json -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/2026-10-26-integration-implementation/worker.log -> nova_slider_captcha-0.2.0/verification/2026-10-26-integration-implementation
+copying verification/history-0.1.0/VERIFICATION.md -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/artifact-sha256.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/dom-node-22.23.3.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/dom-node-24.21.0.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/dom-node-26.10.0.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/dom-results.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/export-checks.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/matrix-results.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/node-downloads.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/node-results.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.11.17-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.12.15-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.12.15-django-6.0.8.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.12.15-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.13.16-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.14.8-django-5.2.17.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-3.14.8-django-6.1.1.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/python-runtime-versions.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/source-runtime-sha256.json -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/widget-node-22.23.3.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/widget-node-24.21.0.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+copying verification/history-0.1.0/widget-node-26.10.0.log -> nova_slider_captcha-0.2.0/verification/history-0.1.0
+Writing nova_slider_captcha-0.2.0/setup.cfg
+Creating tar archive
+removing 'nova_slider_captcha-0.2.0' (and everything under it)
+Building wheel from source distribution...
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+running bdist_wheel
+running build
+running build_py
+creating build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/services.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/models.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/events.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/checks.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/conf.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/__init__.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/apps.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/forms.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/admin.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/images.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/urls.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/views.py -> build/lib/nova_slider_captcha
+creating build/lib/nova_slider_captcha/templatetags
+copying src/nova_slider_captcha/templatetags/__init__.py -> build/lib/nova_slider_captcha/templatetags
+creating build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0002_ratelimitstate.py -> build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/__init__.py -> build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0001_initial.py -> build/lib/nova_slider_captcha/migrations
+creating build/lib/nova_slider_captcha/management
+copying src/nova_slider_captcha/management/__init__.py -> build/lib/nova_slider_captcha/management
+creating build/lib/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/prune_slider_captcha.py -> build/lib/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/__init__.py -> build/lib/nova_slider_captcha/management/commands
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+creating build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+creating build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.css -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.css -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.js -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.js -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+creating build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+installing to build/bdist.macosx-11.0-arm64/wheel
+running install
+running install_lib
+creating build/bdist.macosx-11.0-arm64/wheel
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/templatetags
+copying build/lib/nova_slider_captcha/templatetags/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/templatetags
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/0002_ratelimitstate.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/0001_initial.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/services.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/locale
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/locale/zh_Hans
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/models.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/events.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/checks.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/conf.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/management
+copying build/lib/nova_slider_captcha/management/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/management
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/management/commands/prune_slider_captcha.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/management/commands/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/apps.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/forms.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/admin.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/static
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/demo.css -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/slider.css -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/demo.js -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/slider.js -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/images.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/templates
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/urls.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/views.py -> build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha
+running install_egg_info
+Copying src/nova_slider_captcha.egg-info to build/bdist.macosx-11.0-arm64/wheel/./nova_slider_captcha-0.2.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.macosx-11.0-arm64/wheel/nova_slider_captcha-0.2.0.dist-info/WHEEL
+creating '/tmp/nova-slider-integration-review-20261026/dist/.tmp-wikvo___/nova_slider_captcha-0.2.0-py3-none-any.whl' and adding 'build/bdist.macosx-11.0-arm64/wheel' to it
+adding 'nova_slider_captcha/__init__.py'
+adding 'nova_slider_captcha/admin.py'
+adding 'nova_slider_captcha/apps.py'
+adding 'nova_slider_captcha/checks.py'
+adding 'nova_slider_captcha/conf.py'
+adding 'nova_slider_captcha/events.py'
+adding 'nova_slider_captcha/forms.py'
+adding 'nova_slider_captcha/images.py'
+adding 'nova_slider_captcha/models.py'
+adding 'nova_slider_captcha/services.py'
+adding 'nova_slider_captcha/urls.py'
+adding 'nova_slider_captcha/views.py'
+adding 'nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo'
+adding 'nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po'
+adding 'nova_slider_captcha/management/__init__.py'
+adding 'nova_slider_captcha/management/commands/__init__.py'
+adding 'nova_slider_captcha/management/commands/prune_slider_captcha.py'
+adding 'nova_slider_captcha/migrations/0001_initial.py'
+adding 'nova_slider_captcha/migrations/0002_ratelimitstate.py'
+adding 'nova_slider_captcha/migrations/__init__.py'
+adding 'nova_slider_captcha/static/nova_slider_captcha/demo.css'
+adding 'nova_slider_captcha/static/nova_slider_captcha/demo.js'
+adding 'nova_slider_captcha/static/nova_slider_captcha/slider.css'
+adding 'nova_slider_captcha/static/nova_slider_captcha/slider.js'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/admin_login.html'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/demo.html'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/widget.html'
+adding 'nova_slider_captcha/templatetags/__init__.py'
+adding 'nova_slider_captcha-0.2.0.dist-info/licenses/LICENSE'
+adding 'nova_slider_captcha-0.2.0.dist-info/METADATA'
+adding 'nova_slider_captcha-0.2.0.dist-info/WHEEL'
+adding 'nova_slider_captcha-0.2.0.dist-info/top_level.txt'
+adding 'nova_slider_captcha-0.2.0.dist-info/RECORD'
+removing build/bdist.macosx-11.0-arm64/wheel
+Successfully built /tmp/nova-slider-integration-review-20261026/dist/nova_slider_captcha-0.2.0.tar.gz
+Successfully built /tmp/nova-slider-integration-review-20261026/dist/nova_slider_captcha-0.2.0-py3-none-any.whl

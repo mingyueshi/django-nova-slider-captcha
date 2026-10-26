@@ -11,6 +11,8 @@
 - 固定窗口计数改为数据库原子 GCRA 令牌桶：连续补充额度，不再于整分钟同时恢复全部额度
 - `429` 返回计算出的 `Retry-After` 与 `retryAfter`；新增迁移保守保留旧限流状态的冷却期
 
+未发布改进（版本号仍为 0.2.0）包括自定义 purpose、通用 Form/ModelForm 集成、响应几何驱动和基础业务日志，详见 [CHANGELOG](docs/CHANGELOG.md)。
+
 升级前请先阅读下方“从 0.1.0 升级”，不要直接让新旧限流代码同时运行。
 
 ## 安装与本地试用
@@ -68,7 +70,7 @@ urlpatterns = [
 
 代理应保留外部 Host，向 Django 准确传递外部 HTTPS scheme，并正确配置 `ALLOWED_HOSTS`；仅在入口代理会移除客户端伪造头并重新设置时，才配置 `SECURE_PROXY_SSL_HEADER` / `USE_X_FORWARDED_HOST`。保证 session/CSRF Cookie 的域、路径覆盖页面与验证码接口，并在生产启用 Secure；代理不得缓存验证码响应或丢弃 `Set-Cookie`。可信代理还需正确提供客户端 `REMOTE_ADDR`，本组件不会直接读取 `X-Forwarded-For`。不要通过关闭 CSRF 或宽泛信任客户端转发头解决代理错误。
 
-组件内部自带一个名为 `nova_slider_token` 的隐藏表单字段。不要在外面重复渲染同名字段。成功事件 `verified` 的 `event.detail` 为 `{token, expiresIn}`；凭证失效或刷新时发出 `captcha-reset`，状态变化发出 `captcha-state`。只在相关表单内临时保留凭证，不放入 URL、日志或持久浏览器存储。
+组件内部自带一个默认名为 `nova_slider_token` 的隐藏表单字段；可用 `field-name="proof"` 修改。Django Widget 会使用对应字段的完整名字（含 Form prefix / formset 前缀），多个组件应各用一个字段名。不要在外面重复渲染同名字段。成功事件 `verified` 的 `event.detail` 为 `{token, expiresIn}`；凭证失效或刷新时发出 `captcha-reset`，状态变化发出 `captcha-state`。只在相关表单内临时保留凭证，不放入 URL、日志或持久浏览器存储。
 
 业务接口示意：
 
@@ -85,6 +87,115 @@ if not consume(request.POST.get("nova_slider_token"), request, purpose="login"):
 消费是单次的。后续操作失败时可能需要重新验证；如果把消费放进更大的数据库事务，事务回滚也会撤销消费。请明确事务边界，对支付等重要业务另设幂等控制。验证码不替代认证或授权。
 
 `X-CSRFToken` 可使用模板中的 `{% csrf_token %}` 或 `/captcha/init` 返回的值；不必读取 Cookie，因此兼容 `CSRF_COOKIE_HTTPONLY=True`。使用 `CSRF_USE_SESSIONS=True` 时仍须保持正常的中间件顺序。
+
+## 自定义 purpose
+
+Django 默认允许 `demo`、`login`。宿主设置 `NOVA_SLIDER_PURPOSES` 后会**替换整个集合**；要保留默认用途，请在配置中显式列出：
+
+```python
+# settings.py（Django app；Worker 示例仍使用其独立协议）
+NOVA_SLIDER_PURPOSES = ["demo", "login", "contact", "profile_update"]
+```
+
+仅接受非空的 list、tuple、set 或 frozenset，不能用字符串或字典代替。名称遵循 `[a-z][a-z0-9_:-]{0,31}`，首位为小写英文字母，后续可用小写字母、数字、下划线、冒号和连字符，总长不超过数据库的 32 字符。非法配置会产生系统检查 `E004`，HTTP 接口返回 `503 configuration_invalid`，出题服务抛出 `ValueError`，消费拒绝放行。每次调用读取当前配置，支持 `override_settings`；移除某个用途后，其未完成挑战和未消费凭证也会被拒绝。
+
+前端 `purpose="contact"` 只选择题目绑定用途。业务服务端必须固定 `purpose="contact"`，不能直接使用 POST 中的 purpose 决定受保护操作。`/captcha/submit` 始终只消费 `demo`，不能用它消费自定义用途。所有用途共享对应 action 的 IP/session 额度，增加或切换 purpose 不会获得新额度。
+
+## 通用 Form 与 ModelForm
+
+使用 `SliderCaptchaField` 和放在最左边的 `SliderCaptchaFormMixin`，在初始化时传入 `request=`。字段名可自由选择；Widget 的 `purpose`、完整隐藏字段名和资源由字段提供。只使用 Field 而遗漏 Mixin 会拒绝验证。字段必须保持 `required=True`、`disabled=False`。
+
+普通 Form 示例（放进已有 Django app）：
+
+```python
+# forms.py
+from django import forms
+from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin
+
+class ContactForm(SliderCaptchaFormMixin, forms.Form):
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+    proof = SliderCaptchaField(purpose="contact")
+
+# views.py
+from django.http import HttpResponse
+from django.shortcuts import render
+from .forms import ContactForm
+
+def contact(request):
+    form = ContactForm(request.POST if request.method == "POST" else None,
+                       request=request, prefix="contact")
+    if request.method == "POST" and form.is_valid():
+        # 凭证已消费；在这里执行业务操作，不能再调用 consume()。
+        return HttpResponse("Accepted")
+    return render(request, "protected_form.html", {"form": form})
+
+# urls.py（项目仍需挂载 nova_slider_captcha.urls）
+from django.urls import path
+from .views import contact
+urlpatterns = [path("contact/", contact, name="contact")]
+```
+
+ModelForm 示例复用 Django 用户模型，不需要新模型迁移；认证与授权仍由业务视图负责：
+
+```python
+# forms.py
+from django import forms
+from django.contrib.auth import get_user_model
+from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin
+
+class ProfileForm(SliderCaptchaFormMixin, forms.ModelForm):
+    proof = SliderCaptchaField(purpose="profile_update")
+
+    class Meta:
+        model = get_user_model()
+        fields = ["first_name", "last_name", "email"]
+
+# views.py
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import render
+from .forms import ProfileForm
+
+@login_required
+def profile(request):
+    form = ProfileForm(request.POST if request.method == "POST" else None,
+                       instance=request.user, request=request)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return HttpResponse("Saved")
+    return render(request, "protected_form.html", {"form": form})
+
+# urls.py
+from django.urls import path
+from .views import profile
+urlpatterns = [path("profile/", profile, name="profile")]
+```
+
+两个示例均使用以下模板，并使用上方包含 `contact`、`profile_update` 的用途配置。自定义用户模型若没有所列字段，按模型实际字段修改 ProfileForm。
+
+```django
+{# templates/protected_form.html #}
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Protected form</title>{{ form.media }}</head>
+<body>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit</button>
+</form>
+</body>
+</html>
+```
+
+消费发生在 Django 的字段校验、`Form.clean()`、ModelForm 的模型校验（含唯一性与约束）全部通过之后。其他字段/模型失败时，凭证仍可用于新建表单重试；缺 request 或会话绑定则拒绝。一个有效表单中的多个验证码字段会在 Challenge 写数据库的同一事务内消费，任一凭证失败全部回滚；每个字段需要独立匹配的凭证。不要在 `clean()` 或模型校验中执行受保护业务写入，因为它们先于消费。
+
+同一实例重复调用 `is_valid()`、读取 `errors` 或 `full_clean()`，只消费一次。成功实例绑定原 token、request 对象、会话绑定和各字段 purpose；更换其中任一项或禁用该 purpose 会使其失效，请新建表单实例。表单通过后仅执行一次业务操作；表单不是业务幂等锁。`save()` 或后续业务失败时默认凭证已用，需要重新验证；若外层事务回滚了消费，必须丢弃该表单实例，不能跨回滚复用缓存成功结果。跨数据库业务写入也不受此局部事务保护。
+
+Formset 可通过 `FormSet(..., form_kwargs={"request": request})` 传 request，并正常渲染 `management_form` 和每个子表单；隐藏字段会使用 `form-0-proof` 等完整名字，未填写的 extra 表单不会消费或产生验证码错误。**消费边界是单个子表单**：已有效子表单可能先消费，而另一个子表单或 formset 的 `clean()` 随后失败；本组件不提供整个 formset 的延后消费/事务保证。可按业务需求选择外层同库事务并在失败后回滚、丢弃所有表单实例，或为 formset 设计独立的可信提交流程。独立表单不要设置 `empty_permitted=True` 来绕过必填校验。
+
+Admin 继续使用下文的 `SliderAdminAuthenticationForm`，不组合这个 Mixin：Admin 必须先消费验证码，再进入密码认证，密码错误也会消费。
 
 ## 前端国际化与自定义文案
 
@@ -148,13 +259,13 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 所有验证码响应禁止缓存，所有状态变更接口要求 JSON、同源请求和 CSRF。先初始化会话：
 
 - `GET /captcha/init` → `{csrfToken}`
-- `POST /captcha/challenge`，请求 `{purpose:"demo"|"login"}`，返回 `{challengeId,background,piece,width:320,height:160,pieceWidth:44,pieceY,expiresIn:120,maxAttempts:5}`
+- `POST /captcha/challenge`，请求 `{purpose:"demo"}`（或配置允许的其他用途），返回 `{challengeId,background,piece,width:320,height:160,pieceWidth:44,pieceY,expiresIn:120,maxAttempts:5}`
 - `POST /captcha/verify`，请求 `{challengeId,x}`，成功返回 `{ok:true,token,expiresIn:60}`；失败返回 `{ok:false,code,...}`
 - `POST /captcha/submit`，请求 `{token,purpose:"demo"}`，只演示消费凭证；`/captcha/demo` 是 Django 的别名
 
 图片为扁平 PNG data URL，不包含数字答案、图片种子或可直接读取缺口位置的向量结构。人和程序仍可以从图像像素推断位置，因此不声称答案能对视觉分析保密。
 
-`x` 是拼图块在原始 320×160 图像中的左边坐标，范围 0–276，容差 ±4 像素。缩放显示时应换算到原始坐标；`pieceY` 是公开值。挑战有效 120 秒，最多 5 次错误猜测；验证成功后凭证从服务端签发时起有效 60 秒。格式错误不扣拼图尝试次数，但计入验证码校验限流。
+`x` 是拼图块在原始图像中的左边坐标；默认 320×160、拼图块 44，范围 0–276，容差 ±4 像素。组件根据响应的 `width`、`height`、`pieceWidth` 计算范围、移动比例、ARIA 和图片宽高比，拒绝非数、零值或越界几何。交互手柄的 48px 由 CSS `--nsc-handle-size` 统一控制，与拼图尺寸独立。本轮未开放后端图片尺寸配置。缩放显示时应换算到原始坐标；`pieceY` 是公开值。挑战有效 120 秒，最多 5 次错误猜测；验证成功后凭证从服务端签发时起有效 60 秒。格式错误不扣拼图尝试次数，但计入验证码校验限流。
 
 常见错误代码包括 `init_required`、`rate_limited`、`invalid_position`、`invalid_challenge`、`expired`、`already_verified`、`incorrect`、`attempts_exhausted`、`invalid_token`、`rate_limit_unavailable`。具体后端还可能返回通用 `unavailable`。Django 中间件的 CSRF 拒绝可以是 HTML 403，客户端已做非 JSON 失败处理。
 
@@ -169,7 +280,7 @@ Django 默认每分钟补充速率与突发容量：
 | `verify_session` | 60 |
 | `verify_ip` | 120 |
 
-通过 `NOVA_SLIDER_RATE_LIMITS` 覆盖上述键，值必须是 1–60000 的整数。桶键由动作、范围和哈希后的主体组成，不包含分钟编号。`demo` 与 `login` 共享相同动作的额度，切换用途或新建 session 不能绕过既定的 IP 配额；验证凭证本身仍单独绑定 session 和用途。
+通过 `NOVA_SLIDER_RATE_LIMITS` 覆盖上述键，值必须是 1–60000 的整数。桶键由动作、范围和哈希后的主体组成，不包含分钟编号。所有允许的 purpose（包括 `demo` 与 `login`）共享相同动作的额度，切换用途或新建 session 不能绕过既定的 IP 配额；验证凭证本身仍单独绑定 session 和用途。
 
 算法每次使用整数微秒与 `ceil(60,000,000/N)` 的补充间隔，原子条件更新数据库中的理论到达时间。以 N=20 为例，满桶允许一次性最多 20 次，此后约每 3 秒补充一次；不会在 59.999 秒和 60.001 秒之间同时恢复两个满桶。
 
@@ -190,6 +301,8 @@ Django 迁移明确拒绝自动逆转，避免悄悄删除仍有效的限流债�
 
 Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcra.sql`（旧库只加新迁移）。它在首次访问稳定桶时惰性继承旧桶冷却期，schema 迁移中不塞入业务数据；同样要求停止旧写入、保留旧表，不声明无停机混合版本升级。
 
+`RateBucket` 仅用于旧版升级与安全清理，不再承载当前限流请求；未来删除必须另做迁移，本轮保留表且不承诺删除日期。
+
 定期执行 `python manage.py prune_slider_captcha` 清理安全过期的挑战、旧桶和完全补充的 GCRA 状态。未清偿债务与未结束冷却期不能提前删除。清理和限流会并发运行，竞争失败必须保守拒绝，不能作为无状态放行依据。
 
 可从每五分钟执行一次开始，例如在部署用户的 crontab 中配置（替换路径，并使用与服务一致的生产环境变量和数据库配置）：
@@ -201,6 +314,41 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 按访问量、状态表增长和数据库清理耗时调整频率；避免调度重叠，确保日志可写并纳入监控。状态数量由 IP、session 和动作共同决定，一个 IP 可以产生大量 session，不能仅按 IP 数估计。清理频率不改变债务和冷却记录的保留条件。
 
 `SECRET_KEY` 轮换会使已有挑战与未消费凭证失效，也会改变 IP/session 限流身份，可能产生新额度。本组件的自定义 `salted_hmac` 不尝试 `SECRET_KEY_FALLBACKS`。应协调所有实例的密钥切换、提示用户重新完成验证码，并在轮换窗口保留独立的入口/账号限流；旧状态仍按上述安全条件清理，不能为轮换直接清空限流表。
+
+## 基础业务日志
+
+Django app 使用命名 logger `nova_slider_captcha`；不添加第三方依赖。所有记录的消息固定为 `CAPTCHA business event`，排障数据位于 `extra` 字段 `captcha_event`、`captcha_reason`、`captcha_status`、`captcha_purpose`、`captcha_action`。purpose 只记录已配置允许的名字，其他情况为 `unknown`。机器原因码包括 `database_unavailable`、`configuration_invalid`、`invalid_proof`、`binding_missing`、`proof_rejected`、`rate_limited`；`proof_rejected` 不区分过期、重放、用途或会话不匹配，避免泄露凭证状态。
+
+503/数据库消费错误使用 ERROR，消费拒绝使用 WARNING，429 默认 DEBUG。用 `NOVA_SLIDER_RATE_LOG_LEVEL = "WARNING"` 可提升 429 级别，或设 `"OFF"` 关闭该事件；允许 DEBUG、INFO、WARNING、ERROR、CRITICAL、OFF（非法值产生检查 `E005`）。成功事件默认不输出。示例宿主设置：
+
+```python
+NOVA_SLIDER_RATE_LOG_LEVEL = "DEBUG"
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "captcha": {
+            "format": "%(levelname)s %(name)s event=%(captcha_event)s reason=%(captcha_reason)s status=%(captcha_status)s purpose=%(captcha_purpose)s action=%(captcha_action)s",
+        },
+    },
+    "handlers": {
+        "captcha_console": {
+            "class": "logging.StreamHandler",
+            "level": "WARNING",
+            "formatter": "captcha",
+        },
+    },
+    "loggers": {
+        "nova_slider_captcha": {
+            "handlers": ["captcha_console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
+```
+
+此 formatter 只绑定验证码 logger，其他 Django 日志不一定带这些 extra 字段。日志不包含 token、session 秘密、答案、原始请求体、异常文本、IP 或任意客户端字符串；宿主自行配置的中间件/APM 也应避免采集这些内容。日志处理器异常不会改变限流或单次消费的判定。429 级别仅控制本组件业务事件，Django 自身的 HTTP 请求日志仍由宿主另行配置。该日志功能仅针对 Django app，未改线上 Worker。
 
 ## 安全与无障碍边界
 
@@ -215,7 +363,7 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](docs/README.md)。
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，详情及本轮改进结果见 [本地自测记录](docs/2026-10-26-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖固定 Pillow 12.2.0。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
 
 ```sh
 python manage.py check

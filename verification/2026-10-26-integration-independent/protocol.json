@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "checks": [
+    "custom purpose, CSRF-backed HTTP, cross-purpose isolation and one-use consumption",
+    "purposes share existing action/IP/session capacity",
+    "configured collection replaces defaults dynamically",
+    "invalid purpose configuration fails closed",
+    "structured fault events omit token, session secret and database error text"
+  ]
+}

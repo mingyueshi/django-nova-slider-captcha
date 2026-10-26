@@ -1,0 +1,14 @@
+Installed import: /private/tmp/nova-slider-integration-review-20261026/django61/lib/python3.12/site-packages/nova_slider_captcha/__init__.py
+Wheel runtime matches source: 28 files
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+...................................................................................................
+----------------------------------------------------------------------
+Ran 99 tests in 6.559s
+
+OK
+Destroying test database for alias 'default'...
+System check identified no issues (0 silenced).
+No changes detected
+Found 99 test(s).
+System check identified no issues (0 silenced).

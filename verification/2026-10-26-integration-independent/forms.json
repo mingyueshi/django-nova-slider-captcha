@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "checks": [
+    "field errors retain proof, prefixed valid form consumes once, repeated validation stable, replay denied",
+    "changed token cannot use cached success or consume replacement",
+    "ModelForm uniqueness failure retains proof; valid model form consumes and saves",
+    "missing request fails without consuming",
+    "changed cleaned token invalidates permanently and leaves replacement unconsumed",
+    "equal-valued replacement request cannot reuse cached identity",
+    "formset accepts one protected form plus empty extra form"
+  ]
+}

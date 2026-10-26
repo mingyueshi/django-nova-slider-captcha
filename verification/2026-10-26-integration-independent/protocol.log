@@ -1,0 +1,6 @@
+Bad Request: /captcha/challenge
+Forbidden: /captcha/submit
+Too Many Requests: /captcha/challenge
+Bad Request: /captcha/challenge
+Service Unavailable: /captcha/challenge
+Service Unavailable: /captcha/verify

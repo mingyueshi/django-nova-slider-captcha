@@ -11,7 +11,8 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 
 from . import services
-from .conf import PURPOSES, WIDTH, PIECE_SIZE
+from .conf import WIDTH, PIECE_SIZE, purposes, valid_purpose
+from .events import event, rate_denied
 
 
 def _failure(code, status=400):
@@ -22,8 +23,13 @@ def _rate_failure(request, action):
     try:
         decision = services.allow_request(request, action)
     except DatabaseError:
+        event("rate_limit", "database_unavailable", 503, action=action)
         return _failure("rate_limit_unavailable", 503)
+    except ValueError:
+        event("configuration", "configuration_invalid", 503, action=action)
+        return _failure("configuration_invalid", 503)
     if not decision:
+        rate_denied(action)
         response = JsonResponse({"ok": False, "code": "rate_limited", "attemptsRemaining": 0,
                                  "retryAfter": decision.retry_after}, status=429)
         response["Retry-After"] = str(decision.retry_after)
@@ -67,7 +73,15 @@ def json_post(view):
             return _failure("invalid_json")
         if not services.session_binding(request):
             return _failure("init_required", 409)
-        return view(request, data)
+        try:
+            purposes()
+            return view(request, data)
+        except ValueError:
+            event("configuration", "configuration_invalid", 503)
+            return _failure("configuration_invalid", 503)
+        except DatabaseError:
+            event("http", "database_unavailable", 503)
+            return _failure("unavailable", 503)
     return wrapped
 
 
@@ -87,7 +101,7 @@ def challenge(request, data):
     if failure is not None:
         return failure
     purpose = data.get("purpose")
-    if not isinstance(purpose, str) or purpose not in PURPOSES:
+    if not valid_purpose(purpose):
         return _failure("invalid_purpose")
     return JsonResponse(services.issue(request, purpose))
 

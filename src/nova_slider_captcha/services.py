@@ -7,13 +7,14 @@ import secrets
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone as datetime_timezone
 
-from django.db import router
+from django.db import DatabaseError, router
 from django.db.models import BigIntegerField, F, Value
 from django.db.models.functions import Greatest
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 
-from .conf import CHALLENGE_TTL, MAX_ATTEMPTS, PURPOSES, RATE_PERIOD_US, TOKEN_TTL, TOLERANCE, rate_limit
+from .conf import CHALLENGE_TTL, HEIGHT, MAX_ATTEMPTS, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, TOLERANCE, WIDTH, purposes, rate_limit, valid_purpose
+from .events import event
 from .images import make_puzzle
 from .models import Challenge, RateLimitState
 
@@ -28,6 +29,8 @@ def _hash(value, salt="binding"):
 
 
 def session_binding(request, create=False):
+    if request is None or not hasattr(request, "session"):
+        return None
     nonce = request.session.get(_SESSION_KEY)
     if not nonce and create:
         nonce = secrets.token_urlsafe(TOKEN_BYTES)
@@ -107,19 +110,20 @@ def allow_request(request, action):
 
 
 def issue(request, purpose):
-    if purpose not in PURPOSES:
+    if not valid_purpose(purpose):
         raise ValueError("Unsupported CAPTCHA purpose")
     binding = session_binding(request, create=True)
     target_x, piece_y, background, piece = make_puzzle()
     challenge = Challenge.objects.create(session_hash=binding, purpose=purpose, target_x=target_x, expires_at=timezone.now() + timedelta(seconds=CHALLENGE_TTL))
-    return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": 320, "height": 160, "pieceWidth": 44, "pieceY": piece_y, "expiresIn": CHALLENGE_TTL, "maxAttempts": MAX_ATTEMPTS}
+    return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": WIDTH, "height": HEIGHT, "pieceWidth": PIECE_SIZE, "pieceY": piece_y, "expiresIn": CHALLENGE_TTL, "maxAttempts": MAX_ATTEMPTS}
 
 
 def verify(request, challenge_id, x):
+    allowed = purposes()
     now = timezone.now()
     binding = session_binding(request)
     challenge = Challenge.objects.filter(pk=challenge_id, session_hash=binding).first() if binding else None
-    if not challenge:
+    if not challenge or challenge.purpose not in allowed:
         return {"ok": False, "code": "invalid_challenge", "attemptsRemaining": 0}
     if challenge.expires_at <= now:
         return {"ok": False, "code": "expired", "attemptsRemaining": 0}
@@ -149,9 +153,23 @@ def consume(token, request, purpose):
     operation. Do not trust a client's asserted purpose. Returns bool; database
     failures propagate (fail closed). Business transactions remain your concern.
     """
-    if purpose not in PURPOSES or not isinstance(token, str) or len(token) != TOKEN_LENGTH:
+    try:
+        supported = valid_purpose(purpose)
+    except ValueError:
+        event("consume", "configuration_invalid", 503)
+        return False
+    if not supported or not isinstance(token, str) or len(token) != TOKEN_LENGTH:
+        event("consume", "invalid_proof", 403, purpose=purpose)
         return False
     binding = session_binding(request)
     if not binding:
+        event("consume", "binding_missing", 403, purpose=purpose)
         return False
-    return bool(Challenge.objects.filter(token_hash=_hash(token, "token"), session_hash=binding, purpose=purpose, solved=True, token_consumed=False, token_expires_at__gt=timezone.now()).update(token_consumed=True))
+    try:
+        consumed = bool(Challenge.objects.filter(token_hash=_hash(token, "token"), session_hash=binding, purpose=purpose, solved=True, token_consumed=False, token_expires_at__gt=timezone.now()).update(token_consumed=True))
+    except DatabaseError:
+        event("consume", "database_unavailable", 503, purpose=purpose)
+        raise
+    if not consumed:
+        event("consume", "proof_rejected", 403, purpose=purpose)
+    return consumed

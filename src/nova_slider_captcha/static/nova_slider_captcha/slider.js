@@ -193,7 +193,7 @@
         if (attribute) element.setAttribute(attribute, this.getText(key));
         else element.textContent = this.getText(key);
       }
-      this.range.setAttribute("aria-valuetext", this.getText("value", { percent: Math.round((this.x / 276) * 100) }));
+      this.range.setAttribute("aria-valuetext", this.getText("value", { percent: Math.round((this.x / this.maxX) * 100) }));
       this.renderStatus();
       this.emit("captcha-locale", { locale: this.locale });
     }
@@ -202,6 +202,8 @@
       this.live = true;
       this.seq = (this.seq || 0) + 1;
       this.x = 0;
+      this.maxX = 1;
+      this.imageWidth = 1;
       this.resetPointer();
       this.abortEvents = new AbortController();
       // Upgrade property values assigned before customElements.define().
@@ -213,12 +215,13 @@
         }
       }
       // Only fixed markup is inserted here. All translated/custom text uses textContent.
-      this.innerHTML = `<div class="nsc"><div class="nsc-image"><img class="nsc-background" alt="" draggable="false"><img class="nsc-piece" alt="" draggable="false"><div class="nsc-overlay"></div></div><div class="nsc-track"><div class="nsc-fill"></div><span class="nsc-track-text" aria-hidden="true"></span><input class="nsc-range" type="range" min="0" max="276" step="1" value="0" aria-describedby="nsc-instructions-${NovaSlider.id++}"><span class="nsc-handle" aria-hidden="true">→</span></div><div class="nsc-meta"><span class="nsc-status" role="status" aria-live="polite"></span><button class="nsc-refresh" type="button"><span aria-hidden="true">↻</span> <span class="nsc-refresh-text"></span></button></div><p class="nsc-keyboard"></p><input type="hidden" name="nova_slider_token" value=""></div>`;
+      this.innerHTML = `<div class="nsc"><div class="nsc-image"><img class="nsc-background" alt="" draggable="false"><img class="nsc-piece" alt="" draggable="false"><div class="nsc-overlay"></div></div><div class="nsc-track"><div class="nsc-fill"></div><span class="nsc-track-text" aria-hidden="true"></span><input class="nsc-range" type="range" min="0" max="1" step="1" value="0" aria-describedby="nsc-instructions-${NovaSlider.id++}"><span class="nsc-handle" aria-hidden="true">→</span></div><div class="nsc-meta"><span class="nsc-status" role="status" aria-live="polite"></span><button class="nsc-refresh" type="button"><span aria-hidden="true">↻</span> <span class="nsc-refresh-text"></span></button></div><p class="nsc-keyboard"></p><input type="hidden" name="nova_slider_token" value=""></div>`;
       this.range = this.querySelector(".nsc-range");
       this.querySelector(".nsc-keyboard").id = this.range.getAttribute("aria-describedby");
       this.status = this.querySelector(".nsc-status");
       this.overlay = this.querySelector(".nsc-overlay");
       this.field = this.querySelector("input[type=hidden]");
+      this.field.name = this.getAttribute("field-name") || "nova_slider_token";
       this.state = "loading";
       this.stateText = { key: "connecting", values: {} };
       this.renderLocale();
@@ -296,12 +299,12 @@
       this.emit("captcha-state", { state, message: this.status.textContent });
     }
     move(x) {
-      this.x = Number.isFinite(x) ? Math.min(276, Math.max(0, x)) : 0;
+      this.x = Number.isFinite(x) ? Math.min(this.maxX, Math.max(0, x)) : 0;
       this.range.value = this.x;
-      this.querySelector(".nsc-piece").style.left = (this.x / 320) * 100 + "%";
-      this.querySelector(".nsc-handle").style.left = `calc(${(this.x / 276) * 100}% - ${(this.x / 276) * 48}px)`;
-      this.querySelector(".nsc-fill").style.width = `calc(${(this.x / 276) * 100}% + ${48 - (this.x / 276) * 48}px)`;
-      this.range.setAttribute("aria-valuetext", this.getText("value", { percent: Math.round((this.x / 276) * 100) }));
+      this.querySelector(".nsc-piece").style.left = (this.x / this.imageWidth) * 100 + "%";
+      this.querySelector(".nsc-handle").style.left = `calc(${(this.x / this.maxX) * 100}% - var(--nsc-handle-size) * ${this.x / this.maxX})`;
+      this.querySelector(".nsc-fill").style.width = `calc(${(this.x / this.maxX) * 100}% + var(--nsc-handle-size) * ${1 - this.x / this.maxX})`;
+      this.range.setAttribute("aria-valuetext", this.getText("value", { percent: Math.round((this.x / this.maxX) * 100) }));
     }
     async post(action, body, signal) {
       const csrfToken = await init(this.endpoint);
@@ -335,7 +338,20 @@
           const message = errorText(data, "generation_failed");
           throw localError(message.key, message.values);
         }
+        // Geometry is public protocol data, but must be valid before arithmetic
+        // or enabling input. Dimensions are bounded independently of CSS pixels.
+        const dimension = (v) => Number.isInteger(v) && v > 0 && v <= 8192;
+        if (!dimension(data.width) || !dimension(data.height) || !dimension(data.pieceWidth)
+            || data.pieceWidth >= data.width || data.pieceWidth > data.height
+            || !Number.isInteger(data.pieceY) || data.pieceY < 0
+            || data.pieceY > data.height - data.pieceWidth)
+          throw localError("generation_failed");
         this.challenge = data;
+        this.imageWidth = data.width;
+        this.maxX = data.width - data.pieceWidth;
+        this.range.max = String(this.maxX);
+        this.querySelector(".nsc-image").style.aspectRatio = `${data.width} / ${data.height}`;
+        this.move(0);
         // New nodes isolate each generation from old image load/error events.
         const bg = new Image(), piece = new Image();
         for (const [image, className, alt] of [[bg, "nsc-background", "background_alt"], [piece, "nsc-piece", "piece_alt"]]) {
