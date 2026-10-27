@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.checks import Error, Tags, register
 
-from .conf import challenge_policy, configured_alternative_link, purposes, rate_limit, rate_log_level
+from .conf import challenge_policy, configured_alternative_link, purposes, rate_limit, rate_log_level, session_backend
 
 
 @register(Tags.security)
@@ -12,12 +12,13 @@ def captcha_settings_check(app_configs, **kwargs):
         if name not in middleware:
             errors.append(Error(f"Nova Slider CAPTCHA requires {name}.", id=identifier))
     try:
+        rate_limit("init", "ip")
         for action in ("issue", "verify"):
             for scope in ("session", "ip"):
                 rate_limit(action, scope)
     except (ValueError, TypeError, AttributeError) as error:
         errors.append(Error(str(error), id="nova_slider_captcha.E003"))
-    for validator, identifier in ((purposes, "nova_slider_captcha.E004"), (rate_log_level, "nova_slider_captcha.E005"), (challenge_policy, "nova_slider_captcha.E006")):
+    for validator, identifier in ((purposes, "nova_slider_captcha.E004"), (rate_log_level, "nova_slider_captcha.E005"), (challenge_policy, "nova_slider_captcha.E006"), (session_backend, "nova_slider_captcha.E008")):
         try:
             validator()
         except ValueError as error:

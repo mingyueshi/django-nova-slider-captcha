@@ -1,0 +1,31 @@
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python scripts/check_coverage.py /private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json
+{
+  "package": {
+    "statements_covered": 690,
+    "statements": 700,
+    "statement_percent": 98.57142857142857,
+    "branches_covered": 175,
+    "branches": 178,
+    "branch_percent": 98.31460674157303,
+    "combined_percent": 98.51936218678816,
+    "floors": {
+      "statements": 97,
+      "branches": 95
+    }
+  },
+  "forms": {
+    "statements_covered": 142,
+    "statements": 142,
+    "statement_percent": 100.0,
+    "branches_covered": 44,
+    "branches": 44,
+    "branch_percent": 100.0,
+    "combined_percent": 100.0,
+    "floors": {
+      "statements": 99,
+      "branches": 97
+    }
+  },
+  "forms_missing_lines": [],
+  "forms_missing_branches": []
+}

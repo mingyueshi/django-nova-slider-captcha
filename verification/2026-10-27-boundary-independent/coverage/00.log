@@ -1,0 +1,2 @@
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python -c import platform,django,PIL,coverage,nova_slider_captcha; print(platform.python_version(),django.get_version(),PIL.__version__,coverage.__version__,nova_slider_captcha.__file__)
+3.12.14 5.2.17 12.3.0 7.17.0 /Users/apple/Documents/GitHub/django-nova-slider-captcha/src/nova_slider_captcha/__init__.py

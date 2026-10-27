@@ -184,6 +184,8 @@ class SliderAdminAuthenticationForm(AdminAuthenticationForm):
     nova_slider_token = forms.CharField(label=_("Security verification"), required=True, max_length=128, widget=SliderCaptchaWidget, error_messages={"required": _("Complete the security verification before signing in.")})
 
     def clean(self):
+        if self._errors:
+            return self.cleaned_data
         # Validate/consume before authentication so missing/invalid CAPTCHA never
         # reaches password backends. A failed password requires a fresh proof.
         token = self.cleaned_data.get("nova_slider_token")

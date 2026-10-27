@@ -1,0 +1,15 @@
+{
+  "commit": "62a93e7efc2d4f1cca0a9390627f5a821c4c742c",
+  "scope": "Targeted read-only code review with isolated SQLite probes; not a full test matrix",
+  "python": "3.12.14",
+  "django": "5.2.17",
+  "files": {
+    "src/nova_slider_captcha/forms.py": "0b54b924f49c712c3d6e0cc5c86bde4cc24380ed232c9acc510eb9e2f57f9c50",
+    "src/nova_slider_captcha/services.py": "0ee9ccd6c76662519e68069bfb69199dfac9996873f6882c0ee2c6b995234ab4",
+    "src/nova_slider_captcha/views.py": "f49085c59bae168ce11a45ff725db065f76565797312a460eaf954d2244e1897",
+    "src/nova_slider_captcha/checks.py": "2c8e444818c151ad4fd0f20ecb5870784edf8049298c5492f0525618dfbc9256",
+    "src/nova_slider_captcha/models.py": "2a7d776ea139452b4597e0ed4b4f3b20d73c7010c9ed86efcdec340727886389",
+    "src/nova_slider_captcha/management/commands/prune_slider_captcha.py": "f2b9ff21f6a765b346f3859863293871c5a605b7529e0dca472873b3c6c1d1f8",
+    "examples/worker-api/captcha.mjs": "870761a113d2d09dbf3eb9f07663cc9f30f37c3d94b8df3dc1efbaed04e3a745"
+  }
+}

@@ -88,6 +88,10 @@ python -m django check --deploy --fail-level WARNING --settings=myproject.settin
 
 ## prune 调度与状态表监控
 
+在 Django 前的可信入口按实际容量限制 `/captcha/init` 的全部流量（自定义挂载时替换路径），并保持正确客户端 IP 映射。应用内 `init_ip` 默认 40 的 GCRA 额度仅约束新绑定创建，已有有效绑定重复 init 豁免；入口限速也要覆盖这类请求。跨源、限流、配置/数据库失败的 init 不会由组件生成新绑定或 CSRF token；宿主其他中间件仍可能有自己的会话写入行为。
+
+宿主 session 与验证码表分开维护。使用 Django 内置 db / cached_db / file 后端时，按宿主调度每天运行一次 `python -m django clearsessions`（同一生产配置），并监控执行结果和会话存储增长。验证码 prune 不清理宿主 session，过期数据库会话也不会自动删除。cache 后端依赖缓存过期，signed_cookies 不创建服务端会话表；自定义后端按其自己的清理契约执行。
+
 从每五分钟一次开始，在宿主的服务管理器、cron 或现有任务调度中运行同一生产配置的 `python -m django prune_slider_captcha`。不增加组件后台线程，也不在请求中隐式启动调度。
 
 可由 systemd oneshot 记录成功与失败，并用 timer 防止同一个服务重叠执行：

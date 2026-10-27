@@ -12,7 +12,7 @@ from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_GET
 
 from . import services
-from .conf import WIDTH, PIECE_SIZE, challenge_policy, purposes, valid_purpose
+from .conf import WIDTH, PIECE_SIZE, challenge_policy, purposes, rate_limit, session_backend, valid_purpose
 from .events import event, rate_denied
 
 
@@ -72,9 +72,10 @@ def json_post(view):
             return _failure("invalid_json")
         if not isinstance(data, dict):
             return _failure("invalid_json")
-        if not services.session_binding(request):
-            return _failure("init_required", 409)
         try:
+            session_backend()
+            if not services.session_binding(request):
+                return _failure("init_required", 409)
             challenge_policy()
             purposes()
             return view(request, data)
@@ -96,11 +97,28 @@ def api_root(request):
 
 @never_cache
 @require_GET
-@ensure_csrf_cookie
 def init(request):
     if not same_origin(request):
         return _failure("origin_rejected", 403)
-    services.session_binding(request, create=True)
+    try:
+        if not hasattr(request, "session"):
+            raise ValueError("CAPTCHA initialization requires session middleware")
+        session_backend()
+        rate_limit("init", "ip")
+        if not services.session_binding(request):
+            failure = _rate_failure(request, "init")
+            if failure is not None:
+                return failure
+            if not services.session_binding(request, create=True):
+                raise ValueError("CAPTCHA initialization requires a session binding")
+    except ValueError:
+        event("configuration", "configuration_invalid", 503)
+        return _failure("configuration_invalid", 503)
+    except DatabaseError:
+        event("http", "database_unavailable", 503)
+        return _failure("unavailable", 503)
+    # get_token marks CSRF for saving, including into sessions. Do this only
+    # after acceptance so response middleware cannot create rejected sessions.
     return JsonResponse({"csrfToken": get_token(request)})
 
 

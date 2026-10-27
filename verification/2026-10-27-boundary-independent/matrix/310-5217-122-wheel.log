@@ -1,0 +1,43 @@
+$ uv pip install --python /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python --no-deps --reinstall-package nova-slider-captcha /tmp/nova-slider-boundary-impl-dist-20261027/nova_slider_captcha-0.3.0-py3-none-any.whl
+Using Python 3.10.20 environment at: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122
+Resolved 1 package in 0.92ms
+Prepared 1 package in 0.13ms
+Uninstalled 1 package in 5ms
+Installed 1 package in 2ms
+ - nova-slider-captcha==0.3.0 (from file:///tmp/nova-slider-i18n-independent-20261026-cGZx5G/dist/nova_slider_captcha-0.3.0-py3-none-any.whl)
+ + nova-slider-captcha==0.3.0 (from file:///tmp/nova-slider-boundary-impl-dist-20261027/nova_slider_captcha-0.3.0-py3-none-any.whl)
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python -c import platform,django,PIL; actual=' '.join((platform.python_version(),django.get_version(),PIL.__version__)); print(actual); assert actual == '3.10.20 5.2.17 12.2.0'
+3.10.20 5.2.17 12.2.0
+
+$ uv pip check --python /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python
+Using Python 3.10.20 environment at: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122
+Checked 6 packages in 0.37ms
+All installed packages are compatible
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python -c import pathlib,nova_slider_captcha; p=pathlib.Path(nova_slider_captcha.__file__).resolve(); print(p); assert p.is_relative_to(pathlib.Path('src').resolve()) is False
+/private/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/lib/python3.10/site-packages/nova_slider_captcha/__init__.py
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python -m django check
+System check identified no issues (0 silenced).
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python -m django test tests --noinput -v 1
+Found 149 test(s).
+System check identified no issues (0 silenced).
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+Creating test database for alias 'captcha'...
+Destroying old test database for alias 'captcha'...
+Creating test database for alias 'replica'...
+Destroying old test database for alias 'replica'...
+.....................................................................................................................................................
+----------------------------------------------------------------------
+Ran 149 tests in 4.361s
+
+OK
+Destroying test database for alias 'default'...
+Destroying test database for alias 'captcha'...
+Destroying test database for alias 'replica'...

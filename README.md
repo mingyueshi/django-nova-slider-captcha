@@ -41,6 +41,9 @@ python manage.py runserver
 ## 接入已有 Django 项目
 
 1. 在 `INSTALLED_APPS` 加入 `nova_slider_captcha`，保留 Django 的 session、认证与 CSRF 中间件。
+
+`SessionMiddleware` 必须先于依赖 session 的中间件。Django 内置 `db` / `cached_db` 会话后端还须安装 `django.contrib.sessions`（缺失时检查 `E008`）；`signed_cookies` / `cache` / `file` 不因验证码本身而要求该 app。自定义会话后端按其自身契约配置。缺少会话能力的 init 返回 503 / `configuration_invalid`；未初始化的 challenge / verify POST 保留 409 / `init_required`。宿主其他中间件在进入视图前抛出的配置异常仍由宿主处理。
+
 2. 在项目 URL 中挂载接口：
 
 ```python
@@ -238,7 +241,7 @@ urlpatterns = [path("profile/", profile, name="profile")]
 
 Formset 可通过 `FormSet(..., form_kwargs={"request": request})` 传 request，并正常渲染 `management_form` 和每个子表单；隐藏字段会使用 `form-0-proof` 等完整名字，未填写的 extra 表单不会消费或产生验证码错误。**消费边界是单个子表单**：已有效子表单可能先消费，而另一个子表单或 formset 的 `clean()` 随后失败；本组件不提供整个 formset 的延后消费/事务保证。可按业务需求选择外层同库事务并在失败后回滚、丢弃所有表单实例，或为 formset 设计独立的可信提交流程。独立表单不要设置 `empty_permitted=True` 来绕过必填校验。
 
-Admin 继续使用下文的 `SliderAdminAuthenticationForm`，不组合这个 Mixin：Admin 必须先消费验证码，再进入密码认证，密码错误也会消费。
+Admin 继续使用下文的 `SliderAdminAuthenticationForm`，不组合这个 Mixin：已有字段错误时不消费、不认证；字段完整时先消费验证码，再进入密码认证，密码错误也会消费。
 
 ## 前端国际化与自定义文案
 
@@ -297,7 +300,7 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 
 表单负责服务端强制验证，模板负责渲染组件与静态资源，两者缺一不可。原生 Django 登录模板不会自动展示任意新增字段。随附模板扩展当前选中的 `admin/login.html`；启用 Nova 0.6.0 时保留其品牌面板和额外字段布局。请把 `nova_admin` 放在 `django.contrib.admin` 之前，并保留 Nova 文档要求的 context processor。
 
-每个单独挂载的 AdminSite 都要配置，保护一个入口不会自动保护其他入口。已有自定义认证表单时，应先审查验证逻辑和 MRO，再组合验证码校验，不要悄悄替换它。缺失、过期、跨用途或已消费的凭证会在密码认证前被拒绝；密码错误也会消费本次凭证，需要重新拼图。
+每个单独挂载的 AdminSite 都要配置，保护一个入口不会自动保护其他入口。已有自定义认证表单时，应先审查验证逻辑和 MRO，再组合验证码校验，不要悄悄替换它。用户名/密码缺失、空白用户名或其他字段错误时保留原字段错误，不消费凭证、不认证；字段完整时，缺失、过期、跨用途或已消费的凭证会在密码认证前被拒绝，密码错误也会消费本次凭证。错误页面不会回填 token；即使服务端未消费，浏览器重渲染后仍需重新拼图。
 
 ## HTTP 协议
 
@@ -321,12 +324,15 @@ Django 默认每分钟补充速率与突发容量：
 
 | 配额 | 容量与速率 N |
 |---|---:|
+| `init_ip`（新建绑定） | 40 |
 | `issue_session` | 20 |
 | `issue_ip` | 60 |
 | `verify_session` | 60 |
 | `verify_ip` | 120 |
 
-通过 `NOVA_SLIDER_RATE_LIMITS` 覆盖上述键，值必须是 1–60000 的整数。桶键由动作、范围和哈希后的主体组成，不包含分钟编号。所有允许的 purpose（包括 `demo` 与 `login`）共享相同动作的额度，切换用途或新建 session 不能绕过既定的 IP 配额；验证凭证本身仍单独绑定 session 和用途。
+通过 `NOVA_SLIDER_RATE_LIMITS` 覆盖上述键，值必须是 1–60000 的整数（不接受布尔值），动态严格校验，非法设置产生 `E003` 且运行时拒绝。桶键由动作、范围和哈希后的主体组成，不包含分钟编号。所有允许的 purpose（包括 `demo` 与 `login`）共享相同动作的额度，切换用途或新建 session 不能绕过既定的 IP 配额；验证凭证本身仍单独绑定 session 和用途。
+
+init 在创建新绑定前单独扣 IP 额度；已有有效绑定重复初始化不扣该额度，不增加 issue / verify 额度。拒绝 init 时不创建绑定或生成 CSRF token，包含 `CSRF_USE_SESSIONS=True` 的响应中间件阶段。init 的 429 与出题/校验沿用相同 `Retry-After` / `retryAfter` 契约。此额度控制新绑定创建，不能代替入口代理对全部 init 流量的限速；宿主其他中间件自行修改会话的成本不在组件控制范围内。
 
 算法每次使用整数微秒与 `ceil(60,000,000/N)` 的补充间隔，原子条件更新数据库中的理论到达时间。以 N=20 为例，满桶允许一次性最多 20 次，此后约每 3 秒补充一次；不会在 59.999 秒和 60.001 秒之间同时恢复两个满桶。
 
@@ -335,6 +341,8 @@ Django 默认每分钟补充速率与突发容量：
 Django 使用可信部署链路提供的 `REMOTE_ADDR`，不会直接相信 `X-Forwarded-For`。IP 用服务端 HMAC 处理。Worker 示例沿用其原有阈值（出题 15/session、120/IP，校验 60/session、240/IP，初始化 40/IP），使用 Cloudflare 提供的边缘 IP，并在缺少该值时共用保守的 unknown 桶，不会跳过 IP 限流。代理配置错误可能让所有用户共用同一桶。
 
 数据库条件更新是原子性边界，不使用进程内锁或依赖本地 cache。时钟回退不会清除未来债务；明显向前跳时或多主机时钟偏差会影响补充速度。部署方须保持可靠时钟；此实现不承诺跨独立数据库或任意分布式时钟的全局额度。数据库故障时拒绝放行并返回 503。
+
+支持稳定的数据库写路由：verify 的决策读取、条件更新和错误次数刷新固定在该次选择的 Challenge 写库，避免滞后读副本误拒新挑战或返回旧次数。凭证消费是写库条件更新，多字段表单的局部事务使用 Challenge 写路由。路由器应为同一业务操作保持稳定的写库选择；不承诺跨库原子事务或真实 PostgreSQL/MySQL 复制验收。
 
 ## 从 0.1.0 升级与回退边界
 
@@ -350,6 +358,8 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 `RateBucket` 仅用于旧版升级与安全清理，不再承载当前限流请求；未来删除必须另做迁移，本轮保留表且不承诺删除日期。
 
 定期执行 `python manage.py prune_slider_captcha` 清理安全过期的挑战、旧桶和完全补充的 GCRA 状态。未清偿债务与未结束冷却期不能提前删除。清理和限流会并发运行，竞争失败必须保守拒绝，不能作为无状态放行依据。
+
+宿主会话须单独清理：`db` / `cached_db` / `file` 等需要清理的内置后端按 Django 约定定期运行 `python manage.py clearsessions`，例如每天一次。验证码 prune 不删除宿主 session；过期不会自动清除数据库会话行。缓存后端依赖缓存过期机制，签名 cookie 后端不产生服务端会话表记录。
 
 可从每五分钟执行一次开始，例如在部署用户的 crontab 中配置（替换路径，并使用与服务一致的生产环境变量和数据库配置）：
 

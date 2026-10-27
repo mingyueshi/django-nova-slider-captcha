@@ -1,0 +1,15 @@
+{
+  "wheel": "nova_slider_captcha-0.3.0-py3-none-any.whl",
+  "wheel_sha256": "9715fcb2f88e13dace52e1dd47a2df8cf410689d39bb1273758fdbea2095f9e9",
+  "sdist": "nova_slider_captcha-0.3.0.tar.gz",
+  "sdist_sha256": "aea7f1452bd31475d405fb2d3d9d283dec88657b8d7aed086520cc57de86708a",
+  "readme_metadata_matches": true,
+  "sdist_current_files_checked": [
+    "tests/test_boundaries.py",
+    "tests/session_backend_probe.py",
+    "tests/settings.py",
+    "README.md",
+    "docs/CHANGELOG.md",
+    "docs/DEPLOYMENT.md"
+  ]
+}

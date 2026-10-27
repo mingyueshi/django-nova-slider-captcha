@@ -327,7 +327,7 @@ class AtomicityTests(CaptchaHelpers, TransactionTestCase):
         now = timezone.now()
         with patch("nova_slider_captcha.services.timezone.now", return_value=now):
             self.assertEqual(self.parallel(allowed, 12).count(True), 3)
-        self.assertEqual(RateLimitState.objects.count(), 4)
+        self.assertEqual(RateLimitState.objects.filter(key__startswith="issue:").count(), 4)
 
     @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_ip": 3, "issue_session": 3})
     def test_concurrent_refill_allows_one_and_denials_preserve_debt(self):

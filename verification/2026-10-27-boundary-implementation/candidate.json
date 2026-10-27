@@ -1,0 +1,15 @@
+{
+  "base_commit": "62a93e7efc2d4f1cca0a9390627f5a821c4c742c",
+  "candidate": "uncommitted runtime diff frozen for independent validation",
+  "runtime_files": {
+    "src/nova_slider_captcha/conf.py": "217c99cf174c879a33ccd2ca4fbbf30f2145d6efa0dba7cd97601b3b75134e47",
+    "src/nova_slider_captcha/checks.py": "a96ad420ddb20df473438cb1575223e1f0c9b9c283117c84d7c4b8ae8bc0fde4",
+    "src/nova_slider_captcha/services.py": "339a9767e805e6bb805cdf68c4022e25d587f8d2966d938e8b8b676a6b8404a3",
+    "src/nova_slider_captcha/views.py": "e6c88dc3b40a352e7d0c9ac7278158a3472aee8e0576202d7459acbe7b7b99f1",
+    "src/nova_slider_captcha/forms.py": "8ffdfcaf734816baf4b53611935296a5347da2bbbab61a2053c3bfeb24594a99"
+  },
+  "artifacts": {
+    "/tmp/nova-slider-boundary-impl-dist-20261027/nova_slider_captcha-0.3.0-py3-none-any.whl": "9715fcb2f88e13dace52e1dd47a2df8cf410689d39bb1273758fdbea2095f9e9",
+    "/tmp/nova-slider-boundary-impl-dist-20261027/nova_slider_captcha-0.3.0.tar.gz": "aea7f1452bd31475d405fb2d3d9d283dec88657b8d7aed086520cc57de86708a"
+  }
+}

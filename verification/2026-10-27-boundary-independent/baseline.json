@@ -1,0 +1,12 @@
+{
+  "head": "62a93e7efc2d4f1cca0a9390627f5a821c4c742c",
+  "files": {
+    "src/nova_slider_captcha/conf.py": "7ecb89ef04d2ee0f612e60f55de686210da1a5f8d25c6871a6699f8df642c7c5",
+    "src/nova_slider_captcha/services.py": "0ee9ccd6c76662519e68069bfb69199dfac9996873f6882c0ee2c6b995234ab4",
+    "src/nova_slider_captcha/views.py": "f49085c59bae168ce11a45ff725db065f76565797312a460eaf954d2244e1897",
+    "src/nova_slider_captcha/forms.py": "0b54b924f49c712c3d6e0cc5c86bde4cc24380ed232c9acc510eb9e2f57f9c50",
+    "src/nova_slider_captcha/checks.py": "2c8e444818c151ad4fd0f20ecb5870784edf8049298c5492f0525618dfbc9256",
+    "src/nova_slider_captcha/events.py": "244bccc89d351d669596c70c85c3ba30f5d0bfcc03e4b45dea8b66d6412c1d76",
+    "src/nova_slider_captcha/models.py": "2a7d776ea139452b4597e0ed4b4f3b20d73c7010c9ed86efcdec340727886389"
+  }
+}

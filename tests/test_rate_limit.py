@@ -205,7 +205,7 @@ class GCRATests(CaptchaHelpers, TestCase):
             denied = self.post(client, "challenge", {"purpose": "login"})
         self.assertEqual(denied.status_code, 429)
         self.assertEqual(denied.json()["retryAfter"], 20)
-        self.assertEqual(RateLimitState.objects.count(), 2)
+        self.assertEqual(RateLimitState.objects.filter(key__startswith="issue:").count(), 2)
 
     def test_retry_header_and_body_are_actual_wait_seconds(self):
         client = self.client_with_init()

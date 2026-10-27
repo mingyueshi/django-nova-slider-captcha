@@ -1,0 +1,182 @@
+{
+  "runtime": {
+    "django": "5.2.17"
+  },
+  "checks": [
+    {
+      "name": "missing_username",
+      "consumed": false,
+      "authenticate_calls": 0,
+      "errors": [
+        "username"
+      ]
+    },
+    {
+      "name": "blank_username",
+      "consumed": false,
+      "authenticate_calls": 0,
+      "errors": [
+        "username"
+      ]
+    },
+    {
+      "name": "missing_password",
+      "consumed": false,
+      "authenticate_calls": 0,
+      "errors": [
+        "password"
+      ]
+    },
+    {
+      "name": "missing_both",
+      "consumed": false,
+      "authenticate_calls": 0,
+      "errors": [
+        "username",
+        "password"
+      ]
+    },
+    {
+      "name": "host_field_invalid",
+      "consumed": false,
+      "authenticate_calls": 0,
+      "errors": [
+        "host_required"
+      ]
+    },
+    {
+      "name": "admin_proof_missing",
+      "authenticate_calls": 0,
+      "consumed": false
+    },
+    {
+      "name": "admin_proof_malformed",
+      "authenticate_calls": 0,
+      "consumed": false
+    },
+    {
+      "name": "admin_proof_unknown",
+      "authenticate_calls": 0,
+      "consumed": false
+    },
+    {
+      "name": "admin_proof_other_purpose",
+      "authenticate_calls": 0,
+      "consumed": false
+    },
+    {
+      "name": "admin_proof_expired",
+      "authenticate_calls": 0,
+      "consumed": false
+    },
+    {
+      "name": "admin_bad_password",
+      "consume_before_auth": true,
+      "authenticate_calls": 1,
+      "replay_rejected": true
+    },
+    {
+      "name": "admin_valid_login",
+      "consume_before_auth": true,
+      "authenticate_calls": 1,
+      "replay_rejected": true
+    },
+    {
+      "name": "admin_real_csrf_post_missing_username",
+      "status": 200,
+      "consumed": false,
+      "token_echoed": false
+    },
+    {
+      "name": "primary_only_challenge",
+      "verify": true,
+      "consume": true,
+      "replay": false
+    },
+    {
+      "name": "lagging_replica",
+      "remaining": [
+        4,
+        3
+      ],
+      "replica_attempts": 0,
+      "primary_solved_respected": true
+    },
+    {
+      "name": "primary_multi_proof_atomicity",
+      "rollback": true,
+      "commit": true
+    },
+    {
+      "name": "primary_gcra_retry",
+      "allowed": [
+        true,
+        true,
+        false
+      ],
+      "retry_after": 30
+    },
+    {
+      "name": "init_real_middleware_False",
+      "accepted_new_sessions": 2,
+      "denied": 3,
+      "denial_sessions": 0,
+      "retry_after": 30,
+      "debt_unchanged": true,
+      "bound_reuse": true,
+      "csrf_post_status": 200,
+      "cross_origin_sessions": 0,
+      "other_peer_status": 200
+    },
+    {
+      "name": "init_real_middleware_True",
+      "accepted_new_sessions": 2,
+      "denied": 3,
+      "denial_sessions": 0,
+      "retry_after": 30,
+      "debt_unchanged": true,
+      "bound_reuse": true,
+      "csrf_post_status": 200,
+      "cross_origin_sessions": 0,
+      "other_peer_status": 200
+    },
+    {
+      "name": "concurrent_init",
+      "requests": 8,
+      "accepted": 3,
+      "limited": 5,
+      "sessions_added": 3
+    },
+    {
+      "name": "init_failure_False",
+      "invalid_bool": 503,
+      "database_failure": 503,
+      "new_sessions": 0
+    },
+    {
+      "name": "init_failure_True",
+      "invalid_bool": 503,
+      "database_failure": 503,
+      "new_sessions": 0
+    },
+    {
+      "name": "invalid_binding_False",
+      "status": 503,
+      "new_sessions": 0
+    },
+    {
+      "name": "invalid_binding_True",
+      "status": 503,
+      "new_sessions": 0
+    },
+    {
+      "name": "missing_session_middleware_init",
+      "status": 503
+    },
+    {
+      "name": "direct_issue_precondition",
+      "error": "ValueError",
+      "image_called": false
+    }
+  ]
+}

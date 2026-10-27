@@ -1,0 +1,73 @@
+[
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "-c",
+      "import platform,django,PIL,coverage,nova_slider_captcha; print(platform.python_version(),django.get_version(),PIL.__version__,coverage.__version__,nova_slider_captcha.__file__)"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "-m",
+      "coverage",
+      "run",
+      "-m",
+      "django",
+      "test",
+      "tests",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "-m",
+      "coverage",
+      "combine",
+      "--keep"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "-m",
+      "coverage",
+      "json",
+      "--pretty-print",
+      "-o",
+      "/private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "-m",
+      "coverage",
+      "report"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "scripts/check_coverage.py",
+      "/private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python",
+      "scripts/test_coverage_gate.py",
+      "/private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json"
+    ],
+    "returncode": 0
+  }
+]

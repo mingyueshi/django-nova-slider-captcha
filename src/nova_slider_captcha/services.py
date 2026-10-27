@@ -13,7 +13,7 @@ from django.db.models.functions import Greatest
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 
-from .conf import HEIGHT, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, WIDTH, challenge_policy, purposes, rate_limit, valid_purpose
+from .conf import HEIGHT, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, WIDTH, challenge_policy, purposes, rate_limit, session_backend, valid_purpose
 from .events import event
 from .images import make_puzzle
 from .models import Challenge, RateLimitState
@@ -77,12 +77,13 @@ def allow_request(request, action):
     REMOTE_ADDR is authoritative. Forwarded headers are intentionally ignored;
     configure the trusted reverse proxy to set REMOTE_ADDR correctly.
     """
-    limits = {scope: rate_limit(action, scope) for scope in ("ip", "session")}
+    scopes = ("ip",) if action == "init" else ("ip", "session")
+    limits = {scope: rate_limit(action, scope) for scope in scopes}
     now_us = timestamp_us(timezone.now())
-    subjects = (("ip", _hash(request.META.get("REMOTE_ADDR", "unknown"), "ip")),
-                ("session", session_binding(request, create=True)))
     claimed = {}
-    for scope, subject in subjects:
+    for scope in scopes:
+        # In particular, init must charge IP before any session binding write.
+        subject = _hash(request.META.get("REMOTE_ADDR", "unknown"), "ip") if scope == "ip" else session_binding(request, create=True)
         capacity = limits[scope]
         interval_us = (RATE_PERIOD_US + capacity - 1) // capacity
         tolerance_us = (capacity - 1) * interval_us
@@ -96,6 +97,8 @@ def allow_request(request, action):
         if not updated:
             # Missing rows are born already charged. get_or_create's unique-key
             # race recovery must never overwrite another request's debt/cooldown.
+            # blocked_until_us stays at zero for new states; nonzero cooldowns
+            # are inherited by migration and remain authoritative until repaid.
             _, created = RateLimitState.objects.get_or_create(
                 key=key, defaults={"tat_us": now_us + interval_us if now_us >= 0 else 0},
             )
@@ -111,9 +114,12 @@ def allow_request(request, action):
 
 def issue(request, purpose):
     policy = challenge_policy()
+    session_backend()
     if not valid_purpose(purpose):
         raise ValueError("Unsupported CAPTCHA purpose")
     binding = session_binding(request, create=True)
+    if not binding:
+        raise ValueError("CAPTCHA issuance requires a session binding")
     target_x, piece_y, background, piece = make_puzzle()
     challenge = Challenge.objects.create(session_hash=binding, purpose=purpose, target_x=target_x, expires_at=timezone.now() + timedelta(seconds=policy.ttl), max_attempts=policy.max_attempts, tolerance=policy.tolerance)
     return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": WIDTH, "height": HEIGHT, "pieceWidth": PIECE_SIZE, "pieceY": piece_y, "expiresIn": policy.ttl, "maxAttempts": policy.max_attempts}
@@ -124,7 +130,9 @@ def verify(request, challenge_id, x):
     allowed = purposes()
     now = timezone.now()
     binding = session_binding(request)
-    challenge = Challenge.objects.filter(pk=challenge_id, session_hash=binding).first() if binding else None
+    writer = router.db_for_write(Challenge)
+    challenges = Challenge.objects.using(writer)
+    challenge = challenges.filter(pk=challenge_id, session_hash=binding).first() if binding else None
     if not challenge or challenge.purpose not in allowed:
         return {"ok": False, "code": "invalid_challenge", "attemptsRemaining": 0}
     if challenge.expires_at <= now:
@@ -133,7 +141,8 @@ def verify(request, challenge_id, x):
         return {"ok": False, "code": "already_verified", "attemptsRemaining": 0}
     if challenge.attempts >= challenge.max_attempts:
         return {"ok": False, "code": "attempts_exhausted", "attemptsRemaining": 0}
-    active = Challenge.objects.filter(pk=challenge.pk, session_hash=binding, expires_at__gt=now, solved=False, attempts__lt=F("max_attempts"), max_attempts=challenge.max_attempts, tolerance=challenge.tolerance)
+    # Literal snapshot predicates reject policy changes racing the decision read.
+    active = challenges.filter(pk=challenge.pk, session_hash=binding, expires_at__gt=now, solved=False, attempts__lt=F("max_attempts"), max_attempts=challenge.max_attempts, tolerance=challenge.tolerance)
     if abs(challenge.target_x - x) <= challenge.tolerance:
         token = secrets.token_urlsafe(TOKEN_BYTES)
         updated = active.update(attempts=F("attempts") + 1, solved=True, token_hash=_hash(token, "token"), token_expires_at=now + timedelta(seconds=TOKEN_TTL))
@@ -142,7 +151,7 @@ def verify(request, challenge_id, x):
     else:
         updated = active.update(attempts=F("attempts") + 1)
         if updated:
-            challenge.refresh_from_db(fields=["attempts"])
+            challenge.refresh_from_db(using=writer, fields=["attempts"])
             remaining = max(0, challenge.max_attempts - challenge.attempts)
             return {"ok": False, "code": "incorrect", "attemptsRemaining": remaining}
     return {"ok": False, "code": "invalid_challenge", "attemptsRemaining": 0}

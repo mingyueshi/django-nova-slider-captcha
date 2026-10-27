@@ -1,0 +1,21 @@
+{
+  "files": {
+    "README.md": "7d1645f58fe5b6b6d2debd0831b45860190719556c656fbb08e9959fceb23e7b",
+    "docs/CHANGELOG.md": "b866d4e14d1a1886866092c541c291251b89d5ccf5879be77e45786594bef9fe",
+    "docs/DEPLOYMENT.md": "da4979202fef65b8e2e3cb37f2f53dce96879db4ebad59da96898ed2b37cdc80",
+    "docs/README.md": "65d17ec9f7722df77bad733e60821c22fe32ac06e3d9245100759b9663b8f2cb",
+    "src/nova_slider_captcha/checks.py": "a96ad420ddb20df473438cb1575223e1f0c9b9c283117c84d7c4b8ae8bc0fde4",
+    "src/nova_slider_captcha/conf.py": "217c99cf174c879a33ccd2ca4fbbf30f2145d6efa0dba7cd97601b3b75134e47",
+    "src/nova_slider_captcha/forms.py": "8ffdfcaf734816baf4b53611935296a5347da2bbbab61a2053c3bfeb24594a99",
+    "src/nova_slider_captcha/services.py": "339a9767e805e6bb805cdf68c4022e25d587f8d2966d938e8b8b676a6b8404a3",
+    "src/nova_slider_captcha/views.py": "e6c88dc3b40a352e7d0c9ac7278158a3472aee8e0576202d7459acbe7b7b99f1",
+    "tests/settings.py": "3b92d4f50246784fc7e53d83c159a69ce0ecfdb13b041817d03dcd7181bcf717",
+    "tests/test_captcha.py": "2e5ee3c7242bb832679f9c33cf57d445aca88383377cac25c23df9606cf28458",
+    "tests/test_integration.py": "85c00cd7aaf74ccceb22d54505f7d6ec13610defa53cebe5684c9ee943dacc54",
+    "tests/test_rate_limit.py": "523e1af651d491324e58b47b8e9456ee68cf3ef2dadea4b35044a6155b561ca6",
+    "tests/session_backend_probe.py": "e645ccff57aa7d9e8b19e443baad874771d5392723bd261216643d3ddc39335f",
+    "tests/test_boundaries.py": "60e5601810f4796c31bf8cfd5d3b524076d7755cf4d351abfa07e88e697cc620",
+    "docs/2026-10-27-boundary-implementation.md": "5e5850eef80c95934ef841db4a039c5c84e70d73c05c77a81c45fbb3d9408e62"
+  },
+  "count_excluding_evidence": 16
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "310-5217-122",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/310-5217-122/bin/python",
+    "versions": "3.10.20 5.2.17 12.2.0"
+  },
+  {
+    "name": "311-5217-123",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/311-5217-123/bin/python",
+    "versions": "3.11.12 5.2.17 12.3.0"
+  },
+  {
+    "name": "312-5217-123",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/312-5217-123/bin/python",
+    "versions": "3.12.14 5.2.17 12.3.0"
+  },
+  {
+    "name": "312-612-122",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/312-612-122/bin/python",
+    "versions": "3.12.14 6.1.2 12.2.0"
+  },
+  {
+    "name": "313-612-123",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/313-612-123/bin/python",
+    "versions": "3.13.12 6.1.2 12.3.0"
+  },
+  {
+    "name": "314-609-123",
+    "python": "/var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/314-609-123/bin/python",
+    "versions": "3.14.7 6.0.9 12.3.0"
+  }
+]

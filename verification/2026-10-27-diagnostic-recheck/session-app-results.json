@@ -1,0 +1,20 @@
+[
+  {
+    "engine": "django.contrib.sessions.backends.db",
+    "checks": [],
+    "status": 500,
+    "error_type": "RuntimeError"
+  },
+  {
+    "engine": "django.contrib.sessions.backends.cached_db",
+    "checks": [],
+    "status": 500,
+    "error_type": "RuntimeError"
+  },
+  {
+    "engine": "django.contrib.sessions.backends.signed_cookies",
+    "checks": [],
+    "status": 200,
+    "error_type": null
+  }
+]

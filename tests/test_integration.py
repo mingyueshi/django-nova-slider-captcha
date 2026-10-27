@@ -232,7 +232,7 @@ class PurposeTests(CaptchaHelpers, TestCase):
         self.challenge(self.client, "contact")
         self.challenge(self.client, "demo")
         self.assertEqual(self.post(self.client, "challenge", {"purpose": "login"}).status_code, 429)
-        self.assertEqual(RateLimitState.objects.count(), 2)
+        self.assertEqual(RateLimitState.objects.filter(key__startswith="issue:").count(), 2)
 
     def test_removed_purpose_cannot_verify_or_consume(self):
         token, row = self.token(self.client, "login")

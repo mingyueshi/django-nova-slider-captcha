@@ -1,0 +1,7 @@
+$ python -m twine check --strict /tmp/nova-slider-boundary-impl-dist-20261027/*
+wheel: PASSED
+sdist: PASSED
+$ python scripts/check_release.py --dist /tmp/nova-slider-boundary-impl-dist-20261027
+Verified 29 runtime files in wheel and sdist for 0.3.0
+Release metadata consistent: 0.3.0
+Interpreter: /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-followup-independent-20261026-0fvya2x5/build-env/bin/python

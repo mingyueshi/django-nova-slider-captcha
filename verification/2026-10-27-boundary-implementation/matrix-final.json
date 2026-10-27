@@ -1,0 +1,110 @@
+{
+  "artifact": {
+    "wheel": "/tmp/nova-slider-boundary-impl-dist-20261027/nova_slider_captcha-0.3.0-py3-none-any.whl",
+    "sha256": "9715fcb2f88e13dace52e1dd47a2df8cf410689d39bb1273758fdbea2095f9e9"
+  },
+  "cells": [
+    {
+      "python": "3.10",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.11",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.12",
+      "django": "6.1.2",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.13",
+      "django": "6.1.2",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "python": "3.14",
+      "django": "6.0.9",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "tests": 149,
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "tests": 149,
+          "status": "passed"
+        }
+      ]
+    }
+  ]
+}

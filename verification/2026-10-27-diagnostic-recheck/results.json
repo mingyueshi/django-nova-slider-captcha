@@ -1,0 +1,108 @@
+{
+  "django": "5.2.17",
+  "admin": [
+    {
+      "submitted_fields": [
+        "password"
+      ],
+      "username_blank": true,
+      "valid": false,
+      "consumed": true,
+      "backend_calls": 0,
+      "error_fields": [
+        "username"
+      ]
+    },
+    {
+      "submitted_fields": [
+        "password",
+        "username"
+      ],
+      "username_blank": true,
+      "valid": false,
+      "consumed": true,
+      "backend_calls": 0,
+      "error_fields": [
+        "username"
+      ]
+    },
+    {
+      "submitted_fields": [
+        "username"
+      ],
+      "username_blank": false,
+      "valid": false,
+      "consumed": true,
+      "backend_calls": 0,
+      "error_fields": [
+        "password"
+      ]
+    },
+    {
+      "submitted_fields": [
+        "password",
+        "username"
+      ],
+      "username_blank": false,
+      "valid": false,
+      "consumed": true,
+      "backend_calls": 1,
+      "error_fields": [
+        "__all__"
+      ]
+    }
+  ],
+  "admin_http_missing_username": {
+    "status": 200,
+    "consumed": true
+  },
+  "together_router": {
+    "issue_verify_consume": "passed",
+    "multi_proof_rollback": "passed",
+    "multi_proof_commit": "passed",
+    "quota_allowed": [
+      true,
+      true,
+      false
+    ],
+    "retry_after": 30,
+    "default_quota_rows": 0,
+    "captcha_quota_rows": 2
+  },
+  "split_router": {
+    "fresh_challenge_code": "invalid_challenge",
+    "wrong_guess_reported_remaining": 5,
+    "primary_attempts": 1,
+    "consume_primary_token": true
+  },
+  "init": {
+    "cookieless_requests": 45,
+    "responses": {
+      "200": 45
+    },
+    "database_sessions_created": 45,
+    "session_cookie_age_seconds": 1209600,
+    "cookie_reuse_creates_extra_session": false,
+    "signed_cookie_backend_creates_database_session": false
+  },
+  "direct_issue_without_session": "IntegrityError",
+  "http_without_session_middleware": {
+    "init_status": 200,
+    "challenge_status": 409,
+    "challenge_code": "init_required",
+    "checks": [
+      "nova_slider_captcha.E001"
+    ]
+  },
+  "own_checks_without_sessions_app": {
+    "django.contrib.sessions.backends.db": [],
+    "django.contrib.sessions.backends.signed_cookies": []
+  },
+  "default_port_origin": {
+    "canonical_host": true,
+    "explicit_default_port_host": false
+  },
+  "policy_snapshot_guard": {
+    "matches_after_concurrent_policy_change": false
+  }
+}

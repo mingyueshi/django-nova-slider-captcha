@@ -1,0 +1,3 @@
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python -m coverage json --pretty-print -o /private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json
+Combined 8 files, skipped 2
+Wrote JSON report to /private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json

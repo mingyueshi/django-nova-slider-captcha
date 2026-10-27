@@ -1,0 +1,9 @@
+{
+  "scope": "documentation addendum only after independent acceptance",
+  "files": {
+    "docs/README.md": "1466da986b969101936e60eb17116333052d95df74196e1a28f71e41ad8b8d23",
+    "docs/2026-10-27-boundary-implementation.md": "31dc512522766e174234e8b90ab711e1c15f32b61f76627e9bd403374312f9f7"
+  },
+  "original_manifest": "change-manifest.json",
+  "runtime_and_artifacts_unchanged": true
+}

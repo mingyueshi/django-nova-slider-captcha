@@ -1,0 +1,2 @@
+$ /tmp/nova-slider-i18n-independent-20261026-cGZx5G/lint-env/bin/ruff check .
+All checks passed!

@@ -1,0 +1,81 @@
+Using CPython 3.11.12 interpreter at: /tmp/nova-slider-i18n-lint-impl-py311-dj5217-pil123-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py311-dj5217-pil123-20261027
+Using CPython 3.10.20 interpreter at: /tmp/nova-slider-i18n-lint-impl-py310-dj5217-pil122-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py310-dj5217-pil122-20261027
+Activate with: source /tmp/nova-slider-boundary-impl-py311-dj5217-pil123-20261027/bin/activate
+Activate with: source /tmp/nova-slider-boundary-impl-py310-dj5217-pil122-20261027/bin/activate
+Using Python 3.11.12 environment at: /tmp/nova-slider-boundary-impl-py311-dj5217-pil123-20261027
+Resolved 5 packages in 2ms
+   Building nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Using Python 3.10.20 environment at: /tmp/nova-slider-boundary-impl-py310-dj5217-pil122-20261027
+      Built nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Prepared 1 package in 512ms
+Installed 5 packages in 53ms
+ + asgiref==3.13.0
+ + django==5.2.17
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.3.0
+ + sqlparse==0.6.0
+Using CPython 3.12.14 interpreter at: /tmp/nova-slider-i18n-lint-impl-py312-dj5217-pil123-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py312-dj5217-pil123-20261027
+Activate with: source /tmp/nova-slider-boundary-impl-py312-dj5217-pil123-20261027/bin/activate
+Using Python 3.12.14 environment at: /tmp/nova-slider-boundary-impl-py312-dj5217-pil123-20261027
+Resolved 5 packages in 1ms
+   Building nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Resolved 6 packages in 1.10s
+      Built nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Prepared 1 package in 415ms
+Prepared 1 package in 185ms
+Installed 5 packages in 101ms
+ + asgiref==3.13.0
+ + django==5.2.17
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.3.0
+ +Installed 6 packages sqlparse==0.6. in 100ms
+0
+ + asgiref==3.12.1
+ + django==5.2.17
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.2.0
+ + sqlparse==0.6.0
+ + typing-extensions==4.16.0
+Using CPython 3.12.14 interpreter at: /tmp/nova-slider-i18n-lint-impl-py312-dj612-pil122-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py312-dj612-pil122-20261027
+Activate with: source /tmp/nova-slider-boundary-impl-py312-dj612-pil122-20261027/bin/activate
+Using CPython 3.13.12 interpreter at: /tmp/nova-slider-i18n-lint-impl-py313-dj612-pil123-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py313-dj612-pil123-20261027
+Activate with: source /tmp/nova-slider-boundary-impl-py313-dj612-pil123-20261027/bin/activate
+Using Python 3.12.14 environment at: /tmp/nova-slider-boundary-impl-py312-dj612-pil122-20261027
+Resolved 5 packages in 1ms
+   Building nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Using Python 3.13.12 environment at: /tmp/nova-slider-boundary-impl-py313-dj612-pil123-20261027
+Resolved 5 packages in 1ms
+      Built nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Prepared 1 package in 434ms
+Prepared 1 package in 376ms
+Installed 5 packages in 134ms
+ + asgiref==3.13.0
+ + django==6.1.2
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.3.0
+ + sqlparse==0.6.0
+Installed 5 packages in 135ms
+ + asgiref==3.13.0
+ + django==6.1.2
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.2.0
+ + sqlparse==0.6.0
+Using CPython 3.14.7 interpreter at: /tmp/nova-slider-i18n-lint-impl-py314-dj609-pil123-20261026/bin/python
+Creating virtual environment at: /tmp/nova-slider-boundary-impl-py314-dj609-pil123-20261027
+Activate with: source /tmp/nova-slider-boundary-impl-py314-dj609-pil123-20261027/bin/activate
+Using Python 3.14.7 environment at: /tmp/nova-slider-boundary-impl-py314-dj609-pil123-20261027
+Resolved 5 packages in 0.95ms
+   Building nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+      Built nova-slider-captcha @ file:///Users/apple/Documents/GitHub/django-nova-slider-captcha
+Prepared 1 package in 470ms
+Installed 5 packages in 95ms
+ + asgiref==3.13.0
+ + django==6.0.9
+ + nova-slider-captcha==0.3.0 (from file:///Users/apple/Documents/GitHub/django-nova-slider-captcha)
+ + pillow==12.3.0
+ + sqlparse==0.6.0

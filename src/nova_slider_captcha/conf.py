@@ -3,6 +3,7 @@ import re
 from dataclasses import dataclass
 
 from django.conf import settings
+from django.apps import apps
 from urllib.parse import unquote, urlsplit
 
 from django.utils.encoding import force_str
@@ -18,7 +19,13 @@ TOLERANCE = 4
 PURPOSES = frozenset(("demo", "login"))
 RATE_PERIOD_US = 60_000_000
 MAX_RATE_LIMIT = 60_000
-RATE_DEFAULTS = {"issue_session": 20, "issue_ip": 60, "verify_session": 60, "verify_ip": 120}
+RATE_DEFAULTS = {"init_ip": 40, "issue_session": 20, "issue_ip": 60, "verify_session": 60, "verify_ip": 120}
+
+
+def session_backend():
+    """Only Django's database session engines require the sessions model."""
+    if settings.SESSION_ENGINE in ("django.contrib.sessions.backends.db", "django.contrib.sessions.backends.cached_db") and not apps.is_installed("django.contrib.sessions"):
+        raise ValueError("Database-backed sessions require django.contrib.sessions in INSTALLED_APPS")
 
 
 def alternative_link(url=None, label=None):

@@ -1,0 +1,94 @@
+{
+  "wheel": "nova_slider_captcha-0.3.0-py3-none-any.whl",
+  "wheel_sha256": "9715fcb2f88e13dace52e1dd47a2df8cf410689d39bb1273758fdbea2095f9e9",
+  "matrix": [
+    {
+      "name": "310-5217-122",
+      "versions": "3.10.20 5.2.17 12.2.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "311-5217-123",
+      "versions": "3.11.12 5.2.17 12.3.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "312-5217-123",
+      "versions": "3.12.14 5.2.17 12.3.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "312-612-122",
+      "versions": "3.12.14 6.1.2 12.2.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "313-612-123",
+      "versions": "3.13.12 6.1.2 12.3.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "name": "314-609-123",
+      "versions": "3.14.7 6.0.9 12.3.0",
+      "checks": [
+        {
+          "mode": "source",
+          "status": "passed"
+        },
+        {
+          "mode": "wheel",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Local SQLite only",
+    "No remote CI, publication, or production checks"
+  ]
+}

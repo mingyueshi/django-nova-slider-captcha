@@ -1,0 +1,2 @@
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python scripts/test_coverage_gate.py /private/tmp/nova-slider-four-fixes-independent-20261027-bendJW/coverage/coverage.json
+{"valid_measured_report": "passed", "rejected": ["empty", "no_branch", "wrong_package", "missing_forms", "wrong_version", "inconsistent_totals", "zero_branches", "excluded_lines", "package_branch_floor", "forms_branch_floor", "package_statement_floor", "forms_statement_floor"]}

@@ -1,0 +1,108 @@
+[
+  {
+    "engine": "django.contrib.sessions.backends.db",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.db",
+    "sessions_app": "no",
+    "errors": [
+      {
+        "id": "nova_slider_captcha.E008",
+        "message": "Database-backed sessions require django.contrib.sessions in INSTALLED_APPS"
+      }
+    ],
+    "init_status": 503,
+    "challenge_status": null,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.cached_db",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.cached_db",
+    "sessions_app": "no",
+    "errors": [
+      {
+        "id": "nova_slider_captcha.E008",
+        "message": "Database-backed sessions require django.contrib.sessions in INSTALLED_APPS"
+      }
+    ],
+    "init_status": 503,
+    "challenge_status": null,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.signed_cookies",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.signed_cookies",
+    "sessions_app": "no",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.cache",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.cache",
+    "sessions_app": "no",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.file",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "django.contrib.sessions.backends.file",
+    "sessions_app": "no",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "review_backend",
+    "sessions_app": "yes",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  },
+  {
+    "engine": "review_backend",
+    "sessions_app": "no",
+    "errors": [],
+    "init_status": 200,
+    "challenge_status": 200,
+    "passed": true
+  }
+]

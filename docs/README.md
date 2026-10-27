@@ -4,6 +4,8 @@
 
 | 文档 | 内容 |
 |---|---|
+| [初始化与验证边界独立验收](2026-10-27-boundary-independent.md) | 主控行为探针、会话后端新进程、六格 source/wheel、覆盖率与冻结文件复核 |
+| [初始化与验证边界实施自测](2026-10-27-boundary-implementation.md) | init 创建额度/CSRF 响应、Admin 字段错误、写库一致性、会话能力与六格同 wheel |
 | [基础静态检查](STATIC_CHECKS.md) | Ruff精确版本、最小规则、范围与窄豁免 |
 | [i18n与Ruff实施自测](2026-10-26-i18n-lint-implementation.md) | 语言回退、动态状态、六格source/wheel、覆盖率及构建物身份 |
 | [i18n与Ruff独立验收](2026-10-26-i18n-lint-independent.md) | 主控语言探针、真实浏览器、Ruff反例、同一wheel六格与差异复核 |

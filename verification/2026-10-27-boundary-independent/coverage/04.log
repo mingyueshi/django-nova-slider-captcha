@@ -1,0 +1,25 @@
+$ /var/folders/kq/dz44fm994nz94zw2dfqnz_g00000gn/T/nova-slider-residual-independent-20261026-ew8b5ibl/ci-coverage-env/bin/python -m coverage report
+Name                                                                  Stmts   Miss Branch BrPart   Cover   Missing
+------------------------------------------------------------------------------------------------------------------
+src/nova_slider_captcha/__init__.py                                       1      0      0      0 100.00%
+src/nova_slider_captcha/admin.py                                          5      0      0      0 100.00%
+src/nova_slider_captcha/apps.py                                           7      0      0      0 100.00%
+src/nova_slider_captcha/checks.py                                        27      1     10      1  94.59%   13
+src/nova_slider_captcha/conf.py                                          76      0     28      0 100.00%
+src/nova_slider_captcha/demo_urls.py                                      4      0      0      0 100.00%
+src/nova_slider_captcha/events.py                                        32      2      4      0  94.44%   49-50
+src/nova_slider_captcha/forms.py                                        142      0     44      0 100.00%
+src/nova_slider_captcha/images.py                                        53      0      4      0 100.00%
+src/nova_slider_captcha/management/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/__init__.py                   0      0      0      0 100.00%
+src/nova_slider_captcha/management/commands/prune_slider_captcha.py      19      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0001_initial.py                        6      0      0      0 100.00%
+src/nova_slider_captcha/migrations/0002_ratelimitstate.py                26      0      6      0 100.00%
+src/nova_slider_captcha/migrations/0003_challenge_policy.py               4      0      0      0 100.00%
+src/nova_slider_captcha/migrations/__init__.py                            0      0      0      0 100.00%
+src/nova_slider_captcha/models.py                                        24      0      0      0 100.00%
+src/nova_slider_captcha/services.py                                     126      1     40      1  98.80%   119
+src/nova_slider_captcha/urls.py                                           4      0      0      0 100.00%
+src/nova_slider_captcha/views.py                                        144      6     42      1  96.24%   29-31, 63-64, 69
+------------------------------------------------------------------------------------------------------------------
+TOTAL                                                                   700     10    178      3  98.52%

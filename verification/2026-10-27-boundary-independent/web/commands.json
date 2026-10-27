@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "/tmp/nova-slider-i18n-independent-20261026-cGZx5G/lint-env/bin/ruff",
+      "check",
+      "."
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "npm",
+      "test"
+    ],
+    "returncode": 0
+  },
+  {
+    "command": [
+      "npm",
+      "run",
+      "test:dom"
+    ],
+    "returncode": 0
+  }
+]

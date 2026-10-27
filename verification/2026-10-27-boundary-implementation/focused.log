@@ -1,0 +1,72 @@
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+Creating test database for alias 'captcha'...
+Destroying old test database for alias 'captcha'...
+Creating test database for alias 'replica'...
+Destroying old test database for alias 'replica'...
+E..F.......................................................................................F....
+======================================================================
+ERROR: test_complete_bad_password_consumes_before_authentication (tests.test_boundaries.AdminFieldBoundaryTests.test_complete_bad_password_consumes_before_authentication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_boundaries.py", line 160, in test_complete_bad_password_consumes_before_authentication
+    self.assertFalse(form.is_valid())
+                     ^^^^^^^^^^^^^^^
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/forms/forms.py", line 206, in is_valid
+    return self.is_bound and not self.errors
+                                 ^^^^^^^^^^^
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/forms/forms.py", line 201, in errors
+    self.full_clean()
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/forms/forms.py", line 338, in full_clean
+    self._clean_form()
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/forms/forms.py", line 354, in _clean_form
+    cleaned_data = self.clean()
+                   ^^^^^^^^^^^^
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/src/nova_slider_captcha/forms.py", line 194, in clean
+    return super().clean()
+           ^^^^^^^^^^^^^^^
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/views/decorators/debug.py", line 75, in sensitive_variables_wrapper
+    return func(*func_args, **func_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/contrib/auth/forms.py", line 366, in clean
+    self.user_cache = authenticate(
+                      ^^^^^^^^^^^^^
+  File "/Users/apple/.pyenv/versions/3.12.14/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/apple/.pyenv/versions/3.12.14/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/apple/.pyenv/versions/3.12.14/lib/python3.12/unittest/mock.py", line 1204, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AdminFieldBoundaryTests.test_complete_bad_password_consumes_before_authentication.<locals>.authenticate() takes 0 positional arguments but 1 was given
+
+======================================================================
+FAIL: test_init_default_and_dynamic_configuration (tests.test_boundaries.InitBoundaryTests.test_init_default_and_dynamic_configuration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_boundaries.py", line 121, in test_init_default_and_dynamic_configuration
+    self.assertEqual(Client().get("/captcha/init").status_code, 200)
+AssertionError: 429 != 200
+
+======================================================================
+FAIL: test_ip_limit_creation_race_across_new_sessions_is_atomic (tests.test_captcha.AtomicityTests.test_ip_limit_creation_race_across_new_sessions_is_atomic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/tmp/nova-slider-boundary-impl-tools-20261027/lib/python3.12/site-packages/django/test/utils.py", line 456, in inner
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/apple/Documents/GitHub/django-nova-slider-captcha/tests/test_captcha.py", line 330, in test_ip_limit_creation_race_across_new_sessions_is_atomic
+    self.assertEqual(RateLimitState.objects.count(), 4)
+AssertionError: 5 != 4
+
+----------------------------------------------------------------------
+Ran 96 tests in 3.265s
+
+FAILED (failures=2, errors=1)
+Destroying test database for alias 'default'...
+Destroying test database for alias 'captcha'...
+Destroying test database for alias 'replica'...
+Found 96 test(s).
+System check identified no issues (0 silenced).
