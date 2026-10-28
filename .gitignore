@@ -19,3 +19,5 @@ htmlcov/
 .wrangler/
 .openai/
 .sites-runtime/
+.mimosa/
+.video_agent/
