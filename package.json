@@ -2,6 +2,9 @@
   "name": "nova-slider-captcha-dev",
   "version": "0.3.0",
   "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "test": "node --test tests/widget.test.mjs",
     "test:dom": "node scripts/test_dom.cjs",

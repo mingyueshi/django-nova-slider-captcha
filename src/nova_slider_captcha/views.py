@@ -104,7 +104,7 @@ def init(request):
         if not hasattr(request, "session"):
             raise ValueError("CAPTCHA initialization requires session middleware")
         session_backend()
-        rate_limit("init", "ip")
+        rate_limit("init", "ip")  # Validate configuration even when an existing binding needs no quota.
         if not services.session_binding(request):
             failure = _rate_failure(request, "init")
             if failure is not None:

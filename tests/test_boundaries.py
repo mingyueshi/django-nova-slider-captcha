@@ -239,14 +239,16 @@ class WriterConsistencyTests(TestCase):
 
 
 class FreshSessionBackendTests(SimpleTestCase):
-    def test_only_builtin_database_backends_require_sessions_app(self):
+    def test_database_backends_and_subclasses_require_sessions_app(self):
         script = Path(__file__).with_name("session_backend_probe.py")
-        for backend in ("db", "cached_db", "signed_cookies", "cache", "file", "custom"):
+        env = os.environ.copy()
+        env.pop("PYTHONPATH", None)
+        for backend in ("db", "cached_db", "signed_cookies", "cache", "file", "custom", "custom_db", "custom_cached_db"):
             with self.subTest(backend=backend):
-                result = subprocess.run([sys.executable, str(script), backend], env=os.environ.copy(), capture_output=True, text=True, timeout=60)
+                result = subprocess.run([sys.executable, str(script), backend], env=env, capture_output=True, text=True, timeout=60)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 report = json.loads(result.stdout)
-                needs_app = backend in ("db", "cached_db")
+                needs_app = backend in ("db", "cached_db", "custom_db", "custom_cached_db")
                 self.assertEqual(report["checks"], ["nova_slider_captcha.E008"] if needs_app else [])
                 self.assertEqual(report["status"], 503 if needs_app else 200)
                 self.assertEqual(report["challenge_status"], 503 if needs_app else 200)

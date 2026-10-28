@@ -1,4 +1,19 @@
-# 0.2.0 验证说明
+# 验证索引：0.3.0 发布准备与历史结果
+
+当前维护版本为 **0.3.0，尚未上传**。下方 0.2.0 数字和根目录 `verification/export-checks.json` 都是 2026-10-05 的历史结果；其中 “No workflow configured” 描述当时情况，不能用于判断当前 CI 配置或执行状态。当前已有 [Tests](../.github/workflows/tests.yml) 和 [Publish](../.github/workflows/publish.yml)，有工作流配置不等于本轮远端运行通过。
+
+| 版本/日期 | 报告与新证据 | 范围 |
+|---|---|---|
+| 0.3.0 / 2026-10-29 补充 | [会话引擎补充复核](2026-10-29-session-engine-followup.md)、[任务证据](../verification/2026-10-29-session-engine-followup/) | 非法引擎受控拒绝、当前源码与新 wheel；不覆盖或改写前轮证据 |
+| 0.3.0 / 2026-10-29 | [人工复核修复](2026-10-29-review-fixes.md)、[任务证据](../verification/2026-10-29-review-fixes/) | 焦点、子进程、会话后端、Worker、本地源码/wheel 配对与发布检查；具体结果以报告为准 |
+| 0.3.0 / 2026-10-27 | [边界独立验收](2026-10-27-boundary-independent.md)、[任务证据](../verification/2026-10-27-boundary-independent/) | init、Admin、写库与会话配置；仅代表当时差异 |
+| 0.3.0 / 2026-10-26 | [发布准备独立验收](2026-10-26-release-independent.md)、[任务证据](../verification/2026-10-26-release-independent/) | 当时的策略快照、主题、构建与本地矩阵 |
+
+更细的实施/独立报告见 [文档目录](README.md)。本轮没有另设实施会话，2026-10-29 的结果是同一会话复核与自测，不冒称独立验收；历史独立报告也不自动覆盖之后的变更。未执行的远端 CI、上传、部署和数据库/设备验收不能由本地结果推定。
+
+---
+
+## 0.2.0 历史验证说明（保留原始结果）
 
 验证日期：2026-10-05。此文件记录本轮优化后的实际执行结果，不把旧版测试视为本版重跑。0.1.0 历史记录已保存到 `verification/history-0.1.0/`。
 

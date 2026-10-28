@@ -307,7 +307,9 @@ class RateSettingsTests(SimpleTestCase):
         self._run_upgrade("--naive-time")
 
     def _run_upgrade(self, *args):
+        env = os.environ.copy()
+        env.pop("PYTHONPATH", None)
         result = subprocess.run([sys.executable, str(Path(__file__).resolve().parents[1] / "scripts/test_rate_upgrade.py"), *args],
-                                capture_output=True, text=True, env=os.environ.copy(), timeout=60)
+                                capture_output=True, text=True, env=env, timeout=60)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("Legacy upgrade and rollback guard passed", result.stdout)

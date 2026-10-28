@@ -1,0 +1,30 @@
+{
+  "package": {
+    "statements_covered": 695,
+    "statements": 705,
+    "statement_percent": 98.58156028368795,
+    "branches_covered": 177,
+    "branches": 180,
+    "branch_percent": 98.33333333333333,
+    "combined_percent": 98.53107344632768,
+    "floors": {
+      "statements": 97,
+      "branches": 95
+    }
+  },
+  "forms": {
+    "statements_covered": 142,
+    "statements": 142,
+    "statement_percent": 100.0,
+    "branches_covered": 44,
+    "branches": 44,
+    "branch_percent": 100.0,
+    "combined_percent": 100.0,
+    "floors": {
+      "statements": 99,
+      "branches": 97
+    }
+  },
+  "forms_missing_lines": [],
+  "forms_missing_branches": []
+}

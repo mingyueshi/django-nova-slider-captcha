@@ -1,0 +1,17 @@
+--- previous-candidate/src/nova_slider_captcha/conf.py
++++ current/src/nova_slider_captcha/conf.py
+@@ -28,8 +28,12 @@
+     if apps.is_installed("django.contrib.sessions"):
+         return
+     from django.contrib.sessions.backends.db import SessionStore as DatabaseSessionStore
+-    store = import_module(settings.SESSION_ENGINE).SessionStore
+-    if issubclass(store, DatabaseSessionStore):
++    try:
++        store = import_module(settings.SESSION_ENGINE).SessionStore
++        database_backed = issubclass(store, DatabaseSessionStore)
++    except (ImportError, AttributeError, TypeError, ValueError) as error:
++        raise ValueError("SESSION_ENGINE must provide an importable SessionStore class") from error
++    if database_backed:
+         raise ValueError("Database-backed sessions require django.contrib.sessions in INSTALLED_APPS")
+ 
+ 

@@ -233,7 +233,7 @@
         }
       }
       // Only fixed markup is inserted here. All translated/custom text uses textContent.
-      this.innerHTML = `<div class="nsc"><div class="nsc-image"><img class="nsc-background" alt="" draggable="false"><img class="nsc-piece" alt="" draggable="false"><div class="nsc-overlay"></div></div><div class="nsc-track"><div class="nsc-fill"></div><span class="nsc-track-text" aria-hidden="true"></span><input class="nsc-range" type="range" min="0" max="1" step="1" value="0" aria-describedby="nsc-instructions-${NovaSlider.id++}"><span class="nsc-handle" aria-hidden="true">→</span></div><div class="nsc-meta"><span class="nsc-status" role="status" aria-live="polite"></span><button class="nsc-refresh" type="button"><span aria-hidden="true">↻</span> <span class="nsc-refresh-text"></span></button></div><p class="nsc-keyboard"></p><input type="hidden" name="nova_slider_token" value=""></div>`;
+      this.innerHTML = `<div class="nsc"><div class="nsc-image"><img class="nsc-background" alt="" draggable="false"><img class="nsc-piece" alt="" draggable="false"><div class="nsc-overlay" aria-hidden="true"></div></div><div class="nsc-track"><div class="nsc-fill"></div><span class="nsc-track-text" aria-hidden="true"></span><input class="nsc-range" type="range" min="0" max="1" step="1" value="0" aria-describedby="nsc-instructions-${NovaSlider.id++}"><span class="nsc-handle" aria-hidden="true">→</span></div><div class="nsc-meta"><span class="nsc-status" role="status" aria-live="polite"></span><button class="nsc-refresh" type="button"><span aria-hidden="true">↻</span> <span class="nsc-refresh-text"></span></button></div><p class="nsc-keyboard"></p><input type="hidden" name="nova_slider_token" value=""></div>`;
       this.range = this.querySelector(".nsc-range");
       this.querySelector(".nsc-keyboard").id = this.range.getAttribute("aria-describedby");
       this.syncFormAria();
@@ -255,11 +255,14 @@
       this.endpoint = url.pathname.replace(/\/?$/, "/");
       this.purpose = this.getAttribute("purpose") || "demo";
       const on = (element, event, cb) => element.addEventListener(event, cb, { signal: this.abortEvents.signal });
-      on(this.range, "input", () => this.move(Number(this.range.value)));
+      on(this.range, "input", () => {
+        if (this.state === "ready") this.move(Number(this.range.value));
+        else this.range.value = this.x;
+      });
       on(this.range, "pointerdown", (e) => {
-        if (this.state !== "ready" || this.activePointerId !== null || !Number.isInteger(e.pointerId)) return;
+        if (this.state !== "ready") { e.preventDefault(); return; }
+        if (this.activePointerId !== null || !Number.isInteger(e.pointerId)) return;
         this.activePointerId = e.pointerId;
-        this.dragging = true;
         try { this.range.setPointerCapture?.(e.pointerId); } catch (_) { /* Pointer may already be inactive. */ }
       });
       on(this.range, "pointerup", (e) => {
@@ -274,6 +277,7 @@
       on(this.range, "pointercancel", cancelPointer);
       on(this.range, "lostpointercapture", cancelPointer);
       on(this.range, "keydown", (e) => {
+        if (this.state !== "ready" && ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(e.key)) e.preventDefault();
         if (e.key === "Enter") { e.preventDefault(); this.verify(); }
       });
       on(this.querySelector(".nsc-refresh"), "click", () => this.refresh());
@@ -283,7 +287,6 @@
       const pointerId = this.activePointerId;
       // Clear identity before release, since release can dispatch lostpointercapture.
       this.activePointerId = null;
-      this.dragging = false;
       if (Number.isInteger(pointerId)) {
         try { this.range?.releasePointerCapture?.(pointerId); } catch (_) { /* Capture may already be released. */ }
       }
@@ -313,7 +316,10 @@
       this.state = state;
       this.stateText = { key, values };
       this.querySelector(".nsc").dataset.state = state;
-      this.range.disabled = state !== "ready";
+      // Native disabling blurs a focused range. Keep focus while awaiting the
+      // response; event guards prevent edits/submission and still allow Tab.
+      this.range.disabled = !["ready", "checking"].includes(state);
+      this.range.setAttribute("aria-disabled", String(state !== "ready"));
       this.renderStatus();
       this.emit("captcha-state", { state, message: this.status.textContent });
     }

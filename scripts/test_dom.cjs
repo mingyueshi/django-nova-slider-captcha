@@ -34,7 +34,7 @@ async function page(url, demo=false, language, formCase){
  let p=await page('/captcha-demo/',true);let {w,slider}=p;
  assert.equal(w.document.querySelectorAll('[name=nova_slider_token]').length,1);
  assert.equal(slider.locale, 'zh-CN');assert.equal(slider.status.textContent,'拖动拼图，对齐图中的缺口');assert.equal(w.document.documentElement.lang,'zh-hans');assert.equal(w.document.querySelector('#demo-submit').textContent,'提交受保护的请求');results.push('Django Chinese locale renders translated demo and initializes Chinese widget');
- slider.move(0);await slider.verify();assert.equal(slider.state,'ready');assert.match(slider.status.textContent,/4/);results.push('wrong guess keeps widget usable with four attempts');
+ slider.range.focus();slider.move(0);await slider.verify();assert.equal(slider.state,'ready');assert.match(slider.status.textContent,/4/);assert.equal(w.document.activeElement,slider.range);assert.equal(slider.range.getAttribute('aria-disabled'),'false');assert.equal(slider.overlay.getAttribute('aria-hidden'),'true');results.push('wrong guess keeps keyboard focus with four attempts and a single accessible status');
  const solution=await call({op:'solution',id:slider.challenge.challengeId});
  slider.range.value=solution.x;slider.range.dispatchEvent(new w.Event('input'));slider.range.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
  await wait(()=>slider.state==='success');assert.equal(slider.getToken().length,43);assert.equal(w.document.querySelector('#demo-submit').disabled,false);results.push('keyboard Enter verifies through real Django API');

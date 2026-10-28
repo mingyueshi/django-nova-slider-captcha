@@ -1,0 +1,40 @@
+{
+  "base_commit": "75117ebdfc032d00e140d050fcc2e7fe9b571e52",
+  "scope": "increment after the previous uncommitted candidate; prior evidence preserved",
+  "changed_files": {
+    ".gitignore": {
+      "before": "e25dc77ee1dc1ad0c7a0fb39bc68cb894613b74141622de630f6620c4e21babf",
+      "after": "37b06deb49dc1cd9faa113c9bb2391140a65732640653d7d36496d1f56d3b26d"
+    },
+    "README.md": {
+      "before": "0d32a1a31c390cc7840b1e3d5967feca2937f3d716aee34c61809728945e61e0",
+      "after": "bb18df02e4c002f006f536842c335e34c9be48d3c615522a3f25bd67be79c5c7"
+    },
+    "docs/CHANGELOG.md": {
+      "before": "59b33b8bd950abbcc18a2579791a11e6e9873762278c75f98efb72e9e24ed572",
+      "after": "b21e68bf8daf716babcaa90dcc6860e8a4e15fd50abc013c10f8f5cdca530abe"
+    },
+    "docs/README.md": {
+      "before": "c8b51edd9a2e49f3c6104618d750cac0b2c16f81b60508ac8f640495fbd95dae",
+      "after": "849eac7b4cc5cd52958ae7c6ce4afdc1b70e705475282d4350145f28adcc0027"
+    },
+    "docs/RELEASING.md": {
+      "before": "da503a58675fa719015694b6261c0c6c6b1edc4f67c3bf89b990a55cfd37141f",
+      "after": "d22d89dc29ee905be6b9ad060395c21867180e1502303749194f5e52bbaeb0ad"
+    },
+    "docs/VERIFICATION.md": {
+      "before": "43cbaf7a33dcaaf661bc036c27fbba806ae1726ff97dc2927c80cef2b52aab4a",
+      "after": "00920b9c31dcc5ba519ea1e5e07111024c3696461fad513e26faa2f2c64b5457"
+    },
+    "src/nova_slider_captcha/conf.py": {
+      "before": "12bdc0364f3adcf11679e26b04a45eb1be4b821e582da6343867bf9406ea9799",
+      "after": "a0ba8667efd12717e5d9508f0e8d0afade4d3eb960d8fbb166d556b5acbeb390"
+    }
+  },
+  "new_source_and_report_files": {
+    "tests/test_session_backend.py": "c0f70ff6537455dbcdfef6137ac4bca2309019846e4f49467709e6fdecfee0d3",
+    "docs/2026-10-29-session-engine-followup.md": "1614bf5510fc8dad069a203b606d7000246e52a5b1968e963755b4a899455d4a"
+  },
+  "preserved_prior_evidence_files": 586,
+  "previous_candidate_manifest_sha256": "7c79036a4ee624820d8957818a95166765c9857f60fa024fe5af93f5cfddb294"
+}

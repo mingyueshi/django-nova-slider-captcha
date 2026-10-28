@@ -1,0 +1,142 @@
+{
+  "nova_source": null,
+  "database": "file-backed SQLite",
+  "wheel": {
+    "name": "nova_slider_captcha-0.3.0-py3-none-any.whl",
+    "sha256": "c1598a0e9b22ac4b6a47843c57e2af28ab0ebc21264558993e6d71942f916479"
+  },
+  "cells": [
+    {
+      "python_series": "3.10",
+      "django": "5.2.17",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.10-5.2.17-12.2.0.log",
+      "python": "3.10.20",
+      "status": "passed"
+    },
+    {
+      "python_series": "3.11",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.11-5.2.17-12.3.0.log",
+      "python": "3.11.12",
+      "status": "passed"
+    },
+    {
+      "python_series": "3.12",
+      "django": "5.2.17",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.12-5.2.17-12.3.0.log",
+      "python": "3.12.14",
+      "status": "passed"
+    },
+    {
+      "python_series": "3.12",
+      "django": "6.1.2",
+      "pillow": "12.2.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.12-6.1.2-12.2.0.log",
+      "python": "3.12.14",
+      "status": "passed"
+    },
+    {
+      "python_series": "3.13",
+      "django": "6.1.2",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.13-6.1.2-12.3.0.log",
+      "python": "3.13.12",
+      "status": "passed"
+    },
+    {
+      "python_series": "3.14",
+      "django": "6.0.9",
+      "pillow": "12.3.0",
+      "profiles": [
+        {
+          "mode": "source",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        },
+        {
+          "mode": "wheel",
+          "theme": "native",
+          "status": "passed",
+          "tests": 150
+        }
+      ],
+      "log": "matrix-3.14-6.0.9-12.3.0.log",
+      "python": "3.14.7",
+      "status": "passed"
+    }
+  ]
+}

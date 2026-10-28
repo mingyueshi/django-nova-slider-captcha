@@ -99,7 +99,7 @@ npm run test:worker
 - DOM 脚本使用真实 Django test client，但不是浏览器布局引擎。需要保存新报告时，指定新的 `NOVA_DOM_REPORT` 路径，父目录须存在。
 - `scripts/test_rate_upgrade.py` 与 `scripts/test_policy_upgrade.py` 使用临时数据库；相关迁移变更须确认其覆盖和执行结果。
 - 安装包验证必须安装本次构建的 wheel，设置 `PYTHONPATH=.` 并确认模块实际来自安装位置。使用 `python -m django`，不要用会插入 `src` 的 `manage.py` 假装测试安装包。
-- `scripts/test_matrix.py` 需要明确的运行时、Nova 源码及 wheel 路径；不要把历史广矩阵当作当前所有环境都可直接执行的命令。
+- `scripts/test_matrix.py` 需要明确的运行时及 wheel 路径；验证 Nova profile 时另提供 Nova 源码路径。报告写入本次 work 目录，不要把历史广矩阵当作当前所有环境都可直接执行的命令。
 - 每次收尾检查 `git diff --check` 和实际修改列表。最终说明改动、验证结果以及影响结论的未验证项，不填充固定“全部通过”模板。
 
 ## 文档与证据

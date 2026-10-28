@@ -4,6 +4,19 @@
 
 Python 包与前端开发包版本同步为 **0.3.0**。以下变化尚未发布到 PyPI；源码已修改或本地测试通过不等于远端 CI 通过、线上部署或已上传。
 
+### 会话引擎补充复核（2026-10-29，待发布）
+
+- 会话后端检查将引擎导入、属性读取及类判定的配置异常转为固定消息的 ValueError，使 E008 和已有 503 / configuration_invalid 兜底继续生效；缺少 sessions app 的检查范围及宿主中间件边界保持原样。补五类非法配置的检查命令、直接视图与服务拒绝回归；.gitignore 补末尾换行。验证及有意保留项见 [补充报告](2026-10-29-session-engine-followup.md)。
+
+### 人工复核修复（2026-10-29，待发布）
+
+- 校验等待期间以 `aria-disabled` 配合输入守卫保留滑块键盘焦点，阻止位置修改和重复提交，保留 Tab 离开；答错后无需重新定位，也不会异步抢回已移走的焦点。overlay 对辅助技术隐藏，状态继续由现有 live region 提供；删除重复的 dragging 状态。
+- 升级与会话探针显式加入仓库根目录，不再隐式依赖调用方 PYTHONPATH，且不把 src 注入 wheel 子进程。DB 会话引擎的自定义子类也受 E008 和运行时配置检查保护。
+- DOM 桥在导入 settings 前设置临时数据库，使派生别名一同隔离；移除 web job 无效的 NOVA_TEST_DB。发布 action 固定至 v1.14.3 的完整 SHA，OIDC job 仍只下载同一构建物并上传。
+- 本地矩阵对齐 CI 六组 Django/Pillow 配对，识别 uv/pyenv 的本机运行时，输出写入指定工作目录；开发包标明 Node >=22.13.0，Django 接入仍无 Node 依赖。
+- Worker 示例 submit 新增独立 60/session、240/IP 的 GCRA 配额，保留已有动作额度和协议差异；统一 TTL/次数/容差内部常量，补 fetch 入口与提交限流回归。此项未部署到线上 Worker/D1。
+- 验证总入口区分 0.3.0 日期证据与 0.2.0 历史结果，保留旧机器摘要；本轮复核、验证范围及未验证项见 [报告](2026-10-29-review-fixes.md)。
+
 ### 初始化资源与验证边界（2026-10-27，待发布）
 
 - 新增动态严格校验的 `NOVA_SLIDER_RATE_LIMITS.init_ip`，默认 40；在创建新绑定前扣 IP 额度，已有有效绑定重复 init 豁免。拒绝时不生成 CSRF token，覆盖 CSRF 使用 session 的响应中间件阶段；保留 issue / verify 额度和 GCRA 债务语义。部署说明补入口限速与独立 clearsessions。

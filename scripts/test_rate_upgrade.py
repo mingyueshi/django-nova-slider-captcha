@@ -7,6 +7,9 @@ from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
+# Import repository settings without relying on the caller's PYTHONPATH.
+# Do not add src: installed-wheel checks must keep using the installed package.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.settings")
 from django.conf import settings
 

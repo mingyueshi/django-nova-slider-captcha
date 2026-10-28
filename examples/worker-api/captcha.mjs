@@ -1,7 +1,11 @@
 import { makePuzzle } from "./puzzle.mjs";
 import { claimQuotas, RateLimitStorageError } from "./rate-limit.mjs";
 const SID = "nova_captcha_session",
-  SESSION_TTL = 1800000;
+  SESSION_TTL = 1800000,
+  CHALLENGE_TTL = 120000,
+  TOKEN_TTL = 60000,
+  MAX_ATTEMPTS = 5,
+  TOLERANCE = 4;
 const random = () =>
   Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) =>
     b.toString(16).padStart(2, "0"),
@@ -93,7 +97,7 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
         .bind(await sha(sid), csrf, now + SESSION_TTL)
         .run();
       return json({ csrfToken: csrf }, 200, {
-        "Set-Cookie": `${SID}=${sid}; Path=/; HttpOnly; SameSite=Strict; Max-Age=1800${new URL(req.url).protocol === "https:" ? "; Secure" : ""}`,
+        "Set-Cookie": `${SID}=${sid}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${SESSION_TTL / 1000}${new URL(req.url).protocol === "https:" ? "; Secure" : ""}`,
       });
     }
     if (req.method !== "POST") return fail("method_not_allowed", 405);
@@ -128,14 +132,14 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
         .prepare(
           "INSERT INTO captcha_challenges(id,session,purpose,answer,expires) VALUES (?,?,?,?,?)",
         )
-        .bind(id, sess.id, body.purpose, p.answer, now + 120000)
+        .bind(id, sess.id, body.purpose, p.answer, now + CHALLENGE_TTL)
         .run();
       const { answer, ...publicPuzzle } = p;
       return json({
         challengeId: id,
         ...publicPuzzle,
-        expiresIn: 120,
-        maxAttempts: 5,
+        expiresIn: CHALLENGE_TTL / 1000,
+        maxAttempts: MAX_ATTEMPTS,
       });
     }
     if (action === "verify") {
@@ -147,24 +151,31 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
         digest = await sha(token);
       const row = await db
         .prepare(
-          "UPDATE captcha_challenges SET attempts=attempts+1, solved=CASE WHEN ABS(answer-?)<=4 THEN 1 ELSE 0 END, token=CASE WHEN ABS(answer-?)<=4 THEN ? ELSE NULL END, token_expires=CASE WHEN ABS(answer-?)<=4 THEN ? ELSE NULL END WHERE id=? AND session=? AND expires>? AND attempts<5 AND solved=0 RETURNING solved,attempts",
+          "UPDATE captcha_challenges SET attempts=attempts+1, solved=CASE WHEN ABS(answer-?)<=? THEN 1 ELSE 0 END, token=CASE WHEN ABS(answer-?)<=? THEN ? ELSE NULL END, token_expires=CASE WHEN ABS(answer-?)<=? THEN ? ELSE NULL END WHERE id=? AND session=? AND expires>? AND attempts<? AND solved=0 RETURNING solved,attempts",
         )
         .bind(
           body.x,
+          TOLERANCE,
           body.x,
+          TOLERANCE,
           digest,
           body.x,
-          now + 60000,
+          TOLERANCE,
+          now + TOKEN_TTL,
           body.challengeId,
           sess.id,
           now,
+          MAX_ATTEMPTS,
         )
         .first();
       if (!row) return fail("challenge_unavailable", 409);
-      if (row.solved) return json({ ok: true, token, expiresIn: 60 });
-      return fail("incorrect", 422, { attemptsRemaining: 5 - row.attempts });
+      if (row.solved) return json({ ok: true, token, expiresIn: TOKEN_TTL / 1000 });
+      return fail("incorrect", 422, { attemptsRemaining: MAX_ATTEMPTS - row.attempts });
     }
     if (action === "submit") {
+      const ip = req.headers.get("cf-connecting-ip") || "unknown";
+      const decision = await claimQuotas(db, [["submit-ip:" + await sha(ip), 240], ["submit:" + sess.id, 60]], now);
+      if (!decision.allowed) return limited(decision);
       if (
         body.purpose !== "demo" ||
         typeof body.token !== "string" ||

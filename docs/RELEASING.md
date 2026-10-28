@@ -21,6 +21,8 @@ CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一�
 
 首次本地矩阵、真实浏览器与远端 CI 的状态分别记录，不能互相代替。旧 0002→0003 迁移回归使用独立临时 SQLite；生产升级需先停止旧写入，执行 migrate，再恢复服务。不要把旧行快照改成当前更宽松配置。
 
+0.3.0 的日期证据及 0.2.0 历史记录统一由 [验证索引](VERIFICATION.md) 导航；当前会话引擎修复见 [补充复核](2026-10-29-session-engine-followup.md)，前轮范围见 [2026-10-29 复核报告](2026-10-29-review-fixes.md)。本轮保持暂不上传。发布 job 的 `pypa/gh-action-pypi-publish` 固定为上游 [v1.14.3](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.14.3) 对应的完整 commit SHA；升级时须核对上游 release/commit 并复核工作流，不恢复浮动分支。
+
 ## 将来首次配置 Trusted Publishing
 
 待发布时由维护者确认 `nova-slider-captcha` 名称和账号权限，在 [PyPI 的 Publishing 管理页](https://pypi.org/manage/account/publishing/) 添加 pending publisher，字段为：项目名 `nova-slider-captcha`，GitHub owner `mingyueshi`，repository `django-nova-slider-captcha`，workflow filename `publish.yml`，environment `pypi`。pending publisher 不会提前创建或保留项目；首次成功发布才创建项目。流程依据 [PyPI 首次项目说明](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)。若项目已经存在，使用该项目的 Publishing 页面添加相同 publisher，按 [现有项目说明](https://docs.pypi.org/trusted-publishers/adding-a-publisher/) 操作。

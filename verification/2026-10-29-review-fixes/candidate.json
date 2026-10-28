@@ -1,0 +1,33 @@
+{
+  "base_commit": "75117ebdfc032d00e140d050fcc2e7fe9b571e52",
+  "scope": "uncommitted diff; dated evidence excluded from this candidate hash list",
+  "files": {
+    ".github/workflows/publish.yml": "9bcb86e8f1fde1920501c502fe96b90cd2f983f614fd7d77fd66ed9e6805048e",
+    ".github/workflows/tests.yml": "3f91f3a75c7f2a8c4736880632f3a49e61f59b0e1164d8323578da706a093813",
+    "AGENTS.md": "29c6042c2c6d2d25315a82a65cf83cc7494cc3f9da3a1104243971b8854fe608",
+    "README.md": "0d32a1a31c390cc7840b1e3d5967feca2937f3d716aee34c61809728945e61e0",
+    "docs/CHANGELOG.md": "59b33b8bd950abbcc18a2579791a11e6e9873762278c75f98efb72e9e24ed572",
+    "docs/README.md": "c8b51edd9a2e49f3c6104618d750cac0b2c16f81b60508ac8f640495fbd95dae",
+    "docs/RELEASING.md": "da503a58675fa719015694b6261c0c6c6b1edc4f67c3bf89b990a55cfd37141f",
+    "docs/VERIFICATION.md": "43cbaf7a33dcaaf661bc036c27fbba806ae1726ff97dc2927c80cef2b52aab4a",
+    "examples/worker-api/README.md": "85959c0fb66a607e32e2a607dcd703fb21dd5f0c5d2c74319c5bd2f8c81200f3",
+    "examples/worker-api/captcha.mjs": "6b0ec7938d627ce71f96221deda81d83fe8ac472a5db1ec38cbda7d0b3f09589",
+    "examples/worker-api/tests/backend.test.mjs": "0fcfbd0bc82904330f4ec2aea51587ba75116b81f2236a1620eb2fa7a3b54112",
+    "package-lock.json": "ddba33e11f6ab638d5e2671be29aa5d1e50b2f3d085da7d62b6775de59f24bef",
+    "package.json": "ac33974a6215ebcbf996c4d507f3c10b322157257a660c33349d6342ec70b3ee",
+    "scripts/dom_bridge.py": "195459039f3d15f6a0356733ae8542a7763a7a4b07e5540b851b77615168c175",
+    "scripts/test_dom.cjs": "0beedcaef4e03ccf91e822edaa0aed5db5759d108eeafdbfb2f2f51243ea47d3",
+    "scripts/test_matrix.py": "c77cc0d8a4396af2f49f4a26cf6bf437792a703ec70326cde045c051430f93f2",
+    "scripts/test_policy_upgrade.py": "8cb855f8b43ee906e746efd340c1c87e753685f3a31e4b6d5247059039959140",
+    "scripts/test_rate_upgrade.py": "e5d06f7480f9614a4d72b0b68a984075e0f02df0d8c9849f9a37b0e84614609d",
+    "src/nova_slider_captcha/conf.py": "12bdc0364f3adcf11679e26b04a45eb1be4b821e582da6343867bf9406ea9799",
+    "src/nova_slider_captcha/static/nova_slider_captcha/slider.js": "ab34596636072ba3e58adeeff673c92fd9cd8060bca1f295b2d3016fd7075154",
+    "src/nova_slider_captcha/views.py": "88430fefb2807a1c800ea434d7cde60a222d7a9422c0d695858c42ed5bf8ae20",
+    "tests/session_backend_probe.py": "40f02cafacd839277f2ab3d4f35a9c695224361734eab08af3c5b4c2044844c3",
+    "tests/test_boundaries.py": "62428cedf3dd5c1d29d76925864ee8ec4758ca9fa414a7229fc7c5cb855d128d",
+    "tests/test_policy.py": "20645a84d8e3997f003f96d0fea8a05d1d47f644fe9b7004e8c59b1a3027653f",
+    "tests/test_rate_limit.py": "7f68b0321787b898f2d911edbf9119c9382e45213a81c78255de1ef7691f7f8b",
+    "tests/widget.test.mjs": "0e6ae75ca7f34ca1f556dc9c4fee9bb4b0911d8350348db079e2b3339f0110f1",
+    "docs/2026-10-29-review-fixes.md": "32f32093fd7d1f721014492e639182cc69e5fc9b4aebb48d0688191346f38595"
+  }
+}

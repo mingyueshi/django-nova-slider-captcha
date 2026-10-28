@@ -335,6 +335,65 @@ test("wrong answer is retryable and exhausting attempts requires refresh", async
   assert.equal(c.widget.range.disabled, true);
   cleanup(c);
 });
+test("checking preserves keyboard focus and blocks edits and duplicate submissions", async () => {
+  let finish;
+  const c = await setup((url) => url.endsWith("verify")
+    ? new Promise(resolve => { finish = resolve; })
+    : response(url.endsWith("init") ? { csrfToken: "csrf" } : puzzle()));
+  try {
+    c.widget.range.focus();
+    c.widget.move(12);
+    c.widget.range.dispatchEvent(new c.w.KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
+    await flush();
+    assert.equal(c.widget.state, "checking");
+    assert.equal(c.widget.range.disabled, false);
+    assert.equal(c.widget.range.getAttribute("aria-disabled"), "true");
+    assert.equal(c.w.document.activeElement, c.widget.range);
+    for (const key of ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", "Enter"]) {
+      const event = new c.w.KeyboardEvent("keydown", { key, cancelable: true });
+      c.widget.range.dispatchEvent(event);
+      assert.equal(event.defaultPrevented, true, key);
+    }
+    const tab = new c.w.KeyboardEvent("keydown", { key: "Tab", cancelable: true });
+    c.widget.range.dispatchEvent(tab);
+    assert.equal(tab.defaultPrevented, false);
+    const down = new c.w.Event("pointerdown", { cancelable: true });
+    c.widget.range.dispatchEvent(down);
+    assert.equal(down.defaultPrevented, true);
+    c.widget.range.value = 99;
+    c.widget.range.dispatchEvent(new c.w.Event("input"));
+    assert.equal(c.widget.x, 12);
+    assert.equal(c.widget.range.value, "12");
+    assert.equal(c.calls.filter(call => call.url.endsWith("verify")).length, 1);
+    finish(response({ ok: false, code: "incorrect", attemptsRemaining: 4 }, 422));
+    await flush();
+    assert.equal(c.widget.state, "ready");
+    assert.equal(c.widget.x, 0);
+    assert.equal(c.widget.range.getAttribute("aria-disabled"), "false");
+    assert.equal(c.w.document.activeElement, c.widget.range);
+    assert.equal(c.widget.overlay.getAttribute("aria-hidden"), "true");
+    assert.equal(c.widget.status.getAttribute("role"), "status");
+  } finally { cleanup(c); }
+});
+test("retry responses never steal focus moved away during checking", async () => {
+  for (const initiallyFocused of [false, true]) {
+    let finish;
+    const c = await setup((url) => url.endsWith("verify")
+      ? new Promise(resolve => { finish = resolve; })
+      : response(url.endsWith("init") ? { csrfToken: "csrf" } : puzzle()));
+    try {
+      if (initiallyFocused) c.widget.range.focus();
+      const pending = c.widget.verify();
+      await flush();
+      const refresh = c.widget.querySelector(".nsc-refresh");
+      refresh.focus();
+      finish(response({ ok: false, code: "incorrect", attemptsRemaining: 4 }, 422));
+      await pending;
+      assert.equal(c.widget.state, "ready");
+      assert.equal(c.w.document.activeElement, refresh);
+    } finally { cleanup(c); }
+  }
+});
 test("late verify success cannot overwrite refreshed challenge", async () => {
   let resolve;
   const c = await setup((url) =>
@@ -716,7 +775,6 @@ test("a stale pointer release or cancellation cannot submit or cancel a new drag
   pointer(c, "lostpointercapture", 1);
   await flush();
   assert.equal(c.widget.activePointerId, 2);
-  assert.equal(c.widget.dragging, true);
   assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 0);
   c.widget.setLocale("en");
   c.widget.messages = { ready: "Keep dragging" };
@@ -726,7 +784,6 @@ test("a stale pointer release or cancellation cannot submit or cancel a new drag
   await flush();
   assert.equal(c.calls.filter(x => x.url.endsWith("verify")).length, 1);
   assert.equal(c.widget.activePointerId, null);
-  assert.equal(c.widget.dragging, false);
   assert.deepEqual(captures, [1, 2]);
   assert.deepEqual(releases, [1, 2]);
   cleanup(c);

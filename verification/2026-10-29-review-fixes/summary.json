@@ -1,0 +1,73 @@
+{
+  "version": "0.3.0",
+  "date": "2026-10-29",
+  "timezone": "Asia/Shanghai",
+  "source_base": "75117ebdfc032d00e140d050fcc2e7fe9b571e52",
+  "source_scope": "uncommitted changes in candidate.json",
+  "review_mode": "same-session review and self-test; not independent acceptance",
+  "platform": "Darwin arm64",
+  "runtime": {
+    "python": "3.12.14",
+    "django": "5.2.17",
+    "pillow": "12.3.0",
+    "coverage": "7.17.0",
+    "node": "v24.21.0",
+    "npm": "11.19.0",
+    "ruff": "0.17.2",
+    "actionlint": "1.7.12"
+  },
+  "tests": {
+    "targeted_backend": 52,
+    "full_backend_no_pythonpath": 149,
+    "source_wheel_profiles": 12,
+    "tests_each_profile": 149,
+    "matrix_test_executions": 1788,
+    "component": 49,
+    "django_client_dom": 20,
+    "worker_node24": 29,
+    "worker_node22_13": 29,
+    "chromium_baseline_reproductions": 1,
+    "chromium_fixed_cases": 4,
+    "status": "passed"
+  },
+  "checks": {
+    "pip_check": "passed",
+    "django_check": "passed in every source/wheel profile",
+    "migration_drift": "none in every source/wheel profile",
+    "source_wheel_origin_assertions": "passed",
+    "runtime_files_in_each_distribution": 29,
+    "release_metadata": "passed",
+    "twine_strict": "passed",
+    "ruff": "passed",
+    "actionlint": "passed",
+    "coverage_gate": "passed",
+    "coverage_negative_cases": 12,
+    "historical_evidence_preservation": "passed",
+    "dom_alias_isolation": "passed",
+    "ci_pairs_match_local": "passed"
+  },
+  "artifacts_sha256": {
+    "nova_slider_captcha-0.3.0.tar.gz": "ff6a5a85a9d9e5aa45f1d6c9c3d4bdcdd6f41434d44b8a6d9f7caf1273003609",
+    "nova_slider_captcha-0.3.0-py3-none-any.whl": "cc63eb64145b17e06133d09461624b6e34f918b86d475316218afe5546a88f34"
+  },
+  "github_actions": "Configured; not run remotely for this uncommitted candidate.",
+  "pypi": "Not uploaded",
+  "deployments": "None",
+  "committed": false,
+  "pushed": false,
+  "not_verified": [
+    "remote GitHub Actions",
+    "PyPI/OIDC upload",
+    "public Worker/D1 or real workerd",
+    "PostgreSQL/MySQL",
+    "production load",
+    "real mobile devices",
+    "manual screen reader",
+    "optional Nova profile for this candidate"
+  ],
+  "upstream_references": [
+    "https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.14.3",
+    "https://github.com/pypa/gh-action-pypi-publish/commit/7245906fb61fa33a13554f9d5fb856fe61758086",
+    "https://nodejs.org/download/release/v22.13.0/docs/api/sqlite.html"
+  ]
+}

@@ -1,6 +1,6 @@
-"""Run source/wheel, native/Nova profiles against the exact Nova matrix.
+"""Run source/wheel against the CI pairs, optionally also with Nova installed.
 
-Usage: python scripts/test_matrix.py --runtimes /path/to/uv-install-dir --nova-source /path/to/nova/django-theme/src --wheel /path/to/built.whl
+Usage: python scripts/test_matrix.py --runtimes /path/to/uv-install-dir --wheel /path/to/built.whl --work /path/to/new-results [--nova-source /path/to/nova/django-theme/src]
 All environment creation and reports stay in the selected --work directory.
 """
 import argparse
@@ -13,42 +13,66 @@ from pathlib import Path
 import subprocess
 import sys
 
-CELLS = [("3.11.17", "5.2.17"), ("3.12.15", "5.2.17"), ("3.12.15", "6.0.8"), ("3.12.15", "6.1.1"), ("3.13.16", "6.1.1"), ("3.14.8", "5.2.17"), ("3.14.8", "6.1.1")]
+CELLS = [
+    ("3.10", "5.2.17", "12.2.0"),
+    ("3.11", "5.2.17", "12.3.0"),
+    ("3.12", "5.2.17", "12.3.0"),
+    ("3.12", "6.1.2", "12.2.0"),
+    ("3.13", "6.1.2", "12.3.0"),
+    ("3.14", "6.0.9", "12.3.0"),
+]
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def find_interpreter(runtimes, version):
+    """Accept uv's platform-specific layout and pyenv's version directories."""
+    candidates = {*runtimes.glob(f"cpython-{version}*-*/bin/python3"), *runtimes.glob(f"{version}*/bin/python3")}
+    matches = []
+    for candidate in candidates:
+        actual = subprocess.check_output([str(candidate), "-c", "import platform; print(platform.python_version())"], text=True).strip()
+        if actual.startswith(version + "."):
+            matches.append((tuple(map(int, actual.split("."))), candidate))
+    if not matches:
+        raise RuntimeError(f"No Python {version} runtime found in {runtimes}")
+    return max(matches, key=lambda match: match[0])[1]
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--runtimes", type=Path, required=True)
-    parser.add_argument("--nova-source", type=Path, required=True)
+    parser.add_argument("--nova-source", type=Path)
     parser.add_argument("--wheel", type=Path, required=True)
     parser.add_argument("--work", type=Path, default=Path("/tmp/nova-slider-matrix"))
     parser.add_argument("--workers", type=int, default=3)
     args = parser.parse_args()
+    args.runtimes = args.runtimes.resolve()
+    args.wheel = args.wheel.resolve()
+    args.work = args.work.resolve()
     args.work.mkdir(parents=True, exist_ok=True)
 
     def cell(spec):
-        pyver, djver = spec
-        directory = args.work / f"{pyver}-{djver}"
+        pyver, djver, pillow = spec
+        directory = args.work / f"{pyver}-{djver}-{pillow}"
         directory.mkdir(exist_ok=True)
-        interpreter = args.runtimes / f"cpython-{pyver}-linux-x86_64-gnu/bin/python3"
         log_path = directory / "run.log"
-        result = {"python": pyver, "django": djver, "pillow": "12.2.0", "profiles": [], "log": str(log_path)}
+        result = {"python_series": pyver, "django": djver, "pillow": pillow, "profiles": [], "log": str(log_path)}
         with log_path.open("w") as log:
             def run(command, env=None):
                 log.write("$ " + " ".join(map(str, command)) + "\n")
                 log.flush()
                 subprocess.run(list(map(str, command)), cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, check=True)
             try:
+                interpreter = find_interpreter(args.runtimes, pyver)
                 run([interpreter, "-m", "venv", directory / "venv"])
                 py = directory / "venv/bin/python"
-                run([py, "-m", "pip", "install", "--disable-pip-version-check", f"Django=={djver}", "Pillow==12.2.0", "asgiref==3.12.1", "sqlparse==0.6.0"])
+                run([py, "-m", "pip", "install", "--disable-pip-version-check", f"Django=={djver}", f"Pillow=={pillow}", "asgiref==3.12.1", "sqlparse==0.6.0"])
                 # Same-version rebuilds must not silently keep an older wheel.
                 run([py, "-m", "pip", "install", "--disable-pip-version-check", "--force-reinstall", "--no-deps", args.wheel])
                 run([py, "-m", "pip", "check"])
-                run([py, "-c", f"import platform, django, PIL; assert platform.python_version() == {pyver!r}; assert django.get_version() == {djver!r}; assert PIL.__version__ == '12.2.0'; print(platform.python_version(), django.get_version(), PIL.__version__)"])
+                result["python"] = subprocess.check_output([str(py), "-c", "import platform; print(platform.python_version())"], text=True).strip()
+                run([py, "-c", f"import platform, django, PIL; assert platform.python_version().startswith({pyver!r} + '.'); assert django.get_version() == {djver!r}; assert PIL.__version__ == {pillow!r}; print(platform.python_version(), django.get_version(), PIL.__version__)"])
                 for mode in ("source", "wheel"):
-                    for theme in ("native", "nova"):
+                    for theme in (("native", "nova") if args.nova_source else ("native",)):
                         profile = {"mode": mode, "theme": theme, "status": "running"}
                         result["profiles"].append(profile)
                         env = os.environ.copy()
@@ -79,8 +103,8 @@ def main():
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
         results = list(executor.map(cell, CELLS))
-    output = ROOT / "verification/matrix-results.json"
-    output.write_text(json.dumps({"baseline_nova": "0.6.0", "database": "file-backed SQLite", "wheel": {"name": args.wheel.name, "sha256": hashlib.sha256(args.wheel.read_bytes()).hexdigest()}, "cells": results}, indent=2) + "\n")
+    output = args.work / "matrix-results.json"
+    output.write_text(json.dumps({"nova_source": str(args.nova_source) if args.nova_source else None, "database": "file-backed SQLite", "wheel": {"name": args.wheel.name, "sha256": hashlib.sha256(args.wheel.read_bytes()).hexdigest()}, "cells": results}, indent=2) + "\n")
     return 0 if all(r["status"] == "passed" for r in results) else 1
 
 

@@ -173,6 +173,5 @@ jobs:
       - run: npm test
       - run: npm run test:dom
         env:
-          NOVA_TEST_DB: ${{ runner.temp }}/nova-web.sqlite3
           NOVA_DOM_REPORT: ${{ runner.temp }}/nova-dom-results.json
       - run: npm run test:worker

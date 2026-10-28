@@ -35,7 +35,9 @@ class PolicySettingsTests(SimpleTestCase):
                     self.assertIn("nova_slider_captcha.E006", [error.id for error in captcha_settings_check(None)])
 
     def test_existing_rows_upgrade_under_changed_settings(self):
-        result = subprocess.run([sys.executable, str(Path(__file__).resolve().parents[1] / "scripts/test_policy_upgrade.py")], capture_output=True, text=True, env=os.environ.copy(), timeout=60)
+        env = os.environ.copy()
+        env.pop("PYTHONPATH", None)
+        result = subprocess.run([sys.executable, str(Path(__file__).resolve().parents[1] / "scripts/test_policy_upgrade.py")], capture_output=True, text=True, env=env, timeout=60)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn("preserves legacy 5/4", result.stdout)
 

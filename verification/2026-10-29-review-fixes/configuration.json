@@ -1,0 +1,51 @@
+{
+  "ci_pairs_match_local": [
+    [
+      "3.10",
+      "5.2.17",
+      "12.2.0"
+    ],
+    [
+      "3.11",
+      "5.2.17",
+      "12.3.0"
+    ],
+    [
+      "3.12",
+      "5.2.17",
+      "12.3.0"
+    ],
+    [
+      "3.12",
+      "6.1.2",
+      "12.2.0"
+    ],
+    [
+      "3.13",
+      "6.1.2",
+      "12.3.0"
+    ],
+    [
+      "3.14",
+      "6.0.9",
+      "12.3.0"
+    ]
+  ],
+  "ignored_directories": [
+    ".mimosa/probe",
+    ".video_agent/probe"
+  ],
+  "historical_files_unchanged_sha256": {
+    "verification/export-checks.json": "8fd06213718155f78d42d523705573c4120acc467fe487d77d25704826c5fecb",
+    "verification/matrix-results.json": "6893430309a1f9ac57c0379af4f9efc9d43cc6a2aebc14b4281033656bcaa626"
+  },
+  "dom_isolation": {
+    "aliases": [
+      "default",
+      "captcha",
+      "replica"
+    ],
+    "private_root_shared": true,
+    "temporary_removed": true
+  }
+}

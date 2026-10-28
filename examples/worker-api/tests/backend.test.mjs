@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { handleCaptcha } from "../captcha.mjs";
 import { makePuzzle } from "../puzzle.mjs";
 import {claimRate,claimQuotas} from "../rate-limit.mjs";
+import worker from "../worker.mjs";
 class D1 {
   constructor() {
     this.db = new DatabaseSync(":memory:");
@@ -32,11 +33,10 @@ class D1 {
     return Promise.all(items.map((x) => x.run()));
   }
 }
-async function ctx() {
-  const db = new D1(),
-    now = Date.now();
+async function ctx({ db = new D1(), routed = false } = {}) {
+  const now = Date.now();
   const req = () => new Request("https://demo.test/captcha/init");
-  const r = await handleCaptcha(req(), db, "init", now),
+  const r = await (routed ? worker.fetch(req(), { DB: db }) : handleCaptcha(req(), db, "init", now)),
     { csrfToken } = await r.json(),
     cookie = r.headers.get("set-cookie").split(";")[0];
   const post = async (action, body, opts = {}) => {
@@ -51,7 +51,7 @@ async function ctx() {
       },
       body: typeof body === "string" ? body : JSON.stringify(body),
     });
-    const response = await handleCaptcha(request, db, action, opts.now ?? now);
+    const response = await (routed ? worker.fetch(request, { DB: db }) : handleCaptcha(request, db, action, opts.now ?? now));
     return { status: response.status, ...(await response.json()) };
   };
   const issue = () => post("challenge", { purpose: "demo" });
@@ -106,6 +106,72 @@ test("solve + purpose-bound single-use business consumption", async () => {
     (await c.post("submit", { token: proof.token, purpose: "demo" })).status,
     409,
   );
+});
+test("Worker fetch routes the complete session, verification and consumption flow", async () => {
+  const c = await ctx({ routed: true });
+  const p = await c.issue();
+  assert.equal(p.status, 200);
+  const proof = await c.post("verify", { challengeId: p.challengeId, x: c.answer(p.challengeId) });
+  assert.equal(proof.ok, true);
+  assert.equal((await c.post("submit", { token: proof.token, purpose: "demo" })).code, "accepted");
+  assert.equal((await c.post("submit", { token: proof.token, purpose: "demo" })).status, 409);
+  for (const path of ["/", "/captcha/", "/captcha/init/", "/captcha/unknown", "/prefix/captcha/init"]) {
+    assert.equal((await worker.fetch(new Request("https://demo.test" + path), { DB: c.db })).status, 404, path);
+  }
+  for (const action of ["challenge", "verify", "submit"]) {
+    const response = await worker.fetch(new Request("https://demo.test/captcha/" + action), { DB: c.db });
+    assert.equal(response.status, 405);
+    assert.equal((await response.json()).code, "method_not_allowed");
+  }
+  const unavailable = await worker.fetch(new Request("https://demo.test/captcha/init"), {});
+  assert.equal(unavailable.status, 503);
+  assert.equal((await unavailable.json()).code, "unavailable");
+});
+test("submit quota limits invalid proofs, preserves a refused valid proof and refills exactly", async () => {
+  const c = await ctx();
+  const p = await c.issue();
+  const proof = await c.post("verify", { challengeId: p.challengeId, x: c.answer(p.challengeId) });
+  for (let i = 0; i < 60; i++) {
+    assert.equal((await c.post("submit", { purpose: i % 2 ? "login" : "demo", token: "bad" })).code, "invalid_token");
+  }
+  const body = { purpose: "demo", token: proof.token };
+  const debt = c.db.db.prepare("SELECT tat_us FROM captcha_rate_state WHERE id LIKE 'submit:%'").get().tat_us;
+  const denied = await c.post("submit", body);
+  assert.equal(denied.status, 429);
+  assert.equal(denied.retryAfter, 1);
+  assert.equal(c.db.db.prepare("SELECT used FROM captcha_challenges WHERE id=?").get(p.challengeId).used, 0);
+  assert.equal((await c.post("submit", body, { now: c.now + 999 })).status, 429);
+  assert.equal(c.db.db.prepare("SELECT tat_us FROM captcha_rate_state WHERE id LIKE 'submit:%'").get().tat_us, debt);
+  assert.equal((await c.post("submit", body, { now: c.now + 1000 })).code, "accepted");
+});
+test("submit IP quota spans new sessions and stays separate from challenge and verify", async () => {
+  const db = new D1();
+  // Freeze timestamps for an exact shared-IP burst.
+  const now = Date.now();
+  for (let n = 0; n < 4; n++) {
+    const c = await ctx({ db });
+    for (let i = 0; i < 60; i++) assert.equal((await c.post("submit", {}, { now })).status, 400);
+  }
+  const fresh = await ctx({ db });
+  assert.equal((await fresh.post("submit", {}, { now })).status, 429);
+  assert.equal((await fresh.post("submit", {}, { now, headers: { "cf-connecting-ip": "192.0.2.2" } })).status, 400);
+  const p = await fresh.issue();
+  assert.equal(p.status, 200);
+  assert.equal((await fresh.post("verify", { challengeId: p.challengeId, x: fresh.answer(p.challengeId) })).ok, true);
+});
+test("submit limiter storage failure refuses consumption", async () => {
+  const c = await ctx();
+  const p = await c.issue();
+  const proof = await c.post("verify", { challengeId: p.challengeId, x: c.answer(p.challengeId) });
+  const prepare = c.db.prepare.bind(c.db);
+  c.db.prepare = sql => {
+    if (/^(UPDATE|INSERT INTO) captcha_rate_state/.test(sql)) throw new Error("test-only storage failure");
+    return prepare(sql);
+  };
+  const result = await c.post("submit", { purpose: "demo", token: proof.token });
+  assert.equal(result.status, 503);
+  assert.equal(result.code, "rate_limit_unavailable");
+  assert.equal(c.db.db.prepare("SELECT used FROM captcha_challenges WHERE id=?").get(p.challengeId).used, 0);
 });
 test("five wrong attempts then challenge locked", async () => {
   const c = await ctx(),

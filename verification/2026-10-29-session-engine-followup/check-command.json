@@ -1,0 +1,27 @@
+[
+  {
+    "case": "missing_module",
+    "exit_code": 1,
+    "output": "SystemCheckError: System check identified some issues:\n\nERRORS:\n?: (nova_slider_captcha.E008) SESSION_ENGINE must provide an importable SessionStore class\n\nSystem check identified 1 issue (0 silenced).\n"
+  },
+  {
+    "case": "missing_store",
+    "exit_code": 1,
+    "output": "SystemCheckError: System check identified some issues:\n\nERRORS:\n?: (nova_slider_captcha.E008) SESSION_ENGINE must provide an importable SessionStore class\n\nSystem check identified 1 issue (0 silenced).\n"
+  },
+  {
+    "case": "nonclass_store",
+    "exit_code": 1,
+    "output": "SystemCheckError: System check identified some issues:\n\nERRORS:\n?: (nova_slider_captcha.E008) SESSION_ENGINE must provide an importable SessionStore class\n\nSystem check identified 1 issue (0 silenced).\n"
+  },
+  {
+    "case": "empty_path",
+    "exit_code": 1,
+    "output": "SystemCheckError: System check identified some issues:\n\nERRORS:\n?: (nova_slider_captcha.E008) SESSION_ENGINE must provide an importable SessionStore class\n\nSystem check identified 1 issue (0 silenced).\n"
+  },
+  {
+    "case": "nonstring_path",
+    "exit_code": 1,
+    "output": "SystemCheckError: System check identified some issues:\n\nERRORS:\n?: (nova_slider_captcha.E008) SESSION_ENGINE must provide an importable SessionStore class\n\nSystem check identified 1 issue (0 silenced).\n"
+  }
+]

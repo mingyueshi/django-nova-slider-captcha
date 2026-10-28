@@ -1,0 +1,7 @@
+$ <work>/actionlint -version
+1.7.12
+installed by downloading from release page
+built with go1.26.1 compiler for darwin/arm64
+
+$ <work>/actionlint
+Exit status: 0; no diagnostics.

@@ -1,0 +1,70 @@
+$ <previous-work>/runtimes/3.12.14/bin/python3 -m venv <work>/matrix/3.12-6.1.2-12.2.0/venv
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m pip install --disable-pip-version-check Django==6.1.2 Pillow==12.2.0 asgiref==3.12.1 sqlparse==0.6.0
+Collecting Django==6.1.2
+  Using cached django-6.1.2-py3-none-any.whl.metadata (3.9 kB)
+Collecting Pillow==12.2.0
+  Using cached pillow-12.2.0-cp312-cp312-macosx_11_0_arm64.whl.metadata (8.8 kB)
+Collecting asgiref==3.12.1
+  Using cached asgiref-3.12.1-py3-none-any.whl.metadata (9.4 kB)
+Collecting sqlparse==0.6.0
+  Using cached sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)
+Using cached django-6.1.2-py3-none-any.whl (8.4 MB)
+Using cached pillow-12.2.0-cp312-cp312-macosx_11_0_arm64.whl (4.7 MB)
+Using cached asgiref-3.12.1-py3-none-any.whl (25 kB)
+Using cached sqlparse-0.6.0-py3-none-any.whl (50 kB)
+Installing collected packages: sqlparse, Pillow, asgiref, Django
+Successfully installed Django-6.1.2 Pillow-12.2.0 asgiref-3.12.1 sqlparse-0.6.0
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m pip install --disable-pip-version-check --force-reinstall --no-deps <work>/dist/nova_slider_captcha-0.3.0-py3-none-any.whl
+Processing <work>/dist/nova_slider_captcha-0.3.0-py3-none-any.whl
+Installing collected packages: nova-slider-captcha
+Successfully installed nova-slider-captcha-0.3.0
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m pip check
+No broken requirements found.
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -c import platform, django, PIL; assert platform.python_version().startswith('3.12' + '.'); assert django.get_version() == '6.1.2'; assert PIL.__version__ == '12.2.0'; print(platform.python_version(), django.get_version(), PIL.__version__)
+3.12.14 6.1.2 12.2.0
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -c import nova_slider_captcha; from pathlib import Path; p=Path(nova_slider_captcha.__file__).resolve(); print(p); assert str(p).startswith('<repo>/src')
+<repo>/src/nova_slider_captcha/__init__.py
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django check
+System check identified no issues (0 silenced).
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+Creating test database for alias 'captcha'...
+Destroying old test database for alias 'captcha'...
+Creating test database for alias 'replica'...
+Destroying old test database for alias 'replica'...
+......................................................................................................................................................
+----------------------------------------------------------------------
+Ran 150 tests in 10.790s
+
+OK
+Destroying test database for alias 'default'...
+Destroying test database for alias 'captcha'...
+Destroying test database for alias 'replica'...
+Found 150 test(s).
+System check identified no issues (0 silenced).
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -c import nova_slider_captcha; from pathlib import Path; p=Path(nova_slider_captcha.__file__).resolve(); print(p); assert str(p).startswith('<work>/matrix/3.12-6.1.2-12.2.0/venv')
+<work>/matrix/3.12-6.1.2-12.2.0/venv/lib/python3.12/site-packages/nova_slider_captcha/__init__.py
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django check
+System check identified no issues (0 silenced).
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django makemigrations nova_slider_captcha --check --dry-run
+No changes detected in app 'nova_slider_captcha'
+$ <work>/matrix/3.12-6.1.2-12.2.0/venv/bin/python -m django test tests --noinput -v 1
+Creating test database for alias 'default'...
+Destroying old test database for alias 'default'...
+Creating test database for alias 'captcha'...
+Destroying old test database for alias 'captcha'...
+Creating test database for alias 'replica'...
+Destroying old test database for alias 'replica'...
+......................................................................................................................................................
+----------------------------------------------------------------------
+Ran 150 tests in 7.576s
+
+OK
+Destroying test database for alias 'default'...
+Destroying test database for alias 'captcha'...
+Destroying test database for alias 'replica'...
+Found 150 test(s).
+System check identified no issues (0 silenced).

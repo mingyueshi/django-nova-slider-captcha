@@ -1,0 +1,173 @@
+{
+  "cwd": "<repo>",
+  "runtime_reuse": "Existing task-specific tool environment and installed runtimes from the same conversation; no shared or production environment changed.",
+  "paths": {
+    "<work>": "new follow-up temporary directory",
+    "<tools>": "existing task-specific tool venv",
+    "<previous-matrix>": "preceding turn wheel matrix",
+    "<previous-work>": "preceding turn temporary directory"
+  },
+  "commands": {
+    "targeted": [
+      "env",
+      "-u",
+      "PYTHONPATH",
+      "DJANGO_SETTINGS_MODULE=tests.settings",
+      "NOVA_TEST_DB=<work>/targeted-fixed.sqlite3",
+      "<tools>/bin/python",
+      "-m",
+      "django",
+      "test",
+      "tests.test_session_backend",
+      "tests.test_boundaries",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "baseline": [
+      "env",
+      "PYTHONPATH=.",
+      "DJANGO_SETTINGS_MODULE=tests.settings",
+      "NOVA_TEST_DB=<work>/baseline.sqlite3",
+      "<previous-matrix>/3.12-5.2.17-12.3.0/venv/bin/python",
+      "-m",
+      "django",
+      "test",
+      "tests.test_session_backend",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "pip_check": [
+      "<tools>/bin/python",
+      "-m",
+      "pip",
+      "check"
+    ],
+    "django_check": [
+      "env",
+      "-u",
+      "PYTHONPATH",
+      "DJANGO_SETTINGS_MODULE=tests.settings",
+      "NOVA_TEST_DB=<work>/source.sqlite3",
+      "<tools>/bin/python",
+      "-m",
+      "django",
+      "check"
+    ],
+    "migration_check": [
+      "env",
+      "-u",
+      "PYTHONPATH",
+      "DJANGO_SETTINGS_MODULE=tests.settings",
+      "NOVA_TEST_DB=<work>/source.sqlite3",
+      "<tools>/bin/python",
+      "-m",
+      "django",
+      "makemigrations",
+      "nova_slider_captcha",
+      "--check",
+      "--dry-run"
+    ],
+    "full_tests": [
+      "env",
+      "-u",
+      "PYTHONPATH",
+      "DJANGO_SETTINGS_MODULE=tests.settings",
+      "NOVA_TEST_DB=<work>/source.sqlite3",
+      "COVERAGE_FILE=<work>/coverage/.coverage",
+      "<tools>/bin/python",
+      "-m",
+      "coverage",
+      "run",
+      "-m",
+      "django",
+      "test",
+      "tests",
+      "--noinput",
+      "-v",
+      "1"
+    ],
+    "coverage_combine": [
+      "env",
+      "COVERAGE_FILE=<work>/coverage/.coverage",
+      "<tools>/bin/python",
+      "-m",
+      "coverage",
+      "combine",
+      "--keep"
+    ],
+    "coverage_json": [
+      "env",
+      "COVERAGE_FILE=<work>/coverage/.coverage",
+      "<tools>/bin/python",
+      "-m",
+      "coverage",
+      "json",
+      "-o",
+      "<work>/coverage/report.json"
+    ],
+    "coverage_gate": [
+      "<tools>/bin/python",
+      "scripts/check_coverage.py",
+      "<work>/coverage/report.json"
+    ],
+    "coverage_negative": [
+      "<tools>/bin/python",
+      "scripts/test_coverage_gate.py",
+      "<work>/coverage/report.json"
+    ],
+    "ruff": [
+      "<tools>/bin/ruff",
+      "check",
+      "."
+    ],
+    "check_command": [
+      "<tools>/bin/python",
+      "verification/2026-10-29-session-engine-followup/check_command.py",
+      "--work",
+      "<work>/check-command"
+    ],
+    "build": [
+      "<tools>/bin/python",
+      "-m",
+      "build",
+      "--outdir",
+      "<work>/dist"
+    ],
+    "twine": [
+      "<tools>/bin/python",
+      "-m",
+      "twine",
+      "check",
+      "--strict",
+      "<work>/dist/nova_slider_captcha-0.3.0-py3-none-any.whl",
+      "<work>/dist/nova_slider_captcha-0.3.0.tar.gz"
+    ],
+    "release_check": [
+      "<tools>/bin/python",
+      "scripts/check_release.py",
+      "--tag",
+      "v0.3.0",
+      "--dist",
+      "<work>/dist"
+    ],
+    "matrix": [
+      "<tools>/bin/python",
+      "scripts/test_matrix.py",
+      "--runtimes",
+      "<previous-work>/runtimes",
+      "--wheel",
+      "<work>/dist/nova_slider_captcha-0.3.0-py3-none-any.whl",
+      "--work",
+      "<work>/matrix",
+      "--workers",
+      "3"
+    ],
+    "final_diff": [
+      "git",
+      "diff",
+      "--check"
+    ]
+  }
+}

@@ -1,0 +1,158 @@
+TAP version 13
+# (node:69352) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: contract: opaque challenge raster images and exact dimensions
+ok 1 - contract: opaque challenge raster images and exact dimensions
+  ---
+  duration_ms: 39.978667
+  ...
+# Subtest: solve + purpose-bound single-use business consumption
+ok 2 - solve + purpose-bound single-use business consumption
+  ---
+  duration_ms: 24.390875
+  ...
+# Subtest: Worker fetch routes the complete session, verification and consumption flow
+ok 3 - Worker fetch routes the complete session, verification and consumption flow
+  ---
+  duration_ms: 18.733583
+  ...
+# Subtest: submit quota limits invalid proofs, preserves a refused valid proof and refills exactly
+ok 4 - submit quota limits invalid proofs, preserves a refused valid proof and refills exactly
+  ---
+  duration_ms: 38.77675
+  ...
+# Subtest: submit IP quota spans new sessions and stays separate from challenge and verify
+ok 5 - submit IP quota spans new sessions and stays separate from challenge and verify
+  ---
+  duration_ms: 95.204209
+  ...
+# Subtest: submit limiter storage failure refuses consumption
+ok 6 - submit limiter storage failure refuses consumption
+  ---
+  duration_ms: 13.981458
+  ...
+# Subtest: five wrong attempts then challenge locked
+ok 7 - five wrong attempts then challenge locked
+  ---
+  duration_ms: 15.181042
+  ...
+# Subtest: tolerance 4 inclusive and 5 exclusive
+ok 8 - tolerance 4 inclusive and 5 exclusive
+  ---
+  duration_ms: 14.375666
+  ...
+# Subtest: session and CSRF boundaries
+ok 9 - session and CSRF boundaries
+  ---
+  duration_ms: 16.274292
+  ...
+# Subtest: expiry of challenges, tokens and sessions
+ok 10 - expiry of challenges, tokens and sessions
+  ---
+  duration_ms: 24.689625
+  ...
+# Subtest: parallel success issues a single proof; parallel submit consumes once
+ok 11 - parallel success issues a single proof; parallel submit consumes once
+  ---
+  duration_ms: 15.135
+  ...
+# Subtest: parallel wrong attempts never exceed five
+ok 12 - parallel wrong attempts never exceed five
+  ---
+  duration_ms: 13.813958
+  ...
+# Subtest: challenge issuance rate limited per session
+ok 13 - challenge issuance rate limited per session
+  ---
+  duration_ms: 170.398625
+  ...
+# Subtest: session creation rate limited by trusted edge IP
+ok 14 - session creation rate limited by trusted edge IP
+  ---
+  duration_ms: 5.37475
+  ...
+# Subtest: malformed inputs, giant numbers and bounded bodies fail closed
+ok 15 - malformed inputs, giant numbers and bounded bodies fail closed
+  ---
+  duration_ms: 12.727375
+  ...
+# Subtest: multiple challenges do not invalidate another tab
+ok 16 - multiple challenges do not invalidate another tab
+  ---
+  duration_ms: 24.868083
+  ...
+# Subtest: PNG contains no plaintext answer metadata
+ok 17 - PNG contains no plaintext answer metadata
+  ---
+  duration_ms: 9.998042
+  ...
+# Subtest: GCRA blocks minute-boundary double burst and admits exact refill
+ok 18 - GCRA blocks minute-boundary double burst and admits exact refill
+  ---
+  duration_ms: 0.872083
+  ...
+# Subtest: GCRA concurrency claims at most configured capacity
+ok 19 - GCRA concurrency claims at most configured capacity
+  ---
+  duration_ms: 0.790958
+  ...
+# Subtest: backwards clock cannot reset debt and rejected requests do not extend it
+ok 20 - backwards clock cannot reset debt and rejected requests do not extend it
+  ---
+  duration_ms: 0.280042
+  ...
+# Subtest: fractional refill rounds toward stricter rate; invalid configs fail closed
+ok 21 - fractional refill rounds toward stricter rate; invalid configs fail closed
+  ---
+  duration_ms: 0.652
+  ...
+# Subtest: legacy active fixed window inherits cooldown without reopening quota
+ok 22 - legacy active fixed window inherits cooldown without reopening quota
+  ---
+  duration_ms: 0.289583
+  ...
+# Subtest: stable IP quota is shared by new sessions; retry accounts for charged IP
+ok 23 - stable IP quota is shared by new sessions; retry accounts for charged IP
+  ---
+  duration_ms: 1.325917
+  ...
+# Subtest: cleanup only removes fully replenished states; pruning never grants while debt remains
+ok 24 - cleanup only removes fully replenished states; pruning never grants while debt remains
+  ---
+  duration_ms: 0.535541
+  ...
+# Subtest: HTTP rate-limited responses carry computed Retry-After and machine code
+ok 25 - HTTP rate-limited responses carry computed Retry-After and machine code
+  ---
+  duration_ms: 166.004708
+  ...
+# Captcha operation unavailable
+# Subtest: database limiter failure returns stable unavailable response, never a challenge
+ok 26 - database limiter failure returns stable unavailable response, never a challenge
+  ---
+  duration_ms: 1.793375
+  ...
+# Subtest: shared Django/Worker fixture agrees at each microsecond boundary
+ok 27 - shared Django/Worker fixture agrees at each microsecond boundary
+  ---
+  duration_ms: 1.018084
+  ...
+# Subtest: changing purpose does not reset the shared issuance quota
+ok 28 - changing purpose does not reset the shared issuance quota
+  ---
+  duration_ms: 159.314042
+  ...
+# Subtest: legacy lookup uses indexed exact-prefix range without long LIKE patterns
+ok 29 - legacy lookup uses indexed exact-prefix range without long LIKE patterns
+  ---
+  duration_ms: 0.5585
+  ...
+1..29
+# tests 29
+# suites 0
+# pass 29
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 951.054209

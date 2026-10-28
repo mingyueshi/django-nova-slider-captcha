@@ -1,6 +1,7 @@
 import logging
 import re
 from dataclasses import dataclass
+from importlib import import_module
 
 from django.conf import settings
 from django.apps import apps
@@ -23,8 +24,16 @@ RATE_DEFAULTS = {"init_ip": 40, "issue_session": 20, "issue_ip": 60, "verify_ses
 
 
 def session_backend():
-    """Only Django's database session engines require the sessions model."""
-    if settings.SESSION_ENGINE in ("django.contrib.sessions.backends.db", "django.contrib.sessions.backends.cached_db") and not apps.is_installed("django.contrib.sessions"):
+    """Django's database session engines and their subclasses need the model."""
+    if apps.is_installed("django.contrib.sessions"):
+        return
+    from django.contrib.sessions.backends.db import SessionStore as DatabaseSessionStore
+    try:
+        store = import_module(settings.SESSION_ENGINE).SessionStore
+        database_backed = issubclass(store, DatabaseSessionStore)
+    except (ImportError, AttributeError, TypeError, ValueError) as error:
+        raise ValueError("SESSION_ENGINE must provide an importable SessionStore class") from error
+    if database_backed:
         raise ValueError("Database-backed sessions require django.contrib.sessions in INSTALLED_APPS")
 
 

@@ -42,7 +42,9 @@ python manage.py runserver
 
 1. 在 `INSTALLED_APPS` 加入 `nova_slider_captcha`，保留 Django 的 session、认证与 CSRF 中间件。
 
-`SessionMiddleware` 必须先于依赖 session 的中间件。Django 内置 `db` / `cached_db` 会话后端还须安装 `django.contrib.sessions`（缺失时检查 `E008`）；`signed_cookies` / `cache` / `file` 不因验证码本身而要求该 app。自定义会话后端按其自身契约配置。缺少会话能力的 init 返回 503 / `configuration_invalid`；未初始化的 challenge / verify POST 保留 409 / `init_required`。宿主其他中间件在进入视图前抛出的配置异常仍由宿主处理。
+`SessionMiddleware` 必须先于依赖 session 的中间件。Django 内置 `db` / `cached_db` 会话后端及其自定义子类还须安装 `django.contrib.sessions`（缺失时检查 `E008`）；`signed_cookies` / `cache` / `file` 不因验证码本身而要求该 app。其他自定义会话后端按其自身契约配置。缺少会话能力的 init 返回 503 / `configuration_invalid`；未初始化的 challenge / verify POST 保留 409 / `init_required`。宿主其他中间件在进入视图前抛出的配置异常仍由宿主处理。
+
+未安装 `django.contrib.sessions` 时，该检查路径上的引擎导入失败、缺少或非类的 `SessionStore` 也会报告 `E008`；进入验证码视图的请求受控返回 503 / `configuration_invalid`。这不保证无效引擎下的宿主 `SessionMiddleware` 能完成初始化。
 
 2. 在项目 URL 中挂载接口：
 
@@ -338,7 +340,7 @@ init 在创建新绑定前单独扣 IP 额度；已有有效绑定重复初始�
 
 这是“突发容量 + 持续速率”的令牌桶语义，**不是任意滑动 60 秒内绝对最多 N 次**。拒绝不会把已有债务不断延后。配额检查先扣 IP，再扣 session；后者拒绝时前者不退款，属于保守计费。`Retry-After` 与 JSON `retryAfter` 是当时状态下向上取整的等待秒数，其他并发请求仍可能先用掉新额度。
 
-Django 使用可信部署链路提供的 `REMOTE_ADDR`，不会直接相信 `X-Forwarded-For`。IP 用服务端 HMAC 处理。Worker 示例沿用其原有阈值（出题 15/session、120/IP，校验 60/session、240/IP，初始化 40/IP），使用 Cloudflare 提供的边缘 IP，并在缺少该值时共用保守的 unknown 桶，不会跳过 IP 限流。代理配置错误可能让所有用户共用同一桶。
+Django 使用可信部署链路提供的 `REMOTE_ADDR`，不会直接相信 `X-Forwarded-For`。IP 用服务端 HMAC 处理。Worker 示例沿用其原有阈值（出题 15/session、120/IP，校验 60/session、240/IP，初始化 40/IP），并为演示 submit 增加独立的 60/session、240/IP 额度；使用 Cloudflare 提供的边缘 IP，并在缺少该值时共用保守的 unknown 桶，不会跳过 IP 限流。代理配置错误可能让所有用户共用同一桶。
 
 数据库条件更新是原子性边界，不使用进程内锁或依赖本地 cache。时钟回退不会清除未来债务；明显向前跳时或多主机时钟偏差会影响补充速度。部署方须保持可靠时钟；此实现不承诺跨独立数据库或任意分布式时钟的全局额度。数据库故障时拒绝放行并返回 503。
 
@@ -490,7 +492,9 @@ npm run test:worker
 
 开发/CI 分支覆盖率使用独立的 `requirements-coverage.txt`（coverage.py 7.17.0），不增加运行依赖。稳定 coverage profile 为 Python 3.12 / Django 5.2.17 / Pillow 12.3.0，包含升级脚本子进程，不排除包内文件。门槛分别检查纯语句/纯分支：包整体97%/95%，forms.py 99%/97%；不把 coverage report 的组合百分比当成纯分支。CI 无论测试成功或失败都尝试生成并上传 HTML/JSON/XML 和原始覆盖率数据，测试失败不会被报告步骤掩盖。基线、命令、缺失分支和负向检查见 [覆盖率维护说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/COVERAGE.md)。
 
-Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。完整矩阵脚本要求显式提供精确运行时、Nova 源码路径及已构建 wheel；它不是适用于所有平台的一键 CI。
+Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。开发包要求 Node >=22.13.0（可直接使用 `node:sqlite`，无需额外启动标志），CI 使用 Node 24。`scripts/test_matrix.py` 的六组 Python/Django/Pillow 配对与 CI 一致；显式提供 uv/pyenv 运行时目录、已构建 wheel 和新输出目录，报告写入该输出目录。可选的 `--nova-source` 增加 Nova 主题 profile，不提供时运行与 CI 一致的原生 profile；精确 Python 补丁版本记录在结果中。
+
+当前 0.3.0 与历史验证的入口见 [验证索引](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)。键盘滑块在校验等待期间保留焦点并阻止修改/重复提交，答错后可直接继续；等待时 Tab 移出的焦点不会被响应抢回。
 
 需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/.github/workflows/tests.yml) 使用 Python/Django/Pillow 六格代表性矩阵：3.10/5.2.17/12.2.0、3.11/5.2.17/12.3.0、3.12/5.2.17/12.3.0、3.12/6.1.2/12.2.0、3.13/6.1.2/12.3.0、3.14/6.0.9/12.3.0，分别验证 source 与同一构建 wheel，并检查 sdist、元数据、迁移漂移、完整测试及组件/DOM/Worker。runner 临时路径放在合法的 step.env 上下文。新增配置与本地通过不代表远端 CI 通过；此前发布准备见 [发布准备自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-release-implementation.md)。当前接入改进见 [后续实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-followup-implementation.md)。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
 

@@ -1,0 +1,70 @@
+{
+  "version": "0.3.0",
+  "date": "2026-10-29",
+  "timezone": "Asia/Shanghai",
+  "base_commit": "75117ebdfc032d00e140d050fcc2e7fe9b571e52",
+  "scope": "uncommitted continuation; seven previously existing files changed, plus tests/report/evidence; see candidate.json",
+  "review_mode": "same-session verification, not independent acceptance",
+  "platform": "Darwin arm64",
+  "runtime": {
+    "python": "3.12.14",
+    "django": "5.2.17",
+    "pillow": "12.3.0",
+    "coverage": "7.17.0",
+    "ruff": "0.17.2"
+  },
+  "previous_wheel_reproduction": {
+    "sha256": "cc63eb64145b17e06133d09461624b6e34f918b86d475316218afe5546a88f34",
+    "matches_pre_followup_conf": true,
+    "new_regression_failed_subcases": 4,
+    "empty_path_already_controlled": true
+  },
+  "checks": {
+    "direct_cli_invalid_engine_cases": 5,
+    "cli_exit_code_each": 1,
+    "cli_error_each": "nova_slider_captcha.E008; no unhandled traceback",
+    "targeted_backend_tests": 13,
+    "full_source_tests": 150,
+    "source_wheel_profiles": 12,
+    "tests_each_profile": 150,
+    "matrix_test_executions": 1800,
+    "pip_check": "passed",
+    "django_check": "passed",
+    "migration_drift": "none",
+    "ruff": "passed",
+    "coverage_gate": "passed; detailed counts in coverage-gate.json",
+    "coverage_negative_cases": 12,
+    "twine_strict": "passed",
+    "release_metadata": "passed",
+    "runtime_files_in_wheel_and_sdist": 29,
+    "result": "passed"
+  },
+  "artifacts_sha256": {
+    "nova_slider_captcha-0.3.0.tar.gz": "4bfddc69db3f79948a65b3988136e2493a4f31cf2f4822f348bb81ffba554821",
+    "nova_slider_captcha-0.3.0-py3-none-any.whl": "c1598a0e9b22ac4b6a47843c57e2af28ab0ebc21264558993e6d71942f916479"
+  },
+  "preservation": {
+    "previous_reports_and_evidence_unchanged": 586,
+    "unrelated_previous_changes_unchanged": true,
+    "gitignore_only_appended_newline": true
+  },
+  "github_actions": "not run remotely for this candidate",
+  "pypi": "not uploaded",
+  "git": "not committed or pushed",
+  "deployments": "none",
+  "not_rerun": [
+    "frontend/DOM/browser tests (no frontend changes)",
+    "Worker tests (no Worker changes)",
+    "actionlint (no workflow changes)",
+    "Mimosa scan"
+  ],
+  "not_verified": [
+    "remote GitHub Actions",
+    "PyPI/OIDC upload",
+    "PostgreSQL/MySQL",
+    "public Worker/D1",
+    "production load",
+    "devices or manual assistive technology",
+    "optional Nova matrix profile"
+  ]
+}

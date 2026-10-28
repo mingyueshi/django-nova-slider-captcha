@@ -1,5 +1,6 @@
 """Real 0002 -> 0003 upgrade in a private database; never touch demo data."""
 import os
+import sys
 from pathlib import Path
 import secrets
 import tempfile
@@ -7,6 +8,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.settings")
 from django.conf import settings
 

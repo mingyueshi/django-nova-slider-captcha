@@ -1,0 +1,343 @@
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77
+  - wheel
+* Getting build dependencies for sdist...
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.json' under directory 'examples/worker-api'
+warning: no files found matching '*.html' under directory 'examples/worker-api'
+no previously-included directories found matching 'verification'
+no previously-included directories found matching '.github'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.sqlite3' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==84.2.1
+  - wheel==0.48.0
+* Building sdist...
+running sdist
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.json' under directory 'examples/worker-api'
+warning: no files found matching '*.html' under directory 'examples/worker-api'
+no previously-included directories found matching 'verification'
+no previously-included directories found matching '.github'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.sqlite3' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+running check
+creating nova_slider_captcha-0.3.0
+creating nova_slider_captcha-0.3.0/demo
+creating nova_slider_captcha-0.3.0/docs
+creating nova_slider_captcha-0.3.0/examples/worker-api
+creating nova_slider_captcha-0.3.0/examples/worker-api/tests
+creating nova_slider_captcha-0.3.0/scripts
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/management
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/management/commands
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/migrations
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/static/nova_slider_captcha
+creating nova_slider_captcha-0.3.0/src/nova_slider_captcha/templates/nova_slider_captcha
+creating nova_slider_captcha-0.3.0/tests
+creating nova_slider_captcha-0.3.0/tests/fixtures
+copying files to nova_slider_captcha-0.3.0...
+copying .coveragerc -> nova_slider_captcha-0.3.0
+copying LICENSE -> nova_slider_captcha-0.3.0
+copying MANIFEST.in -> nova_slider_captcha-0.3.0
+copying README.md -> nova_slider_captcha-0.3.0
+copying manage.py -> nova_slider_captcha-0.3.0
+copying package-lock.json -> nova_slider_captcha-0.3.0
+copying package.json -> nova_slider_captcha-0.3.0
+copying pyproject.toml -> nova_slider_captcha-0.3.0
+copying requirements-coverage.txt -> nova_slider_captcha-0.3.0
+copying requirements-lint.txt -> nova_slider_captcha-0.3.0
+copying demo/__init__.py -> nova_slider_captcha-0.3.0/demo
+copying demo/settings.py -> nova_slider_captcha-0.3.0/demo
+copying demo/urls.py -> nova_slider_captcha-0.3.0/demo
+copying docs/2026-10-26-diagnostic-recheck.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-followup-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-followup-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-form-aria.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-i18n-lint-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-i18n-lint-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-integration-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-integration-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-release-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-release-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-residual-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-26-residual-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-27-boundary-implementation.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-27-boundary-independent.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-27-diagnostic-recheck.md -> nova_slider_captcha-0.3.0/docs
+copying docs/2026-10-29-review-fixes.md -> nova_slider_captcha-0.3.0/docs
+copying docs/CHANGELOG.md -> nova_slider_captcha-0.3.0/docs
+copying docs/COVERAGE.md -> nova_slider_captcha-0.3.0/docs
+copying docs/DEPLOYMENT.md -> nova_slider_captcha-0.3.0/docs
+copying docs/DIAGNOSTIC_REPORT.md -> nova_slider_captcha-0.3.0/docs
+copying docs/README.md -> nova_slider_captcha-0.3.0/docs
+copying docs/RELEASING.md -> nova_slider_captcha-0.3.0/docs
+copying docs/SOURCE_PROVENANCE.md -> nova_slider_captcha-0.3.0/docs
+copying docs/STATIC_CHECKS.md -> nova_slider_captcha-0.3.0/docs
+copying docs/VERIFICATION.md -> nova_slider_captcha-0.3.0/docs
+copying examples/worker-api/README.md -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/captcha.mjs -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/migrations-0002-gcra.sql -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/puzzle.mjs -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/rate-limit.mjs -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/schema.sql -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/worker.mjs -> nova_slider_captcha-0.3.0/examples/worker-api
+copying examples/worker-api/tests/backend.test.mjs -> nova_slider_captcha-0.3.0/examples/worker-api/tests
+copying scripts/benchmark_hotpaths.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/benchmark_images.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/check_coverage.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/check_release.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/dom_bridge.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/test_coverage_gate.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/test_dom.cjs -> nova_slider_captcha-0.3.0/scripts
+copying scripts/test_matrix.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/test_policy_upgrade.py -> nova_slider_captcha-0.3.0/scripts
+copying scripts/test_rate_upgrade.py -> nova_slider_captcha-0.3.0/scripts
+copying src/nova_slider_captcha/__init__.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/admin.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/apps.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/checks.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/conf.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/demo_urls.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/events.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/forms.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/images.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/models.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/services.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/urls.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha/views.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha
+copying src/nova_slider_captcha.egg-info/PKG-INFO -> nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/SOURCES.txt -> nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/dependency_links.txt -> nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/requires.txt -> nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha.egg-info/top_level.txt -> nova_slider_captcha-0.3.0/src/nova_slider_captcha.egg-info
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/management/__init__.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/management
+copying src/nova_slider_captcha/management/commands/__init__.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/prune_slider_captcha.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/migrations/0001_initial.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0002_ratelimitstate.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0003_challenge_policy.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/__init__.py -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.css -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.js -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.css -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.js -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> nova_slider_captcha-0.3.0/src/nova_slider_captcha/templates/nova_slider_captcha
+copying tests/__init__.py -> nova_slider_captcha-0.3.0/tests
+copying tests/nova_settings.py -> nova_slider_captcha-0.3.0/tests
+copying tests/session_backend_probe.py -> nova_slider_captcha-0.3.0/tests
+copying tests/settings.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_alternative.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_boundaries.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_captcha.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_forms.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_images.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_integration.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_localization.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_logging.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_optional_link_fallback.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_policy.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_rate_limit.py -> nova_slider_captcha-0.3.0/tests
+copying tests/test_urls.py -> nova_slider_captcha-0.3.0/tests
+copying tests/widget.test.mjs -> nova_slider_captcha-0.3.0/tests
+copying tests/fixtures/gcra.json -> nova_slider_captcha-0.3.0/tests/fixtures
+Writing nova_slider_captcha-0.3.0/setup.cfg
+Creating tar archive
+removing 'nova_slider_captcha-0.3.0' (and everything under it)
+* Building wheel from sdist
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77
+  - wheel
+* Getting build dependencies for wheel...
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.json' under directory 'examples/worker-api'
+warning: no files found matching '*.html' under directory 'examples/worker-api'
+no previously-included directories found matching 'verification'
+no previously-included directories found matching '.github'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.sqlite3' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==84.2.1
+  - wheel==0.48.0
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/services.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/models.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/events.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/checks.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/conf.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/__init__.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/apps.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/forms.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/admin.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/demo_urls.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/images.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/urls.py -> build/lib/nova_slider_captcha
+copying src/nova_slider_captcha/views.py -> build/lib/nova_slider_captcha
+creating build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0002_ratelimitstate.py -> build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/__init__.py -> build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0003_challenge_policy.py -> build/lib/nova_slider_captcha/migrations
+copying src/nova_slider_captcha/migrations/0001_initial.py -> build/lib/nova_slider_captcha/migrations
+creating build/lib/nova_slider_captcha/management
+copying src/nova_slider_captcha/management/__init__.py -> build/lib/nova_slider_captcha/management
+creating build/lib/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/prune_slider_captcha.py -> build/lib/nova_slider_captcha/management/commands
+copying src/nova_slider_captcha/management/commands/__init__.py -> build/lib/nova_slider_captcha/management/commands
+running egg_info
+writing src/nova_slider_captcha.egg-info/PKG-INFO
+writing dependency_links to src/nova_slider_captcha.egg-info/dependency_links.txt
+writing requirements to src/nova_slider_captcha.egg-info/requires.txt
+writing top-level names to src/nova_slider_captcha.egg-info/top_level.txt
+reading manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no files found matching '*.json' under directory 'examples/worker-api'
+warning: no files found matching '*.html' under directory 'examples/worker-api'
+no previously-included directories found matching 'verification'
+no previously-included directories found matching '.github'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.sqlite3' found anywhere in distribution
+warning: no previously-included files matching '.DS_Store' found anywhere in distribution
+adding license file 'LICENSE'
+writing manifest file 'src/nova_slider_captcha.egg-info/SOURCES.txt'
+creating build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+copying src/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> build/lib/nova_slider_captcha/templates/nova_slider_captcha
+creating build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.css -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.css -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/demo.js -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+copying src/nova_slider_captcha/static/nova_slider_captcha/slider.js -> build/lib/nova_slider_captcha/static/nova_slider_captcha
+creating build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying src/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+installing to build/bdist.macosx-27.0-arm64/wheel
+running install
+running install_lib
+creating build/bdist.macosx-27.0-arm64/wheel
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/0002_ratelimitstate.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/__init__.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/0003_challenge_policy.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/migrations/0001_initial.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/migrations
+copying build/lib/nova_slider_captcha/services.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/locale
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/locale/zh_Hans
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/locale/zh_Hans/LC_MESSAGES
+copying build/lib/nova_slider_captcha/models.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/events.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/checks.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/conf.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/management
+copying build/lib/nova_slider_captcha/management/__init__.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/management
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/management/commands/prune_slider_captcha.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/management/commands/__init__.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/management/commands
+copying build/lib/nova_slider_captcha/__init__.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/apps.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/forms.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/admin.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/static
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/demo.css -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/slider.css -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/demo.js -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/static/nova_slider_captcha/slider.js -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/static/nova_slider_captcha
+copying build/lib/nova_slider_captcha/demo_urls.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/images.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/templates
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/demo.html -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/widget.html -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/templates/nova_slider_captcha/admin_login.html -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha/templates/nova_slider_captcha
+copying build/lib/nova_slider_captcha/urls.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+copying build/lib/nova_slider_captcha/views.py -> build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha
+running install_egg_info
+Copying src/nova_slider_captcha.egg-info to build/bdist.macosx-27.0-arm64/wheel/./nova_slider_captcha-0.3.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.macosx-27.0-arm64/wheel/nova_slider_captcha-0.3.0.dist-info/WHEEL
+creating '<work>/final-dist/.tmp-wjrpcn1m/nova_slider_captcha-0.3.0-py3-none-any.whl' and adding 'build/bdist.macosx-27.0-arm64/wheel' to it
+adding 'nova_slider_captcha/__init__.py'
+adding 'nova_slider_captcha/admin.py'
+adding 'nova_slider_captcha/apps.py'
+adding 'nova_slider_captcha/checks.py'
+adding 'nova_slider_captcha/conf.py'
+adding 'nova_slider_captcha/demo_urls.py'
+adding 'nova_slider_captcha/events.py'
+adding 'nova_slider_captcha/forms.py'
+adding 'nova_slider_captcha/images.py'
+adding 'nova_slider_captcha/models.py'
+adding 'nova_slider_captcha/services.py'
+adding 'nova_slider_captcha/urls.py'
+adding 'nova_slider_captcha/views.py'
+adding 'nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.mo'
+adding 'nova_slider_captcha/locale/zh_Hans/LC_MESSAGES/django.po'
+adding 'nova_slider_captcha/management/__init__.py'
+adding 'nova_slider_captcha/management/commands/__init__.py'
+adding 'nova_slider_captcha/management/commands/prune_slider_captcha.py'
+adding 'nova_slider_captcha/migrations/0001_initial.py'
+adding 'nova_slider_captcha/migrations/0002_ratelimitstate.py'
+adding 'nova_slider_captcha/migrations/0003_challenge_policy.py'
+adding 'nova_slider_captcha/migrations/__init__.py'
+adding 'nova_slider_captcha/static/nova_slider_captcha/demo.css'
+adding 'nova_slider_captcha/static/nova_slider_captcha/demo.js'
+adding 'nova_slider_captcha/static/nova_slider_captcha/slider.css'
+adding 'nova_slider_captcha/static/nova_slider_captcha/slider.js'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/admin_login.html'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/demo.html'
+adding 'nova_slider_captcha/templates/nova_slider_captcha/widget.html'
+adding 'nova_slider_captcha-0.3.0.dist-info/licenses/LICENSE'
+adding 'nova_slider_captcha-0.3.0.dist-info/METADATA'
+adding 'nova_slider_captcha-0.3.0.dist-info/WHEEL'
+adding 'nova_slider_captcha-0.3.0.dist-info/top_level.txt'
+adding 'nova_slider_captcha-0.3.0.dist-info/RECORD'
+removing build/bdist.macosx-27.0-arm64/wheel
+Successfully built nova_slider_captcha-0.3.0.tar.gz and nova_slider_captcha-0.3.0-py3-none-any.whl

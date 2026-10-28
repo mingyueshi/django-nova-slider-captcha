@@ -1,0 +1,142 @@
+{
+  "browser": "156.0.8078.73",
+  "backend": "loopback Django test settings, private SQLite",
+  "baseline": "75117ebdfc032d00e140d050fcc2e7fe9b571e52",
+  "results": [
+    {
+      "case": "baseline keyboard error",
+      "checking": {
+        "state": "checking",
+        "active": "BODY",
+        "disabled": true,
+        "ariaDisabled": null,
+        "x": 1,
+        "calls": 1
+      },
+      "ready": {
+        "state": "ready",
+        "active": "BODY",
+        "disabled": false,
+        "ariaDisabled": null,
+        "x": 0,
+        "calls": 1
+      }
+    },
+    {
+      "case": {
+        "locale": "zh-CN",
+        "width": 1280,
+        "scheme": "light",
+        "action": "retry"
+      },
+      "checking": {
+        "state": "checking",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "true",
+        "x": 1,
+        "calls": 1
+      },
+      "ready": {
+        "state": "ready",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "false",
+        "x": 0,
+        "calls": 1
+      },
+      "aria": {
+        "overlay": "true",
+        "live": "status",
+        "overflow": false
+      }
+    },
+    {
+      "case": {
+        "locale": "en",
+        "width": 360,
+        "scheme": "dark",
+        "action": "retry"
+      },
+      "checking": {
+        "state": "checking",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "true",
+        "x": 1,
+        "calls": 1
+      },
+      "ready": {
+        "state": "ready",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "false",
+        "x": 0,
+        "calls": 1
+      },
+      "aria": {
+        "overlay": "true",
+        "live": "status",
+        "overflow": false
+      }
+    },
+    {
+      "case": {
+        "locale": "zh-CN",
+        "width": 360,
+        "scheme": "light",
+        "action": "tab"
+      },
+      "checking": {
+        "state": "checking",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "true",
+        "x": 1,
+        "calls": 1
+      },
+      "ready": {
+        "state": "ready",
+        "active": "refresh",
+        "disabled": false,
+        "ariaDisabled": "false",
+        "x": 0,
+        "calls": 1
+      },
+      "aria": {
+        "overlay": "true",
+        "live": "status",
+        "overflow": false
+      }
+    },
+    {
+      "case": {
+        "locale": "en",
+        "width": 360,
+        "scheme": "dark",
+        "action": "refresh"
+      },
+      "checking": {
+        "state": "checking",
+        "active": "range",
+        "disabled": false,
+        "ariaDisabled": "true",
+        "x": 1,
+        "calls": 1
+      },
+      "ready": {
+        "state": "ready",
+        "active": "refresh",
+        "disabled": false,
+        "ariaDisabled": "false",
+        "x": 0,
+        "calls": 1
+      },
+      "aria": {
+        "overlay": "true",
+        "live": "status",
+        "overflow": false
+      }
+    }
+  ]
+}

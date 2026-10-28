@@ -10,9 +10,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 os.environ["DJANGO_SETTINGS_MODULE"] = "tests.settings"
-from django.conf import settings
 temporary = tempfile.TemporaryDirectory(prefix="nova-slider-dom-")
-settings.DATABASES["default"]["NAME"] = str(Path(temporary.name) / "test.sqlite3")
+# Set before settings import so default and its derived aliases share isolation.
+os.environ["NOVA_TEST_DB"] = str(Path(temporary.name) / "test.sqlite3")
 import django
 django.setup()
 from django.test import Client

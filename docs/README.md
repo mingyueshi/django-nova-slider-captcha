@@ -4,6 +4,9 @@
 
 | 文档 | 内容 |
 |---|---|
+| [会话引擎补充复核](2026-10-29-session-engine-followup.md) | 非法 SESSION_ENGINE 的 E008/503 兜底、无副作用回归及本轮验证 |
+| [人工复核修复](2026-10-29-review-fixes.md) | 焦点与 ARIA、子进程、会话子类、Worker、CI/矩阵与本轮证据 |
+| [验证索引与历史结果](VERIFICATION.md) | 0.3.0 日期证据入口；保留 0.2.0 原始验证记录 |
 | [初始化与验证边界独立验收](2026-10-27-boundary-independent.md) | 主控行为探针、会话后端新进程、六格 source/wheel、覆盖率与冻结文件复核 |
 | [初始化与验证边界实施自测](2026-10-27-boundary-implementation.md) | init 创建额度/CSRF 响应、Admin 字段错误、写库一致性、会话能力与六格同 wheel |
 | [基础静态检查](STATIC_CHECKS.md) | Ruff精确版本、最小规则、范围与窄豁免 |
@@ -26,7 +29,6 @@
 | [诊断报告](DIAGNOSTIC_REPORT.md) | 问题分析、复核结论和独立验收结论 |
 | [2026-10-26 实施自测](2026-10-26-implementation.md) | 本轮改动、实际自测命令、性能和查询数 |
 | [2026-10-26 主控独立验收](2026-10-26-independent.md) | 独立复测、浏览器检查和验证边界 |
-| [0.2.0 历史验证说明](VERIFICATION.md) | 2026-10-05 验证矩阵与历史结果 |
 
 原始日志、机器摘要、测试脚本和历史归档保留在仓库根目录的 [verification/](../verification/)，避免改变已有脚本的输出路径。历史记录中的仓库路径按记录时的布局理解。
 
