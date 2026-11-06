@@ -21,3 +21,5 @@ htmlcov/
 .sites-runtime/
 .mimosa/
 .video_agent/
+.ruff_cache/
+.workbuddy/
