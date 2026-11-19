@@ -185,7 +185,7 @@ test("missing decode waits for both load events and cleans listeners", async () 
   await flush();
   assert.equal(c.widget.state, "ready");
   assert.equal(c.images.active(), 0);
-  assert.equal(background.alt, "带有一处拼图缺口的山水图案");
+  assert.equal(background.alt, "带有拼图缺口的背景图");
   cleanup(c);
 });
 test("missing decode handles cached images and listeners installed before src", async () => {
@@ -557,7 +557,7 @@ test("default remains Chinese regardless of document language, including ARIA", 
   assert.equal(c.widget.status.textContent, "拖动拼图，对齐图中的缺口");
   assert.equal(c.widget.range.getAttribute("aria-label"), "移动拼图块");
   assert.equal(c.widget.range.getAttribute("aria-valuetext"), "0%，按 Enter 校验");
-  assert.equal(c.widget.querySelector(".nsc-background").alt, "带有一处拼图缺口的山水图案");
+  assert.equal(c.widget.querySelector(".nsc-background").alt, "带有拼图缺口的背景图");
   assert.equal(c.widget.querySelector(".nsc").lang, "zh-CN");
   cleanup(c);
 });
@@ -988,7 +988,7 @@ test("explicit unsupported locales use English through attributes and property e
       assert.equal(c.widget.getAttribute("aria-label"), "Security verification");
       assert.equal(c.widget.range.getAttribute("aria-label"), "Move the puzzle piece");
       assert.equal(c.widget.status.textContent, "Slide the piece to fit the gap");
-      assert.equal(c.widget.querySelector(".nsc-background").alt, "Landscape with a missing puzzle piece");
+      assert.equal(c.widget.querySelector(".nsc-background").alt, "Background image with a puzzle-shaped cutout");
       c.widget.move(138);
       assert.equal(c.widget.range.getAttribute("aria-valuetext"), "50%, press Enter to verify");
       cleanup(c);

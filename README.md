@@ -155,6 +155,20 @@ NOVA_SLIDER_PURPOSE_POLICIES = {
 
 配置能力不代表更强安全性。更长 TTL、更大次数或容差可能改善完成率，也增加猜测或自动解题的机会；按实际用户、入口限流与风险要求选择。TOKEN_TTL 仍固定 60 秒，不提供设置；图片固定 320×160 / 44，本轮不开放尺寸设置。prune 按已持久化 expires_at 清理，并保留足够覆盖固定 60 秒凭证的时间。
 
+## 自定义背景图池
+
+默认使用程序生成的背景。宿主可以在 Django settings 中提供最多 8 个部署时准备的本地图片，使用列表或元组，每项为不超过 1024 字符的绝对路径字符串。
+
+```python
+NOVA_SLIDER_BACKGROUND_IMAGES = ["/srv/myapp/captcha/landscape.jpg", "/srv/myapp/captcha/pattern.png"]
+```
+
+支持单帧 JPEG 和 PNG，按内容识别。文件最多 4 MiB，宽高各为 1–4096 像素，总像素最多 400 万。素材应是宿主控制目录中的普通文件，最终路径项为符号链接时会跳过。使用等比例居中裁切填满 320×160 画布，透明区域与固定底色合成 RGB。使用存储的像素方向和颜色。带 EXIF 方向的手机照片请在部署前校正像素方向，需要准确还原颜色时请事先转换到 sRGB。出题时不应用 EXIF 方向或 ICC 配置。输出是重新编码的 PNG，不附带原始素材元数据。
+
+每题打乱去重后的路径，最多尝试 3 张，使用第一张可用图。文件缺失、读取失败或格式不符合要求时跳过。三次内没有可用图时使用程序背景，即使池中还存在未尝试的图片。配置类型或路径格式错误会产生 Django 检查 `nova_slider_captcha.E010`，运行时回退到程序背景。系统检查只检查配置格式，素材可用性由发题时判断。
+
+同一素材用于不同挑战时，缺口位置仍由独立安全随机源决定，拼块和缺口逐题生成。素材设置仅用于 Django；未初始化 Django 的离线出图使用程序背景。
+
 ## 通用 Form 与 ModelForm
 
 使用 `SliderCaptchaField` 和放在最左边的 `SliderCaptchaFormMixin`，在初始化时传入 `request=`。字段名可自由选择；Widget 的 `purpose`、完整隐藏字段名和资源由字段提供。只使用 Field 而遗漏 Mixin 会拒绝验证。字段必须保持 `required=True`、`disabled=False`；不支持的值在构造时抛出明确 ValueError，字段实例之后被改写仍会在运行时拒绝。

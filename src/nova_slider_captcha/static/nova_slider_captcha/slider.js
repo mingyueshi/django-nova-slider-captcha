@@ -4,7 +4,7 @@
   const dictionaries = {
     "zh-CN": {
       widget_label: "安全验证",
-      background_alt: "带有一处拼图缺口的山水图案",
+      background_alt: "带有拼图缺口的背景图",
       piece_alt: "可移动拼图块",
       track: "向右拖动滑块",
       slider_label: "移动拼图块",
@@ -43,7 +43,7 @@
     },
     en: {
       widget_label: "Security verification",
-      background_alt: "Landscape with a missing puzzle piece",
+      background_alt: "Background image with a puzzle-shaped cutout",
       piece_alt: "Movable puzzle piece",
       track: "Drag the slider to the right",
       slider_label: "Move the puzzle piece",

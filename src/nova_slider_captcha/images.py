@@ -1,13 +1,63 @@
-"""Procedural raster art; only flattened PNG bytes leave the server."""
+"""Procedural or host-supplied raster art; only flattened PNG bytes leave the server."""
 import base64
 import io
 import math
+import os
 import random
 import secrets
+import stat
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
-from .conf import HEIGHT, PIECE_SIZE, WIDTH
+from .conf import HEIGHT, PIECE_SIZE, WIDTH, background_images
+
+MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_IMAGE_PIXELS = 4_000_000
+MAX_IMAGE_SIDE = 4096
+MAX_IMAGE_ATTEMPTS = 3
+
+
+def _read_background(path):
+    # Check the file before opening, then validate the descriptor before reading.
+    # Nonblocking and no-follow flags also protect against replacement on POSIX.
+    before = os.lstat(path)
+    if not stat.S_ISREG(before.st_mode):
+        return None
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
+    fd = os.open(path, flags)
+    with os.fdopen(fd, "rb") as file:
+        opened = os.fstat(file.fileno())
+        if not stat.S_ISREG(opened.st_mode) or not os.path.samestat(before, opened) or not 0 < opened.st_size <= MAX_IMAGE_BYTES:
+            return None
+        data = file.read(MAX_IMAGE_BYTES + 1)
+    if len(data) > MAX_IMAGE_BYTES:
+        return None
+    with Image.open(io.BytesIO(data), formats=("JPEG", "PNG")) as source:
+        width, height = source.size
+        if (not 0 < min(width, height) <= max(width, height) <= MAX_IMAGE_SIDE
+                or width * height > MAX_IMAGE_PIXELS or getattr(source, "is_animated", False)):
+            return None
+        art = ImageOps.fit(source.convert("RGBA"), (WIDTH, HEIGHT), method=Image.Resampling.LANCZOS)
+        canvas = Image.new("RGB", (WIDTH, HEIGHT), (45, 56, 65))
+        canvas.paste(art, mask=art.getchannel("A"))
+        return canvas
+
+
+def _choose_background(rng):
+    try:
+        paths = list(dict.fromkeys(background_images()))
+    except ValueError:
+        paths = []
+    if paths:
+        rng.shuffle(paths)
+        for path in paths[:MAX_IMAGE_ATTEMPTS]:
+            try:
+                canvas = _read_background(path)
+            except (OSError, ValueError, SyntaxError, EOFError, Image.DecompressionBombError, Image.DecompressionBombWarning):
+                continue
+            if canvas is not None:
+                return canvas
+    return _background(rng)
 
 
 def _data_uri(image):
@@ -51,7 +101,7 @@ def make_puzzle():
     target_x = secrets.randbelow(WIDTH - PIECE_SIZE - 12 - 60) + 60
     piece_y = secrets.randbelow(HEIGHT - PIECE_SIZE - 20 - 24) + 24
     rng = random.Random(secrets.randbits(128))
-    canvas = _background(rng)
+    canvas = _choose_background(rng)
     mask = Image.new("L", (PIECE_SIZE, PIECE_SIZE), 0)
     shape = ImageDraw.Draw(mask)
     shape.rounded_rectangle((1, 9, 35, 42), radius=4, fill=255)

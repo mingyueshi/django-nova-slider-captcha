@@ -2,6 +2,7 @@ import logging
 import re
 from dataclasses import dataclass, replace
 from importlib import import_module
+from pathlib import Path
 
 from django.conf import settings
 from django.apps import apps
@@ -21,6 +22,21 @@ PURPOSES = frozenset(("demo", "login"))
 RATE_PERIOD_US = 60_000_000
 MAX_RATE_LIMIT = 60_000
 RATE_DEFAULTS = {"init_ip": 40, "issue_session": 20, "issue_ip": 60, "verify_session": 60, "verify_ip": 120}
+MAX_BACKGROUND_IMAGES = 8
+
+
+def background_images():
+    if not settings.configured:
+        return ()
+    paths = getattr(settings, "NOVA_SLIDER_BACKGROUND_IMAGES", ())
+    if not isinstance(paths, (list, tuple)) or len(paths) > MAX_BACKGROUND_IMAGES:
+        raise ValueError("NOVA_SLIDER_BACKGROUND_IMAGES 必须是最多包含 8 项的列表或元组")
+    for path in paths:
+        if (not isinstance(path, str) or not 1 <= len(path) <= 1024
+                or path.startswith(("//", "\\")) or any(ord(char) < 32 or ord(char) == 127 for char in path)
+                or not Path(path).is_absolute()):
+            raise ValueError("NOVA_SLIDER_BACKGROUND_IMAGES 仅接受不含控制字符的绝对本地路径字符串")
+    return tuple(paths)
 
 
 def session_backend():
