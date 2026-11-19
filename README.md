@@ -383,6 +383,14 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 `SECRET_KEY` 轮换会使已有挑战与未消费凭证失效，也会改变 IP/session 限流身份，可能产生新额度。本组件的自定义 `salted_hmac` 不尝试 `SECRET_KEY_FALLBACKS`。应协调所有实例的密钥切换、提示用户重新完成验证码，并在轮换窗口保留独立的入口/账号限流；旧状态仍按上述安全条件清理，不能为轮换直接清空限流表。
 
+### 查看当前限流状态
+
+运行 `python manage.py slider_captcha_rate_stats` 查看文本统计，或加 `--json` 供监控脚本解析。两种格式均从与清理命令相同的写库路由执行只读聚合，并使用同一个采样时间。JSON 包含 `sampled_at`、`states` 和 `legacy`。
+
+`states` 按动作和范围列出总数 `total`、债务数 `debt`（`tat_us > now_us`）、未结束冷却数 `cooldown`（`blocked_until_us > now_us`）和可清理数 `prunable`（两者均小于或等于采样时间）。债务与冷却可能重叠。存在债务的桶仍可能有可用额度，存量统计无法还原历史 429。异常键归入固定的 `other/other`，报告不输出桶键或主体哈希。
+
+`legacy` 单列遗留 `RateBucket` 的总数和可清理数。只有 `expires_at` 严格早于采样时间才计入可清理。两个表分别进行聚合扫描，并发写入或清理时行集合可能变化。桶表较大时按需或低频采样。
+
 ## 宿主安全替代入口
 
 视觉拼图不是非视觉验证。宿主有独立、受保护的替代流程时，可为所有 Django Widget（含 Admin）配置始终可见的导航链接：
