@@ -320,6 +320,8 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 
 常见错误代码包括 `init_required`、`rate_limited`、`invalid_position`、`invalid_challenge`、`expired`、`already_verified`、`incorrect`、`attempts_exhausted`、`invalid_token`、`rate_limit_unavailable`。具体后端还可能返回通用 `unavailable`。Django 中间件的 CSRF 拒绝可以是 HTML 403，客户端已做非 JSON 失败处理。
 
+并发验证同一张拼图时，如果另一请求先验证成功或用完最后一次尝试，导致本次条件更新未命中，`POST /captcha/verify` 可能返回 HTTP `200`，响应体为 `{"ok":false,"code":"invalid_challenge","attemptsRemaining":0}`。
+
 ## GCRA 限流语义
 
 Django 默认每分钟补充速率与突发容量：
