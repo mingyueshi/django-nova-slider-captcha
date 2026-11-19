@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.checks import Error, Tags, register
 
-from .conf import challenge_policy, configured_alternative_link, purposes, rate_limit, rate_log_level, session_backend
+from .conf import audit_success_enabled, challenge_policy, configured_alternative_link, purposes, rate_limit, rate_log_level, session_backend
 
 
 @register(Tags.security)
@@ -18,7 +18,13 @@ def captcha_settings_check(app_configs, **kwargs):
                 rate_limit(action, scope)
     except (ValueError, TypeError, AttributeError) as error:
         errors.append(Error(str(error), id="nova_slider_captcha.E003"))
-    for validator, identifier in ((purposes, "nova_slider_captcha.E004"), (rate_log_level, "nova_slider_captcha.E005"), (challenge_policy, "nova_slider_captcha.E006"), (session_backend, "nova_slider_captcha.E008")):
+    for validator, identifier in (
+        (purposes, "nova_slider_captcha.E004"),
+        (rate_log_level, "nova_slider_captcha.E005"),
+        (challenge_policy, "nova_slider_captcha.E006"),
+        (session_backend, "nova_slider_captcha.E008"),
+        (audit_success_enabled, "nova_slider_captcha.E009"),
+    ):
         try:
             validator()
         except ValueError as error:

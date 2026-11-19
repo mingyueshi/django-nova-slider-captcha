@@ -4,7 +4,7 @@ include requirements-lint.txt
 recursive-include src/nova_slider_captcha *.py *.html *.css *.js *.po *.mo
 recursive-include tests *.py *.mjs *.json
 recursive-include scripts *.py *.cjs
-recursive-include demo *.py
+recursive-include demo *.py *.html
 recursive-include docs *.md
 recursive-include examples/worker-api *.md *.mjs *.sql *.json *.html
 prune verification

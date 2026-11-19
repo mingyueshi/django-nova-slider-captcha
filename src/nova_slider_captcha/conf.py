@@ -1,6 +1,6 @@
 import logging
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from importlib import import_module
 
 from django.conf import settings
@@ -68,19 +68,46 @@ class ChallengePolicy:
     tolerance: int
 
 
-def challenge_policy():
-    """Validate dynamically; persist these values when issuing each challenge."""
-    values = []
-    for name, default, minimum, maximum in (
-        ("NOVA_SLIDER_CHALLENGE_TTL", CHALLENGE_TTL, 30, 600),
-        ("NOVA_SLIDER_MAX_ATTEMPTS", MAX_ATTEMPTS, 1, 20),
-        ("NOVA_SLIDER_TOLERANCE", TOLERANCE, 0, 10),
-    ):
-        value = getattr(settings, name, default)
-        if type(value) is not int or not minimum <= value <= maximum:
-            raise ValueError(f"{name} must be an integer from {minimum} to {maximum}")
-        values.append(value)
-    return ChallengePolicy(*values)
+_POLICY_FIELDS = {
+    "ttl": ("NOVA_SLIDER_CHALLENGE_TTL", CHALLENGE_TTL, 30, 600),
+    "max_attempts": ("NOVA_SLIDER_MAX_ATTEMPTS", MAX_ATTEMPTS, 1, 20),
+    "tolerance": ("NOVA_SLIDER_TOLERANCE", TOLERANCE, 0, 10),
+}
+
+
+def _policy_integer(value, label, minimum, maximum):
+    if type(value) is not int or not minimum <= value <= maximum:
+        raise ValueError(f"{label} must be an integer from {minimum} to {maximum}")
+    return value
+
+
+def challenge_policy(purpose=None):
+    """Validate the whole current table before returning an issuance policy."""
+    default = ChallengePolicy(**{
+        key: _policy_integer(getattr(settings, name, fallback), name, minimum, maximum)
+        for key, (name, fallback, minimum, maximum) in _POLICY_FIELDS.items()
+    })
+    setting = "NOVA_SLIDER_PURPOSE_POLICIES"
+    configured = getattr(settings, setting, {})
+    if not isinstance(configured, dict):
+        raise ValueError(f"{setting} must be a dictionary")
+    if not configured:
+        return default
+    allowed = purposes()
+    selected = default
+    for name, overrides in configured.items():
+        if not isinstance(name, str) or name not in allowed:
+            raise ValueError(f"{setting} may only contain allowed CAPTCHA purposes")
+        if not isinstance(overrides, dict):
+            raise ValueError(f"{setting}[{name!r}] must be a dictionary")
+        if any(key not in _POLICY_FIELDS for key in overrides):
+            raise ValueError(f"{setting}[{name!r}] accepts only ttl, max_attempts and tolerance")
+        for key, value in overrides.items():
+            _, _, minimum, maximum = _POLICY_FIELDS[key]
+            _policy_integer(value, f"{setting}[{name!r}][{key!r}]", minimum, maximum)
+        if name == purpose:
+            selected = replace(default, **overrides)
+    return selected
 
 
 def purposes():
@@ -103,6 +130,13 @@ def rate_log_level():
     if not isinstance(value, str) or value not in (*levels, "OFF"):
         raise ValueError("NOVA_SLIDER_RATE_LOG_LEVEL must be DEBUG, INFO, WARNING, ERROR, CRITICAL or OFF")
     return None if value == "OFF" else levels[value]
+
+
+def audit_success_enabled():
+    value = getattr(settings, "NOVA_SLIDER_AUDIT_SUCCESS", False)
+    if type(value) is not bool:
+        raise ValueError("NOVA_SLIDER_AUDIT_SUCCESS must be a boolean")
+    return value
 
 
 def rate_limit(action, scope):

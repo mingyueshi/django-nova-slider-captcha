@@ -9,7 +9,8 @@
 当前源码为首次 PyPI 发布准备，**尚未上传 PyPI**。新增公开配置/API 与迁移，因此从 0.2.0 进入 0.3.0；本地构建和验证不代表远端 CI 或线上发布完成。
 
 - 自定义 purpose、request-aware Form/ModelForm、前缀与 formset 字段、结构化业务日志
-- 有界的挑战 TTL / 尝试次数 / 容差设置；每个挑战持久化签发时策略，旧挑战保留原 5/4
+- 按用途覆盖有界的挑战 TTL、尝试次数和容差。每个挑战保留签发时的策略
+- 可显式开启签发、验证与消费的成功审计。源码演示包含人工核验的非视觉显示名称更改流程
 - 响应几何驱动；独立嵌入的暗色兜底、显式主题优先级与状态文字对比度修复
 - 明确的 Python/Django 配对 CI，构建 wheel/sdist 并运行安装包测试
 - 首次 Trusted Publishing 发布流程准备，版本/tag 检查后复用同一已验证构建物
@@ -139,9 +140,16 @@ NOVA_SLIDER_PURPOSES = ["demo", "login", "contact", "profile_update"]
 NOVA_SLIDER_CHALLENGE_TTL = 120  # 30–600 秒
 NOVA_SLIDER_MAX_ATTEMPTS = 5     # 1–20 次（成功验证也计一次）
 NOVA_SLIDER_TOLERANCE = 4        # 0–10 原图像素，0 为精确匹配
+
+NOVA_SLIDER_PURPOSE_POLICIES = {
+    "login": {"ttl": 60, "max_attempts": 3},
+    "demo": {"tolerance": 5},
+}
 ```
 
-仅接受范围内的整数，拒绝 bool、字符串、浮点数、负值和超限值。系统检查错误 `E006` 会阻止正常启动检查；运行时 HTTP API 返回 `503 configuration_invalid`，直接 issue/verify 抛 ValueError，consume 拒绝放行。配置每次动态读取，支持 `override_settings`；错误配置修复前不会重新解释或扩大已有挑战策略。
+`NOVA_SLIDER_PURPOSE_POLICIES` 默认为空字典。每个键须在当前用途白名单中，每个值须是字典，仅允许 `ttl`、`max_attempts`、`tolerance`。未指定的字段继承全局设置，未列出的用途使用整套全局设置。移除用途时同时移除其覆盖项，同一动作的 IP 和 session 限流继续由所有用途共享。
+
+全局值和覆盖值仅接受范围内的整数，拒绝 bool、字符串、浮点数、负值和超限值。全局配置和覆盖表均动态读取并整体校验，未使用用途的非法策略也会产生 `E006`。已初始化会话的出题、校验和演示消费 API 返回 `503 configuration_invalid`，直接调用 `issue` / `verify` 抛出 `ValueError`，`consume` 和表单拒绝凭证。已经校验过的表单实例再次访问时也会校验当前配置。
 
 签发时，TTL 写入 `expires_at`，尝试上限和容差写入 Challenge 的 `max_attempts` / `tolerance` 快照。之后更改配置只影响新挑战，旧挑战继续按原策略校验，既不扩大也不缩小额度。迁移 `0003_challenge_policy` 将所有已有行填为原 5/4，不重置 attempts、过期时间或凭证状态。不要通过旧代码与新代码混跑来绕过快照；升级前停止旧写入，再迁移和恢复。回退删除快照字段会丢失在途策略，应先停写并排空在途挑战/凭证，再采用经审查的回退流程。
 
@@ -424,6 +432,27 @@ URL 与标签均由可信宿主代码提供，不读取客户端参数或 HTML a
 
 这个链接只导航，不生成凭证、不跳过原验证，也不内置短信、邮件或音频服务。宿主替代页面及其提交接口仍须自行实施身份核验、授权、CSRF、限流、一次性证明与同等保护；不能把目的 URL 直接指向已免验证的业务操作。现有语言字典、默认语言和回退没有改动，链接标签由宿主明确选择。
 
+### 本地示例：更改已登记用户的显示名称
+
+源码中的 `demo` 提供两条路径，用视觉滑块或人工核验代码更改当前账号的 `User.first_name`。普通演示账号须由操作员预先登记到 `profile-demo-members`，并由操作员通过事先核实、支持键盘和文本的独立渠道确认身份并交付代码。操作员需要本地管理命令权限。登录、页面访问、批准和保存均校验账号资格，示例登录只允许启用的非 staff、非 superuser 组成员。登录 POST 在密码校验前计入现有 issue 的 IP 和 session 额度，额度不足时显示重试提示。
+
+在仓库根目录安装项目后，可使用单独的本地 SQLite 库运行：
+
+```sh
+NOVA_DEMO_DIR="$(mktemp -d)"
+export NOVA_DEMO_DB="$NOVA_DEMO_DIR/profile.sqlite3"
+python manage.py migrate
+python manage.py shell -c 'from django.contrib.auth.models import Group, User; user = User.objects.create_user(username="nova-reader"); user.groups.add(Group.objects.create(name="profile-demo-members"))'
+python manage.py changepassword nova-reader
+python manage.py runserver 127.0.0.1:8000
+```
+
+1. 用登记好的账号打开本机 `/profile-demo/` 并登录。按 Tab 找到「使用非视觉验证更改显示名称」链接，按 Enter 进入。也可直接打开 `/profile-demo/alternative/`。
+2. 保持登录并向核验人员提供页面中的核验编号。核验人员从事先登记的渠道确认来人身份与账号的关系，再在另一个终端将 `NOVA_DEMO_DB` 设为同一个数据库路径，运行 `python manage.py approve_demo_profile_change nova-reader <核验编号>`。本地可用操作员终端模拟独立交付，无需连接邮件或短信服务。真实宿主应通过自己的已核实渠道交付终端产生的代码。
+3. 填入新显示名称和批准代码后提交。成功页显示数据库中更新后的名称。输错时可以重试，累计五次格式有效的错误代码后需要重新批准。代码自签发起五分钟内有效，每个账号以最新批准为准。
+
+浏览器用 Django 会话和 CSRF 保护提交。核验编号用于绑定当前登录会话，代码另行随机生成且数据库仅保存其摘要。代码限定登记账号、该会话和更改显示名称这项操作。错误次数和单次消费由条件更新保证，消费与实际名称写入在同一个事务提交。关闭 JavaScript 仍可登录、导航及提交非视觉表单。示例路由、批准命令及批准记录均在源码的本地 `demo` 中，接入安装包时请按宿主的既有身份核验和操作员权限设计自己的流程。
+
 ## 主题与窄容器
 
 组件优先使用宿主语义变量（如 `--link-fg`、`--body-quiet-color`、`--error-fg`）及已有面板变量；没有宿主变量时提供独立明/暗色兜底。`html[data-theme="light"|"dark"]` 和 Nova 显式 mode 类优先于操作系统偏好；未指定或 auto 时跟随 `prefers-color-scheme`。宿主仍可在组件上覆盖 `--nsc-*`，例如 `--nsc-accent`、`--nsc-success`、`--nsc-error`、`--nsc-panel` 和 `--nsc-handle-size`。组件外的替代链接可通过 `--nsc-alternative-fg` 覆盖颜色。
@@ -434,10 +463,13 @@ URL 与标签均由可信宿主代码提供，不读取客户端参数或 HTML a
 
 Django app 使用命名 logger `nova_slider_captcha`；不添加第三方依赖。所有记录的消息固定为 `CAPTCHA business event`，排障数据位于 `extra` 字段 `captcha_event`、`captcha_reason`、`captcha_status`、`captcha_purpose`、`captcha_action`。purpose 只记录已配置允许的名字，其他情况为 `unknown`。机器原因码包括 `database_unavailable`、`configuration_invalid`、`invalid_proof`、`binding_missing`、`proof_rejected`、`rate_limited`；`proof_rejected` 不区分过期、重放、用途或会话不匹配，避免泄露凭证状态。
 
-503/数据库消费错误使用 ERROR，消费拒绝使用 WARNING，429 默认 DEBUG。用 `NOVA_SLIDER_RATE_LOG_LEVEL = "WARNING"` 可提升 429 级别，或设 `"OFF"` 关闭该事件；允许 DEBUG、INFO、WARNING、ERROR、CRITICAL、OFF（非法值产生检查 `E005`）。成功事件默认不输出。示例宿主设置：
+503/数据库消费错误使用 ERROR，消费拒绝使用 WARNING，429 默认 DEBUG。用 `NOVA_SLIDER_RATE_LOG_LEVEL = "WARNING"` 可提升 429 级别，或设 `"OFF"` 关闭该事件。允许 DEBUG、INFO、WARNING、ERROR、CRITICAL、OFF，非法值产生检查 `E005`。
+
+用布尔设置 `NOVA_SLIDER_AUDIT_SUCCESS = True` 开启成功审计，默认为 `False`。非法值产生检查 `E009`，运行时只有显式的 `True` 会启用审计。签发成功、验证后签发凭证成功和单次消费成功分别记录 `issue`、`verify`、`consume`，事件与动作同名，级别为 INFO，原因码为 `success`，服务结果状态为 200。事件在实际写库事务提交后输出。多凭证表单或外层事务回滚时会丢弃其待输出的成功事件。宿主应使用 Django 的自动提交或 `atomic()` 管理写入，并在日志处理器上开启 INFO 级别。
 
 ```python
 NOVA_SLIDER_RATE_LOG_LEVEL = "DEBUG"
+NOVA_SLIDER_AUDIT_SUCCESS = True
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -449,7 +481,7 @@ LOGGING = {
     "handlers": {
         "captcha_console": {
             "class": "logging.StreamHandler",
-            "level": "WARNING",
+            "level": "INFO",
             "formatter": "captcha",
         },
     },

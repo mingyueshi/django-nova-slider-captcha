@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.utils.crypto import salted_hmac
 
 from .conf import HEIGHT, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, WIDTH, challenge_policy, purposes, rate_limit, session_backend, valid_purpose
-from .events import event
+from .events import audit_success, event
 from .images import make_puzzle
 from .models import Challenge, RateLimitState
 
@@ -113,15 +113,16 @@ def allow_request(request, action):
 
 
 def issue(request, purpose):
-    policy = challenge_policy()
     session_backend()
     if not valid_purpose(purpose):
         raise ValueError("Unsupported CAPTCHA purpose")
+    policy = challenge_policy(purpose)
     binding = session_binding(request, create=True)
     if not binding:
         raise ValueError("CAPTCHA issuance requires a session binding")
     target_x, piece_y, background, piece = make_puzzle()
     challenge = Challenge.objects.create(session_hash=binding, purpose=purpose, target_x=target_x, expires_at=timezone.now() + timedelta(seconds=policy.ttl), max_attempts=policy.max_attempts, tolerance=policy.tolerance)
+    audit_success("issue", purpose=purpose, using=challenge._state.db)
     return {"challengeId": str(challenge.pk), "background": background, "piece": piece, "width": WIDTH, "height": HEIGHT, "pieceWidth": PIECE_SIZE, "pieceY": piece_y, "expiresIn": policy.ttl, "maxAttempts": policy.max_attempts}
 
 
@@ -147,6 +148,7 @@ def verify(request, challenge_id, x):
         token = secrets.token_urlsafe(TOKEN_BYTES)
         updated = active.update(attempts=F("attempts") + 1, solved=True, token_hash=_hash(token, "token"), token_expires_at=now + timedelta(seconds=TOKEN_TTL))
         if updated:
+            audit_success("verify", purpose=challenge.purpose, using=writer)
             return {"ok": True, "token": token, "expiresIn": TOKEN_TTL}
     else:
         updated = active.update(attempts=F("attempts") + 1)
@@ -177,11 +179,14 @@ def consume(token, request, purpose):
     if not binding:
         event("consume", "binding_missing", 403, purpose=purpose)
         return False
+    writer = router.db_for_write(Challenge)
     try:
-        consumed = bool(Challenge.objects.filter(token_hash=_hash(token, "token"), session_hash=binding, purpose=purpose, solved=True, token_consumed=False, token_expires_at__gt=timezone.now()).update(token_consumed=True))
+        consumed = bool(Challenge.objects.using(writer).filter(token_hash=_hash(token, "token"), session_hash=binding, purpose=purpose, solved=True, token_consumed=False, token_expires_at__gt=timezone.now()).update(token_consumed=True))
     except DatabaseError:
         event("consume", "database_unavailable", 503, purpose=purpose)
         raise
-    if not consumed:
+    if consumed:
+        audit_success("consume", purpose=purpose, using=writer)
+    else:
         event("consume", "proof_rejected", 403, purpose=purpose)
     return consumed

@@ -1,9 +1,13 @@
 """Low-cardinality business events. Never pass request data or exception text."""
 import logging
+from functools import partial
 from threading import Lock
 from time import monotonic
 
-from .conf import purposes, rate_log_level
+from django.db import transaction
+from django.db.transaction import TransactionManagementError
+
+from .conf import audit_success_enabled, purposes, rate_log_level
 
 logger = logging.getLogger("nova_slider_captcha")
 logger.addHandler(logging.NullHandler())
@@ -50,3 +54,16 @@ def rate_denied(action):
         level = logging.DEBUG
     if level is not None:
         event("rate_limit", "rate_limited", 429, action=action, level=level)
+
+
+def audit_success(action, *, purpose, using):
+    try:
+        if audit_success_enabled():
+            transaction.on_commit(
+                partial(event, action, "success", 200, purpose=purpose, action=action, level=logging.INFO),
+                using=using,
+            )
+    except (ValueError, TransactionManagementError):
+        # An invalid audit flag or a manually managed connection without an
+        # atomic block cannot safely emit this event.
+        pass

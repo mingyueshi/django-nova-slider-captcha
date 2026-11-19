@@ -1,4 +1,6 @@
 from demo.settings import *
+# Core integration tests exercise the installed app's purpose defaults.
+globals().pop("NOVA_SLIDER_PURPOSES")
 # Checks and migration-drift checks must also avoid the example database.
 DATABASES["default"]["NAME"] = DATABASES["default"]["TEST"]["NAME"]
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
