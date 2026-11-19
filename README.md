@@ -527,6 +527,34 @@ LOGGING = {
 
 此 formatter 只绑定验证码 logger，其他 Django 日志不一定带这些 extra 字段。日志不包含 token、session 秘密、答案、原始请求体、异常文本、IP 或任意客户端字符串；宿主自行配置的中间件/APM 也应避免采集这些内容。日志处理器异常不会改变限流或单次消费的判定。429 级别仅控制本组件业务事件，Django 自身的 HTTP 请求日志仍由宿主另行配置。该日志功能仅针对 Django app，未改线上 Worker。
 
+## 验证结果 Webhook
+
+Webhook 默认关闭。宿主可配置一个可信的 HTTPS 接收端。使用独立生成的 32 字节随机密钥，以 64 位小写十六进制字符串从宿主密钥存储注入：
+
+```python
+import os
+
+NOVA_SLIDER_WEBHOOK = {
+    "url": "https://events.example.com/captcha",
+    "secret": os.environ["NOVA_SLIDER_WEBHOOK_SECRET"],
+}
+```
+
+设为 `None` 可关闭。只接受 HTTPS 目标和可选端口，URL 须为 ASCII，最多 2048 字符，可含路径。URL 中的认证信息、查询和片段会被拒绝。非法配置产生 Django 检查 `nova_slider_captcha.E011`，运行时跳过通知，验证码判定继续正常执行。
+
+- `verification_succeeded` 在挑战首次验证成功、凭证签发的条件更新提交后通知。
+- `proof_consumed` 在凭证首次成功消费的条件更新提交后通知。两个事件各自独立，可能乱序到达。发题、验证码校验失败和凭证重放均不会触发通知。
+
+Admin 在校验密码之前消费验证码凭证，因此密码错误时也可能收到 `proof_consumed`。接收方如需确认登录成功或其他业务结果，应以宿主在对应业务成功后发出的事件为准。
+
+接收端收到 HTTPS POST，`Content-Type` 为 `application/json`。正文固定为 ASCII JSON 对象，只含 `event` 和 `notification_id`。通知 ID 为每次随机生成的 UUID4，使用 32 位小写十六进制且无连字符。它只标识这封通知。正文不含挑战、凭证、会话、请求或用户标识，也不含用途、答案和 IP。
+
+`X-Nova-Webhook-Timestamp` 是十进制 Unix 秒。将该头值的 ASCII 字节、一个 ASCII 点号 `.`、收到的原始正文字节依次拼接。以配置密钥十六进制解码后的 32 字节为密钥计算 HMAC-SHA256。签名头 `X-Nova-Webhook-Signature` 为 `sha256=` 后接小写十六进制摘要。接收方应以恒定时间比较签名，按原始字节验签，再解析正文。建议拒绝与接收方时钟相差超过 300 秒的时间戳，并在同一次原子操作中登记通知 ID 和判定重复，至少保留至签名时间窗结束。两个事件的 ID 无关联。
+
+通知只在实际写库提交后尝试发送，回滚会丢弃提交钩子。手动关闭 autocommit 时，Django 无法在 `atomic()` 之外注册提交钩子，这类操作会跳过通知。受支持的手动事务路径须提交并恢复 autocommit，Django 才会运行钩子。提交时若配置已禁用或改变，待投递的旧配置通知会被丢弃。
+
+提交钩子只向后台交接。每个进程最多 4 次并行投递，无等待队列，满载或启动失败则丢弃。预派生 worker 各自拥有独立容量，进程退出或重启时未完成的通知可能丢失。直连使用默认 TLS 证书校验，单次套接字 I/O 超时为 2 秒，不继承请求头或环境代理，不跟随重定向、不读取响应体、不重试。系统 DNS 和接收端行为可能占用后台槽位更久。通知为尽力投递，验证码及业务事务不依赖接收方在线。实现不会记录目标 URL、密钥、异常文本或响应体。
+
 ## 安全与无障碍边界
 
 - 生产必须设置 HTTPS、安全的 session/CSRF Cookie、强密钥、可信 Host/代理和独立登录/账号限流，必要时配合 MFA。

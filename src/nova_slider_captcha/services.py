@@ -17,6 +17,8 @@ from .conf import HEIGHT, PIECE_SIZE, RATE_PERIOD_US, TOKEN_TTL, WIDTH, challeng
 from .events import audit_success, event
 from .images import make_puzzle
 from .models import Challenge, RateLimitState
+from .webhooks import webhook_success
+
 
 _SESSION_KEY = "_nova_slider_binding"
 TOKEN_BYTES = 32
@@ -149,6 +151,7 @@ def verify(request, challenge_id, x):
         updated = active.update(attempts=F("attempts") + 1, solved=True, token_hash=_hash(token, "token"), token_expires_at=now + timedelta(seconds=TOKEN_TTL))
         if updated:
             audit_success("verify", purpose=challenge.purpose, using=writer)
+            webhook_success("verification_succeeded", using=writer)
             return {"ok": True, "token": token, "expiresIn": TOKEN_TTL}
     else:
         updated = active.update(attempts=F("attempts") + 1)
@@ -187,6 +190,7 @@ def consume(token, request, purpose):
         raise
     if consumed:
         audit_success("consume", purpose=purpose, using=writer)
+        webhook_success("proof_consumed", using=writer)
     else:
         event("consume", "proof_rejected", 403, purpose=purpose)
     return consumed
