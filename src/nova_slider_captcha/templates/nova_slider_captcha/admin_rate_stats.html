@@ -1,0 +1,51 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate 'Home' %}</a> &rsaquo; {{ title }}</div>
+{% endblock %}
+
+{% block nav-sidebar %}
+{% if available_apps %}
+  {{ block.super }}
+{% else %}
+  {% with available_apps=nova_rate_stats_navigation %}{{ block.super }}{% endwith %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<p>{% translate "Sampled at" %} <time datetime="{{ stats.sampled_at }}">{{ stats.sampled_at }}</time></p>
+<div class="module" style="overflow-x: auto">
+  <table style="width: 100%">
+    <caption>{% translate "Rate states by action and scope" %}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{% translate "Action" %}</th>
+        <th scope="col">{% translate "Scope" %}</th>
+        <th scope="col">{% translate "Total" %}</th>
+        <th scope="col">{% translate "In debt" %}</th>
+        <th scope="col">{% translate "Cooling down" %}</th>
+        <th scope="col">{% translate "Prunable" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for row in stats.states %}
+      <tr>
+        <td>{{ row.action }}</td>
+        <td>{{ row.scope }}</td>
+        <td>{{ row.total }}</td>
+        <td>{{ row.debt }}</td>
+        <td>{{ row.cooldown }}</td>
+        <td>{{ row.prunable }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<h2>{% translate "Legacy rate buckets (RateBucket)" %}</h2>
+<dl>
+  <dt>{% translate "Total" %}</dt><dd>{{ stats.legacy.total }}</dd>
+  <dt>{% translate "Prunable" %}</dt><dd>{{ stats.legacy.prunable }}</dd>
+</dl>
+<p>{% translate "Debt and cooldown can overlap. A bucket with debt may still have capacity. Current rows cannot reconstruct past 429 responses." %}</p>
+{% endblock %}

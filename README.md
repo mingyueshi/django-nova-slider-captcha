@@ -411,6 +411,8 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 `legacy` 单列遗留 `RateBucket` 的总数和可清理数。只有 `expires_at` 严格早于采样时间才计入可清理。两个表分别进行聚合扫描，并发写入或清理时行集合可能变化。桶表较大时按需或低频采样。
 
+使用 `SliderCaptchaAdminSite` 的宿主也可以在本站首页打开「查看验证码限流统计」。入口与页面同时要求启用的 staff 身份以及 `nova_slider_captcha.view_ratelimitstate` 和 `nova_slider_captcha.view_ratebucket` 两项权限，超级管理员自动满足。页面仅接受 GET 和 HEAD，与管理命令共用聚合口径。页面文字使用 Django gettext，随当前 Admin 语言切换。若宿主覆盖该站的 `index_template`，可继承 `nova_slider_captcha/admin_index.html`，或在自己的模板里仅在 `nova_rate_stats_url` 有值时渲染入口。该上下文由 `SliderCaptchaAdminSite.index()` 提供。URL 名称为 `<站点命名空间>:nova_slider_rate_stats`。页面与管理命令都对桶表做聚合扫描，桶表较大时宜按需查看。
+
 ## 宿主安全替代入口
 
 视觉拼图不是非视觉验证。宿主有独立、受保护的替代流程时，可为所有 Django Widget（含 Admin）配置始终可见的导航链接：

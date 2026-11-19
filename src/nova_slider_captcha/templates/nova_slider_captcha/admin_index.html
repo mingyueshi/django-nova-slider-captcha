@@ -1,0 +1,13 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content %}
+{% if nova_rate_stats_url and not app_list %}
+  {% with app_list=nova_rate_stats_navigation %}{{ block.super }}{% endwith %}
+{% else %}
+  {% if nova_rate_stats_url %}
+    <p><a href="{{ nova_rate_stats_url }}">{% translate "View CAPTCHA rate statistics" %}</a></p>
+  {% endif %}
+  {{ block.super }}
+{% endif %}
+{% endblock %}

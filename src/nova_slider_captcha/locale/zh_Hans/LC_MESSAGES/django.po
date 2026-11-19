@@ -45,3 +45,39 @@ msgstr "此图形拼图不是完整的机器人防护系统。生产站点还必
 #: templates/nova_slider_captcha/demo.html
 msgid "Try the protected Django Admin login"
 msgstr "体验受保护的 Django Admin 登录"
+
+msgid "CAPTCHA rate statistics"
+msgstr "验证码限流统计"
+
+msgid "View CAPTCHA rate statistics"
+msgstr "查看验证码限流统计"
+
+msgid "Sampled at"
+msgstr "采样时间"
+
+msgid "Rate states by action and scope"
+msgstr "限流状态（按动作和范围）"
+
+msgid "Action"
+msgstr "动作"
+
+msgid "Scope"
+msgstr "范围"
+
+msgid "Total"
+msgstr "总数"
+
+msgid "In debt"
+msgstr "债务数"
+
+msgid "Cooling down"
+msgstr "未结束冷却数"
+
+msgid "Prunable"
+msgstr "可清理数"
+
+msgid "Legacy rate buckets (RateBucket)"
+msgstr "遗留限流桶（RateBucket）"
+
+msgid "Debt and cooldown can overlap. A bucket with debt may still have capacity. Current rows cannot reconstruct past 429 responses."
+msgstr "债务与冷却可能重叠。有债务的桶仍可能有可用额度。存量统计无法还原历史 429 响应。"
