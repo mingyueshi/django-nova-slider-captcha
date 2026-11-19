@@ -1,6 +1,29 @@
-# 0.3.0 发布准备（尚未上传）
+# 0.3.0 发布说明与流程（待首次发布）
 
-本轮只准备可审阅、构建和验证的 0.3.0；没有配置 PyPI 账号或 publisher、推送、打 tag、创建 GitHub Release 或上传。下列步骤留给维护者在独立验收后执行。
+2026-11-19，候选代码 `d874839` 通过五项升级的本地综合验收，验收报告已在 `c9db8fb` 提交。0.3.0 尚未上传 PyPI。正式发布流程须另行授权。
+
+## 升级后的默认行为与接入
+
+| 宿主需求 | 0.3.0 的行为与操作 |
+| --- | --- |
+| 查看当前限流桶 | 安装 Django app 后按需运行 `python manage.py slider_captcha_rate_stats`。默认输出文本，监控脚本可加 `--json`。命令只读，原有清理任务继续运行 `prune_slider_captcha`。 |
+| 在 Admin 查看同一统计 | 普通 Django Admin 默认没有统计页。挂载 `SliderCaptchaAdminSite` 后，给通过本站授权的活动 staff 同时授予 `nova_slider_captcha.view_ratelimitstate` 和 `nova_slider_captcha.view_ratebucket`。只读页面与命令使用相同的写库聚合。 |
+| 换用宿主图片 | 默认生成程序背景。设置 `NOVA_SLIDER_BACKGROUND_IMAGES` 为本地 JPEG、PNG 绝对路径列表或元组。每题独立生成缺口和拼块，本题尝试的素材都不可用时自动回退。已有前端继续使用相同字段和图片尺寸。 |
+| 更新挑战策略或禁用用途 | 各进程自动复用已校验的全局策略和小型用途白名单，无需缓存服务。将设置更新到每个 worker，该进程下次读取即生效。旧题保留签发策略；禁用用途时同步删除策略覆盖，禁用期间旧挑战和旧凭证都被拒绝。 |
+| 接收服务端通知 | Webhook 默认关闭。用 `NOVA_SLIDER_WEBHOOK` 指定可信 HTTPS 地址和独立的 32 字节密钥（编码为 64 个小写十六进制字符）。验证或消费成功后，仅在写库事务提交后才尝试投递。回调失败不影响验证或消费。接收方对时间戳和原始正文验签，正文仅含 `event` 与 `notification_id`。 |
+
+五项升级沿用现有表结构。从 0.2.0 升级仍须在停写后执行 `0003_challenge_policy`；已经应用该迁移的宿主无需为这五项再迁移。详细设置、权限、统计字段与签名格式见 [README](../README.md)，版本变更见 [CHANGELOG](CHANGELOG.md)。
+
+## 本地验收覆盖
+
+| 环境 | 已验证范围 |
+| --- | --- |
+| SQLite 完整矩阵 | 六组 Python/Django/Pillow 配对，各跑源码和同一个已安装 wheel，各测原生与 Nova Admin。24 个环境分别通过 201 项完整测试。 |
+| 数据库专项 | 同一个 wheel 在 PostgreSQL 18.7、MySQL 8.0.46 上分别通过 76 项、47 项专项。与 SQLite 使用同一边界数据，三者都实际删去预计可清理的 84 条当前桶和 2 条遗留桶；升级子测试使用独立 SQLite。 |
+| 浏览器与前端 | 真实 Chrome 验证原生与 Nova Admin 登录、桌面和窄屏统计，以及素材撤下后的键盘验证与提交。Node 24 下另通过组件 49 项、Django client + jsdom 联调 20 项、独立 Worker 示例 29 项。 |
+| Webhook | 本机 HTTPS 接收端从独立数据库连接确认提交后才收到通知，回滚没有通知。验签、正文白名单、超时和接收端返回 503 时的单次消费均已核对。 |
+
+报告内的 wheel、sdist 哈希对应候选代码 `d874839`。README 会进入包元数据，正式发布应以发布工作流针对最终 tag 构建、测试并上传的同一份产物为准。远端 CI、跨主机复制、外部接收方和生产流量仍无本轮验收结果。[综合验收报告与产物摘要](../verification/2026-11-19-pre-release-integrated/REPORT.md)
 
 ## 本地构建与验收
 
@@ -21,7 +44,7 @@ CI 的 `tests.yml` 在 push、PR、手动运行和 reusable 调用时构建一�
 
 首次本地矩阵、真实浏览器与远端 CI 的状态分别记录，不能互相代替。旧 0002→0003 迁移回归使用独立临时 SQLite；生产升级需先停止旧写入，执行 migrate，再恢复服务。不要把旧行快照改成当前更宽松配置。
 
-0.3.0 的日期证据及 0.2.0 历史记录统一由 [验证索引](VERIFICATION.md) 导航；当前会话引擎修复见 [补充复核](2026-10-29-session-engine-followup.md)，前轮范围见 [2026-10-29 复核报告](2026-10-29-review-fixes.md)。本轮保持暂不上传。发布 job 的 `pypa/gh-action-pypi-publish` 固定为上游 [v1.14.3](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.14.3) 对应的完整 commit SHA；升级时须核对上游 release/commit 并复核工作流，不恢复浮动分支。
+此前 0.3.0 的日期证据及 0.2.0 历史记录见 [验证索引](VERIFICATION.md)。2026-10-29 的会话引擎修复见 [补充复核](2026-10-29-session-engine-followup.md)，同日其他检查见 [复核报告](2026-10-29-review-fixes.md)。发布 job 的 `pypa/gh-action-pypi-publish` 固定为上游 [v1.14.3](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.14.3) 对应的完整 commit SHA；升级时须核对上游 release/commit 并复核工作流，不恢复浮动分支。
 
 ## 将来首次配置 Trusted Publishing
 
@@ -72,6 +95,4 @@ urlpatterns = [
 
 首次发布前运行 `python -m pip install -r requirements-lint.txt` 与 `ruff check .`。Ruff精确锁定0.17.2、target py310，选择错误类规则，未启用格式化/mypy，详情见 [STATIC_CHECKS.md](STATIC_CHECKS.md)。sdist包含requirements-lint.txt和pyproject配置；不增加运行依赖。独立lint job无OIDC权限，发布job仍只下载同一已测构建物和上传，不运行新的检查代码。
 
-本轮实施自测见 [i18n与Ruff实施记录](2026-10-26-i18n-lint-implementation.md)；以实际记录区分本地和远端CI，不因配置存在就宣称检查在GitHub已通过。
-
-主控最终复核见 [i18n与Ruff独立验收](2026-10-26-i18n-lint-independent.md)，包含独立构建、六格source/同一wheel、真实浏览器和静态检查反例。本轮仍未提交、推送或发布。
+2026-10-26 的 i18n 和 Ruff 检查保留了当时的实施自测及独立复核，涵盖构建、六组源码与 wheel 配对、真实浏览器和静态检查反例。[实施记录](2026-10-26-i18n-lint-implementation.md) · [独立验收](2026-10-26-i18n-lint-independent.md)

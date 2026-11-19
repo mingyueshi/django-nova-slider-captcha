@@ -6,16 +6,19 @@
 
 ## 0.3.0 的变化（待发布）
 
-当前源码为首次 PyPI 发布准备，**尚未上传 PyPI**。新增公开配置/API 与迁移，因此从 0.2.0 进入 0.3.0；本地构建和验证不代表远端 CI 或线上发布完成。
+**0.3.0 待首次发布至 PyPI。** 本轮五项升级适用于 Django 宿主，已有滑块可以继续使用原有发题、验证和消费协议。
 
-- 自定义 purpose、request-aware Form/ModelForm、前缀与 formset 字段、结构化业务日志
-- 按用途覆盖有界的挑战 TTL、尝试次数和容差。每个挑战保留签发时的策略
-- 可显式开启签发、验证与消费的成功审计。源码演示包含人工核验的非视觉显示名称更改流程
-- 响应几何驱动；独立嵌入的暗色兜底、显式主题优先级与状态文字对比度修复
-- 明确的 Python/Django 配对 CI，构建 wheel/sdist 并运行安装包测试
-- 首次 Trusted Publishing 发布流程准备，版本/tag 检查后复用同一已验证构建物
+| 功能 | 默认行为 | 宿主接入方式 |
+| --- | --- | --- |
+| 限流桶命令 | 按需读取当前桶和遗留桶，默认输出文本。 | 运行 `python manage.py slider_captcha_rate_stats`，监控脚本加 `--json`。清理另用 `prune_slider_captcha`。 |
+| 只读 Admin 统计 | 普通 Django Admin 默认没有统计页。 | 挂载 `SliderCaptchaAdminSite`，给需要查看的活动 staff 两项桶模型查看权限，从本站首页进入。 |
+| 自定义背景图池 | 默认用程序生成背景，每题独立生成缺口和拼块。 | 将宿主部署的 JPEG、PNG 绝对路径填入 `NOVA_SLIDER_BACKGROUND_IMAGES`。本题尝试的素材均不可用时自动回退。 |
+| 配置缓存与变更失效 | 各进程自动缓存已校验的全局挑战策略及小型用途白名单，无需配置缓存后端。 | 沿用原有 Django 设置。更新在该进程的下一次读取生效。禁用用途时同步移除其策略覆盖，禁用期间旧挑战和旧凭证均被拒绝。 |
+| 验证结果 Webhook | 默认关闭。 | 通过 `NOVA_SLIDER_WEBHOOK` 配置 HTTPS 接收地址和独立签名密钥。验证或消费成功后，写库事务提交才尝试投递。回调失败不影响验证和单次消费。 |
 
-完整变化见 [CHANGELOG](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/CHANGELOG.md)，发布维护步骤见 [发布准备说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/RELEASING.md)。从 0.2.0 升级时执行迁移 0003；从 0.1.0 升级还需阅读下方的限流升级边界，不能并行运行新旧限流代码。
+0.3.0 还支持自定义 purpose 与按用途设置挑战策略、接收 request 的 Form/ModelForm、前缀和 formset 字段、结构化日志与可选成功审计。源码演示提供人工核验的非视觉显示名称更改流程。前端按响应几何布局，并改进主题优先级、暗色和文字对比度。发布流程按 Python/Django 配对测试源码及构建后的 wheel，正式发布时通过 Trusted Publishing 上传同一次流程中已验收的构建物。
+
+从 0.2.0 升级须执行迁移 `0003_challenge_policy`。已应用该迁移的宿主接入上述五项功能无需额外迁移。从 0.1.0 升级还须先停止旧限流写入，详见下文的升级与回退边界。[完整变更](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/CHANGELOG.md) · [发布说明与流程](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/RELEASING.md)
 
 ## 安装与本地试用
 
@@ -159,7 +162,7 @@ NOVA_SLIDER_PURPOSE_POLICIES = {
 
 各进程仅缓存已通过校验的全局挑战策略和小型用途白名单。每次调用仍读取当前设置，按全局数值或白名单内容复用结果。直接赋值、白名单原地修改、嵌套的 `override_settings()` 及退出后的还原都会在下一次调用生效。非法值继续被拒绝，修正后下一次调用即可恢复。
 
-逐用途覆盖表每次整体校验，包括字典内层的原地修改与当前白名单的对应关系。删除用途时同步移除该用途的策略覆盖。合法调整继续只影响新挑战，旧题保留签发时的策略快照。缓存限于各 worker 自身，部署配置仍需在所有 worker 上更新。正在处理的请求可能已读到变更前的值，多项设置的修改须由宿主统一协调。
+逐用途覆盖表每次整体校验，包括字典内层的原地修改与当前白名单的对应关系。调整 TTL、次数或容差只影响新题，已发题保留签发时的策略快照。删除用途时同步移除该用途的策略覆盖。禁用期间旧题不能验证、旧凭证不能消费。若显式恢复同名用途，仍在有效期内且满足其他条件的旧题或未消费凭证可再次使用。缓存限于各 worker 自身，部署配置仍需在所有 worker 上更新。正在处理的请求可能已读到变更前的值，多项设置的修改须由宿主统一协调。
 
 ## 自定义背景图池
 
@@ -312,15 +315,18 @@ Django 表单与模板使用 Django `gettext`/`gettext_lazy`，随包提供 `zh_
 
 ## Django Admin 与 Nova Admin
 
-新建明确启用验证码的 AdminSite：
+要同时启用验证码登录和限流统计，在项目 URLConf 挂载专用站点：
 
 ```python
+from django.urls import path
 from nova_slider_captcha.admin import SliderCaptchaAdminSite
+
 admin_site = SliderCaptchaAdminSite(name="admin")
 # 在该 site 注册项目实际使用的模型与 ModelAdmin。
+urlpatterns = [path("admin/", admin_site.urls)]  # 合入宿主的 urlpatterns
 ```
 
-已有 AdminSite 必须同时配置表单和模板：
+已有 AdminSite 如只接入验证码登录，须同时配置表单和模板：
 
 ```python
 from nova_slider_captcha.forms import SliderAdminAuthenticationForm
@@ -411,7 +417,7 @@ Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcr
 
 `legacy` 单列遗留 `RateBucket` 的总数和可清理数。只有 `expires_at` 严格早于采样时间才计入可清理。两个表分别进行聚合扫描，并发写入或清理时行集合可能变化。桶表较大时按需或低频采样。
 
-使用 `SliderCaptchaAdminSite` 的宿主也可以在本站首页打开「查看验证码限流统计」。入口与页面同时要求启用的 staff 身份以及 `nova_slider_captcha.view_ratelimitstate` 和 `nova_slider_captcha.view_ratebucket` 两项权限，超级管理员自动满足。页面仅接受 GET 和 HEAD，与管理命令共用聚合口径。页面文字使用 Django gettext，随当前 Admin 语言切换。若宿主覆盖该站的 `index_template`，可继承 `nova_slider_captcha/admin_index.html`，或在自己的模板里仅在 `nova_rate_stats_url` 有值时渲染入口。该上下文由 `SliderCaptchaAdminSite.index()` 提供。URL 名称为 `<站点命名空间>:nova_slider_rate_stats`。页面与管理命令都对桶表做聚合扫描，桶表较大时宜按需查看。
+使用 `SliderCaptchaAdminSite` 的宿主也可以在本站首页打开「查看验证码限流统计」。入口与页面都要求账号为活动 staff、通过本站的 `has_permission()`，并同时具备 `nova_slider_captcha.view_ratelimitstate` 和 `nova_slider_captcha.view_ratebucket`。页面仅接受 GET 和 HEAD，与管理命令共用聚合口径。页面文字使用 Django gettext，随当前 Admin 语言切换。若宿主覆盖该站的 `index_template`，可继承 `nova_slider_captcha/admin_index.html`，或在自己的模板里仅在 `nova_rate_stats_url` 有值时渲染入口。该上下文由 `SliderCaptchaAdminSite.index()` 提供。URL 名称为 `<站点命名空间>:nova_slider_rate_stats`。页面与管理命令都对桶表做聚合扫描，桶表较大时宜按需查看。
 
 ## 宿主安全替代入口
 
@@ -531,7 +537,7 @@ LOGGING = {
 
 ## 验证结果 Webhook
 
-Webhook 默认关闭。宿主可配置一个可信的 HTTPS 接收端。使用独立生成的 32 字节随机密钥，以 64 位小写十六进制字符串从宿主密钥存储注入：
+Webhook 默认关闭。宿主可配置一个可信的 HTTPS 接收端。独立生成 32 字节随机密钥，编码为 64 个小写十六进制字符，从宿主密钥存储注入。
 
 ```python
 import os
@@ -564,13 +570,14 @@ Admin 在校验密码之前消费验证码凭证，因此密码错误时也可�
 - 不记录原始凭证、session 绑定秘密、答案位置或鼠标轨迹；不要把挑战表暴露在普通管理后台。
 - 拼图仅提供辅助防滥用成本，可能被图像匹配、视觉模型或人工解题绕过，不保证商业风控或生产抗滥用能力。当前保留单一 mask；随机形状最多提高对固定模板的适配成本，不能阻止通用像素匹配或视觉识别，不作为发布前置条件。
 - 键盘可以调节和提交，但视觉拼图不等于盲人可独立使用。接入方须提供同等安全的非视觉替代流程并做用户测试，不能按屏幕阅读器检测、URL 参数或“无障碍跳过”按钮免验证。
-- PostgreSQL/MySQL、生产压力、多主机代理部署、真机触控和辅助技术，仅在对应版本的验证报告确有记录时才视为已测。
 
 ## 验证与兼容
 
 项目说明、诊断与验证报告集中存放在 [docs/ 文档目录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/README.md)。
 
-安装声明仍与 Nova 一致：Python ≥3.10、Django ≥5.2.17 且 <6.2，图片依赖为经边界验证的 Pillow >=12.2,<13（本轮实测 12.2.0 与当前 12.x 最新 12.3.0，未开放 10/11/13）。2026-10-26 增补 Python 3.10.20 / Django 5.2.17 本地实测，此前改进结果见 [本地自测记录](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-implementation.md)，通用接入本轮见 [接入实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-integration-implementation.md)。此前精确七格 Python/Django 与三格 Node 结果见 [历史验证说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)；历史 0.1.0 记录已移入 `verification/history-0.1.0/`，不能当作本轮重跑结果。
+安装依赖为 Python ≥3.10、Django ≥5.2.17 且 <6.2、Pillow ≥12.2 且 <13。2026-11-19 的本地综合验收覆盖六组 Python/Django/Pillow 配对，源码与同一个已安装 wheel 各测原生及 Nova Admin，24 个 SQLite 环境各通过 201 项完整测试。PostgreSQL 18.7 和 MySQL 8.0.46 分别通过 76 项和 47 项专项测试。三种数据库上，限流统计的可清理数均与实际删除结果一致。
+
+真实 Chrome 覆盖两种 Admin 主题，以及素材撤下后的键盘验证和提交。Webhook 在本机 HTTPS 接收端核对了提交时序、签名、回滚及投递失败。外部接收端、跨主机复制、生产流量、真机触控、辅助技术和远端 CI 未纳入这次综合验收。[综合验收报告及构建物摘要](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/verification/2026-11-19-pre-release-integrated/REPORT.md)
 
 ```sh
 python manage.py check
@@ -588,7 +595,7 @@ npm run test:worker
 
 Node 只用于开发测试，Django 服务和原生前端不需要 Node 运行时。开发包要求 Node >=22.13.0（可直接使用 `node:sqlite`，无需额外启动标志），CI 使用 Node 24。`scripts/test_matrix.py` 的六组 Python/Django/Pillow 配对与 CI 一致；显式提供 uv/pyenv 运行时目录、已构建 wheel 和新输出目录，报告写入该输出目录。可选的 `--nova-source` 增加 Nova 主题 profile，不提供时运行与 CI 一致的原生 profile；精确 Python 补丁版本记录在结果中。
 
-当前 0.3.0 与历史验证的入口见 [验证索引](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)。键盘滑块在校验等待期间保留焦点并阻止修改/重复提交，答错后可直接继续；等待时 Tab 移出的焦点不会被响应抢回。
+此前各轮验证见 [历史验证索引](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/VERIFICATION.md)。键盘滑块在校验等待期间保留焦点并阻止修改/重复提交，答错后可直接继续；等待时 Tab 移出的焦点不会被响应抢回。
 
 需要自行构建安装包时再执行 `python -m pip install build` 和 `python -m build`。[GitHub Actions 配置](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/.github/workflows/tests.yml) 使用 Python/Django/Pillow 六格代表性矩阵：3.10/5.2.17/12.2.0、3.11/5.2.17/12.3.0、3.12/5.2.17/12.3.0、3.12/6.1.2/12.2.0、3.13/6.1.2/12.3.0、3.14/6.0.9/12.3.0，分别验证 source 与同一构建 wheel，并检查 sdist、元数据、迁移漂移、完整测试及组件/DOM/Worker。runner 临时路径放在合法的 step.env 上下文。新增配置与本地通过不代表远端 CI 通过；此前发布准备见 [发布准备自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-release-implementation.md)。当前接入改进见 [后续实施自测](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/2026-10-26-followup-implementation.md)。DOM 测试默认只输出结果；如需保存新记录，设置 `NOVA_DOM_REPORT=/absolute/path/new-results.json`，避免覆盖历史日志。
 
