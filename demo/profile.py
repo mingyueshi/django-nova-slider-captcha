@@ -1,7 +1,8 @@
 """Host-owned example for the local, single-database demo."""
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import BACKEND_SESSION_KEY, get_user_model
+from django.contrib.auth.backends import BaseBackend, ModelBackend
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
@@ -17,7 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
-from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin, SliderCaptchaWidget
+from nova_slider_captcha.forms import SliderAdminAuthenticationForm, SliderCaptchaField, SliderCaptchaFormMixin, SliderCaptchaWidget
 from nova_slider_captcha.services import allow_request
 
 from .models import ProfileApproval
@@ -26,12 +27,25 @@ MEMBER_GROUP = "profile-demo-members"
 PURPOSE = "demo_profile"
 APPROVAL_SECONDS = 300
 MAX_ATTEMPTS = 5
+DEMO_SESSION_BACKEND = "demo.profile.DemoSessionBackend"
+LEGACY_MODEL_BACKEND = "django.contrib.auth.backends.ModelBackend"
 
 
 def eligible_accounts():
     return get_user_model().objects.filter(
         is_active=True, is_staff=False, is_superuser=False, groups__name=MEMBER_GROUP,
     )
+
+
+class DemoSessionBackend(BaseBackend):
+    """Restore demo sessions only while the account remains eligible."""
+
+    def get_user(self, user_id):
+        return eligible_accounts().filter(pk=user_id).first()
+
+
+class DemoPasswordBackend(ModelBackend):
+    """Give trusted password sessions a new, demo-specific backend identity."""
 
 
 class DemoAuthenticationForm(AuthenticationForm):
@@ -41,10 +55,25 @@ class DemoAuthenticationForm(AuthenticationForm):
             raise self.get_invalid_login_error()
 
 
+class DemoAdminAuthenticationForm(SliderAdminAuthenticationForm):
+    def clean(self):
+        cleaned = super().clean()
+        if self.get_user() is not None and self.request.session.get(BACKEND_SESSION_KEY) in (
+            DEMO_SESSION_BACKEND, LEGACY_MODEL_BACKEND,
+        ):
+            # A privileged login must get a new key even for the same user.
+            self.request.session.cycle_key()
+        return cleaned
+
+
 class DemoLoginView(LoginView):
     template_name = "demo/profile_login.html"
     authentication_form = DemoAuthenticationForm
     next_page = reverse_lazy("demo-profile")
+
+    def form_valid(self, form):
+        form.get_user().backend = DEMO_SESSION_BACKEND
+        return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
         # Share the local demo's existing issue IP/session budget. Perform this

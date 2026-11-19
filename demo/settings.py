@@ -15,6 +15,8 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "collected-static"
 USE_TZ = True
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
+# Earlier demo and Admin sessions shared Django's default backend path.
+AUTHENTICATION_BACKENDS = ["demo.profile.DemoPasswordBackend", "demo.profile.DemoSessionBackend"]
 SESSION_COOKIE_SAMESITE = "Strict"
 CSRF_COOKIE_SAMESITE = "Strict"
 

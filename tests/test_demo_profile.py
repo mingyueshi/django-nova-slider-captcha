@@ -1,8 +1,9 @@
 import io
 from unittest.mock import patch
 
-from django.contrib.auth import SESSION_KEY, get_user_model
+from django.contrib.auth import BACKEND_SESSION_KEY, SESSION_KEY, get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.sessions.models import Session
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.db import DatabaseError
@@ -79,6 +80,46 @@ class ProfileDemoTests(CaptchaHelpers, TestCase):
                 with self.assertRaises(CommandError):
                     call_command("approve_demo_profile_change", username, "a" * 64, stdout=io.StringIO())
         self.assertFalse(ProfileApproval.objects.exists())
+
+    def test_promotion_requires_a_fresh_admin_login(self):
+        self.client.get(self.login_url)
+        self.assertRedirects(self.login(self.client, self.user), self.profile)
+        demo_session_key = self.client.session.session_key
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save(update_fields=["is_staff", "is_superuser"])
+        self.assert_admin_reauth(self.user, demo_session_key)
+
+    def test_legacy_model_backend_session_requires_fresh_admin_login(self):
+        legacy_backend = "django.contrib.auth.backends.ModelBackend"
+        with self.settings(AUTHENTICATION_BACKENDS=[legacy_backend]):
+            self.client.force_login(self.user)
+            self.assertEqual(self.client.session[BACKEND_SESSION_KEY], legacy_backend)
+            legacy_session_key = self.client.session.session_key
+        self.user.is_staff = True
+        self.user.is_superuser = True
+        self.user.save(update_fields=["is_staff", "is_superuser"])
+        self.assert_admin_reauth(self.user, legacy_session_key)
+
+    def assert_admin_reauth(self, user, original_session_key):
+        self.assertRedirects(self.client.get("/admin/"), "/admin/login/?next=/admin/")
+
+        admin_login = "/admin/login/"
+        credentials = {"username": user.username, "password": self.password, "next": "/admin/"}
+        self.assertContains(self.post_form(self.client, admin_login, credentials), "nova_slider_token")
+        self.assertEqual(self.client.get("/admin/").status_code, 302)
+
+        self.client.csrf = self.client.get("/captcha/init").json()["csrfToken"]
+        proof, row = self.token(self.client, "login")
+        self.assertRedirects(
+            self.post_form(self.client, admin_login, {**credentials, "nova_slider_token": proof}),
+            "/admin/",
+        )
+        self.assertNotEqual(self.client.session.session_key, original_session_key)
+        self.assertEqual(self.client.session[BACKEND_SESSION_KEY], "demo.profile.DemoPasswordBackend")
+        self.assertFalse(Session.objects.filter(session_key=original_session_key).exists())
+        row.refresh_from_db()
+        self.assertTrue(row.token_consumed)
 
     @override_settings(NOVA_SLIDER_RATE_LIMITS={"issue_session": 1, "issue_ip": 3})
     @patch("nova_slider_captcha.services.timestamp_us", return_value=1_000_000)

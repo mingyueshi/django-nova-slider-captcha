@@ -6,6 +6,7 @@ from nova_slider_captcha.admin import SliderCaptchaAdminSite
 from . import profile
 
 admin_site = SliderCaptchaAdminSite(name="admin")
+admin_site.login_form = profile.DemoAdminAuthenticationForm
 admin_site.register(User, UserAdmin)
 admin_site.register(Group, GroupAdmin)
 urlpatterns = [
