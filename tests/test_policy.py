@@ -3,17 +3,21 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from threading import Event
 from unittest.mock import patch
 
 from django import forms
+from django.conf import settings
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, TransactionTestCase, override_settings
 from django.utils import timezone
 
 from nova_slider_captcha import services
 from nova_slider_captcha.checks import captcha_settings_check
-from nova_slider_captcha.conf import ChallengePolicy, challenge_policy
+from nova_slider_captcha import conf
+from nova_slider_captcha.conf import ChallengePolicy, challenge_policy, purposes
 from nova_slider_captcha.forms import SliderCaptchaField, SliderCaptchaFormMixin
 from nova_slider_captcha.models import Challenge, RateLimitState
 from tests import test_captcha
@@ -21,6 +25,89 @@ from tests.test_captcha import CaptchaHelpers
 
 
 class PolicySettingsTests(SimpleTestCase):
+    def test_small_configuration_hits_cache_without_caching_request_purposes(self):
+        with self.settings(
+            NOVA_SLIDER_CHALLENGE_TTL=75, NOVA_SLIDER_MAX_ATTEMPTS=3,
+            NOVA_SLIDER_TOLERANCE=0, NOVA_SLIDER_PURPOSES=["demo"],
+            NOVA_SLIDER_PURPOSE_POLICIES={"demo": {"ttl": 90}},
+        ):
+            fields = dict(reversed(tuple(conf._POLICY_FIELDS.items())))
+            conf._cached_default_policy.cache_clear()
+            with patch.object(conf, "_POLICY_FIELDS", fields):
+                self.assertEqual(challenge_policy(), ChallengePolicy(75, 3, 0))
+            self.assertEqual(purposes(), {"demo"})
+            policy_info = conf._cached_default_policy.cache_info()
+            purposes_info = conf._cached_purposes.cache_info()
+            for index in range(5):
+                untrusted = f"unknown{index}"
+                self.assertFalse(conf.valid_purpose(untrusted))
+                self.assertEqual(challenge_policy(untrusted), ChallengePolicy(75, 3, 0))
+            for before, after, hits in (
+                (policy_info, conf._cached_default_policy.cache_info(), 5),
+                (purposes_info, conf._cached_purposes.cache_info(), 10),
+            ):
+                self.assertEqual(after.hits, before.hits + hits)
+                self.assertEqual(after.misses, before.misses)
+                self.assertEqual(after.currsize, before.currsize)
+
+    def test_large_legal_purpose_collection_bypasses_small_cache(self):
+        names = [f"purpose{index}" for index in range(65)]
+        with self.settings(NOVA_SLIDER_PURPOSES=names):
+            before = conf._cached_purposes.cache_info()
+            self.assertEqual(purposes(), frozenset(names))
+            self.assertTrue(conf.valid_purpose(names[-1]))
+            self.assertEqual(conf._cached_purposes.cache_info(), before)
+
+    def test_direct_assignment_nested_overrides_and_recovery(self):
+        original = challenge_policy()
+        with self.settings(NOVA_SLIDER_CHALLENGE_TTL=45, NOVA_SLIDER_PURPOSES=["demo"]):
+            outer = challenge_policy()
+            self.assertEqual(outer.ttl, 45)
+            with self.settings(NOVA_SLIDER_CHALLENGE_TTL=70, NOVA_SLIDER_PURPOSES=["login"]):
+                self.assertEqual(challenge_policy().ttl, 70)
+                self.assertEqual(purposes(), {"login"})
+                settings.NOVA_SLIDER_CHALLENGE_TTL = []
+                settings.NOVA_SLIDER_PURPOSES = [False]
+                with self.assertRaises(ValueError):
+                    challenge_policy()
+                with self.assertRaises(ValueError):
+                    purposes()
+                settings.NOVA_SLIDER_CHALLENGE_TTL = 80
+                settings.NOVA_SLIDER_PURPOSES = {"demo", "login"}
+                self.assertEqual(challenge_policy().ttl, 80)
+                self.assertEqual(purposes(), {"demo", "login"})
+            self.assertEqual(challenge_policy(), outer)
+            self.assertEqual(purposes(), {"demo"})
+        self.assertEqual(challenge_policy(), original)
+        self.assertEqual(purposes(), {"demo", "login"})
+
+    def test_delayed_validation_cannot_replace_new_configuration(self):
+        started, release = Event(), Event()
+        validate = conf._policy_integer
+
+        def delayed(value, name, minimum, maximum):
+            if name == "NOVA_SLIDER_CHALLENGE_TTL" and value == 571:
+                started.set()
+                if not release.wait(5):
+                    raise TimeoutError("old validation did not resume")
+            return validate(value, name, minimum, maximum)
+
+        conf._cached_default_policy.cache_clear()
+        with (
+            self.settings(NOVA_SLIDER_CHALLENGE_TTL=571),
+            patch.object(conf, "_policy_integer", side_effect=delayed),
+            ThreadPoolExecutor(max_workers=1) as worker,
+        ):
+            pending = worker.submit(challenge_policy)
+            try:
+                self.assertTrue(started.wait(5))
+                settings.NOVA_SLIDER_CHALLENGE_TTL = 572
+                self.assertEqual(challenge_policy().ttl, 572)
+            finally:
+                release.set()
+            self.assertEqual(pending.result(timeout=5).ttl, 571)
+            self.assertEqual(challenge_policy().ttl, 572)
+
     def test_defaults_and_dynamic_boundaries(self):
         self.assertEqual((challenge_policy().ttl, challenge_policy().max_attempts, challenge_policy().tolerance), (120, 5, 4))
         for ttl, attempts, tolerance in ((30, 1, 0), (600, 20, 10)):
@@ -70,6 +157,32 @@ class PolicyTests(CaptchaHelpers, TestCase):
     def setUp(self):
         self.client = self.client_with_init()
         self.request_obj = self.request(self.client)
+
+    def test_in_place_mutation_preserves_snapshots_and_revokes_purpose(self):
+        class ProofForm(SliderCaptchaFormMixin, forms.Form):
+            proof = SliderCaptchaField(purpose="login")
+
+        names = ["demo", "login"]
+        login_policy = {"max_attempts": 2, "tolerance": 0}
+        table = {"login": login_policy}
+        with self.settings(NOVA_SLIDER_PURPOSES=names, NOVA_SLIDER_PURPOSE_POLICIES=table):
+            token, _ = self.token(self.client, "login")
+            _, pending = self.challenge(self.client, "login")
+            _, disabled = self.challenge(self.client, "login")
+            login_policy["tolerance"] = True
+            self.assertEqual(self.post(self.client, "challenge", {"purpose": "demo"}).status_code, 503)
+            login_policy["tolerance"] = 8
+            _, fresh = self.challenge(self.client, "login")
+            self.assertEqual(fresh.tolerance, 8)
+            self.assertEqual(services.verify(self.request_obj, pending.pk, pending.target_x + 1)["code"], "incorrect")
+            names.remove("login")
+            self.assertEqual(self.post(self.client, "challenge", {"purpose": "demo"}).status_code, 503)
+            table.clear()
+            self.assertEqual(services.verify(self.request_obj, disabled.pk, disabled.target_x)["code"], "invalid_challenge")
+            self.assertFalse(services.consume(token, self.request_obj, "login"))
+            self.assertFalse(ProofForm({"proof": token}, request=self.request_obj).is_valid())
+            names.append("login")
+            self.assertTrue(ProofForm({"proof": token}, request=self.request_obj).is_valid())
 
     def test_purpose_snapshots_for_old_and_new_challenges(self):
         _, old = self.challenge(self.client)

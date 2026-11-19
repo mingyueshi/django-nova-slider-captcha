@@ -1,6 +1,7 @@
 import logging
 import re
 from dataclasses import dataclass, replace
+from functools import lru_cache
 from importlib import import_module
 from pathlib import Path
 
@@ -97,12 +98,31 @@ def _policy_integer(value, label, minimum, maximum):
     return value
 
 
+def _build_default_policy(ttl, max_attempts, tolerance):
+    def validated(field, value):
+        name, _, minimum, maximum = _POLICY_FIELDS[field]
+        return _policy_integer(value, name, minimum, maximum)
+
+    return ChallengePolicy(
+        ttl=validated("ttl", ttl),
+        max_attempts=validated("max_attempts", max_attempts),
+        tolerance=validated("tolerance", tolerance),
+    )
+
+
+_cached_default_policy = lru_cache(maxsize=16)(_build_default_policy)
+
+
 def challenge_policy(purpose=None):
     """Validate the whole current table before returning an issuance policy."""
-    default = ChallengePolicy(**{
-        key: _policy_integer(getattr(settings, name, fallback), name, minimum, maximum)
-        for key, (name, fallback, minimum, maximum) in _POLICY_FIELDS.items()
-    })
+    ttl = getattr(settings, "NOVA_SLIDER_CHALLENGE_TTL", CHALLENGE_TTL)
+    attempts = getattr(settings, "NOVA_SLIDER_MAX_ATTEMPTS", MAX_ATTEMPTS)
+    tolerance = getattr(settings, "NOVA_SLIDER_TOLERANCE", TOLERANCE)
+    # Distinguish bool from int and keep unhashable invalid inputs out of the cache.
+    if type(ttl) is int and type(attempts) is int and type(tolerance) is int:
+        default = _cached_default_policy(ttl, attempts, tolerance)
+    else:
+        default = _build_default_policy(ttl, attempts, tolerance)
     setting = "NOVA_SLIDER_PURPOSE_POLICIES"
     configured = getattr(settings, setting, {})
     if not isinstance(configured, dict):
@@ -126,14 +146,28 @@ def challenge_policy(purpose=None):
     return selected
 
 
+def _validate_purposes(names):
+    if any(not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9_:-]{0,31}", name) for name in names):
+        raise ValueError("NOVA_SLIDER_PURPOSES names must match [a-z][a-z0-9_:-]{0,31}")
+    return frozenset(names)
+
+
+_cached_purposes = lru_cache(maxsize=16)(_validate_purposes)
+
+
 def purposes():
     """Read on every call; a configured collection replaces the defaults."""
     configured = getattr(settings, "NOVA_SLIDER_PURPOSES", PURPOSES)
+    if configured is PURPOSES:
+        return PURPOSES
     if not isinstance(configured, (list, tuple, set, frozenset)) or not configured:
         raise ValueError("NOVA_SLIDER_PURPOSES must be a nonempty list, tuple, set or frozenset")
-    if any(not isinstance(name, str) or not re.fullmatch(r"[a-z][a-z0-9_:-]{0,31}", name) for name in configured):
-        raise ValueError("NOVA_SLIDER_PURPOSES names must match [a-z][a-z0-9_:-]{0,31}")
-    return frozenset(configured)
+    names = tuple(configured)
+    # Snapshot contents so in-place mutations are visible. Only successful
+    # validations of small, immutable keys are retained in the process cache.
+    if len(names) <= 64 and all(type(name) is str for name in names):
+        return _cached_purposes(names)
+    return _validate_purposes(names)
 
 
 def valid_purpose(value):
