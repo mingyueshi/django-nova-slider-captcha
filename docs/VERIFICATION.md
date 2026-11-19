@@ -1,6 +1,24 @@
 # 验证索引：0.3.0 发布准备与历史结果
 
-当前维护版本为 **0.3.0，尚未上传**。下方 0.2.0 数字和根目录 `verification/export-checks.json` 都是 2026-10-05 的历史结果；其中 “No workflow configured” 描述当时情况，不能用于判断当前 CI 配置或执行状态。当前已有 [Tests](../.github/workflows/tests.yml) 和 [Publish](../.github/workflows/publish.yml)，有工作流配置不等于本轮远端运行通过。
+## 0.3.0 发布候选 `206a488`（2026-11-19）
+
+候选提交 `206a48806d1793d29e6d66d95a98d1b4b34375f1` 已通过本地完整兼容矩阵和同一份 wheel 的补充验收，待首次发布至 PyPI。[发布工作流](../.github/workflows/publish.yml)
+
+| 本地报告 | 已验证范围 |
+| --- | --- |
+| [构建物与完整兼容矩阵](../verification/2026-11-19-0.3.0-rc-206a488/REPORT.md)（`b67fa47`） | macOS arm64 上的六组 Python/Django/Pillow 配对，每组分别测试源码和同一份已安装 wheel，各覆盖原生与 Nova Admin。24 个 SQLite 环境各通过 201 项完整测试，共 4,824 次测试执行，其中 2,412 次使用 wheel。wheel 和 sdist 都通过 `twine check --strict`，两包内的 34 个运行文件均与候选源码逐字节相符。 |
+| [同一 wheel 的补充验收](../verification/2026-11-19-0.3.0-rc-206a488-supplement/REPORT.md)（`75692de`） | PostgreSQL 18.7 和 MySQL 8.0.46 分别通过 76 项和 47 项专项，两库实际清理结果均与统计一致。真实 Chrome 158 验证了两种 Admin 的登录、桌面与窄屏统计，以及素材撤下后的键盘验证和提交。本机 HTTPS 接收端实收 69 个签名通知，核对了提交时序、回滚、字段范围及投递失败时的单次消费。 |
+
+下列 SHA-256 已与本地 `dist/0.3.0-206a488/` 中的原构建物核对。
+
+| 文件 | SHA-256 |
+| --- | --- |
+| `nova_slider_captcha-0.3.0-py3-none-any.whl` | `7827c4669efc7fd54137b0f9b46a9c86bcf18b3420434b612edb84cfdd1e00a1` |
+| `nova_slider_captcha-0.3.0.tar.gz` | `00bf4241205864dadde07a330bf1d660a8aa97a2a270e674a73d39060ca6f7d1` |
+
+**远端 CI 待跑。** 该候选仍待 GitHub Actions 完成构建、Django 兼容矩阵、静态检查、覆盖率和前端测试。[Tests 工作流](../.github/workflows/tests.yml)
+
+## 此前的 0.3.0 验证记录
 
 | 版本/日期 | 报告与新证据 | 范围 |
 |---|---|---|
@@ -9,7 +27,7 @@
 | 0.3.0 / 2026-10-27 | [边界独立验收](2026-10-27-boundary-independent.md)、[任务证据](../verification/2026-10-27-boundary-independent/) | init、Admin、写库与会话配置；仅代表当时差异 |
 | 0.3.0 / 2026-10-26 | [发布准备独立验收](2026-10-26-release-independent.md)、[任务证据](../verification/2026-10-26-release-independent/) | 当时的策略快照、主题、构建与本地矩阵 |
 
-更细的实施/独立报告见 [文档目录](README.md)。本轮没有另设实施会话，2026-10-29 的结果是同一会话复核与自测，不冒称独立验收；历史独立报告也不自动覆盖之后的变更。未执行的远端 CI、上传、部署和数据库/设备验收不能由本地结果推定。
+2026-10-29 的结果来自同一会话的复核与自测。下方 0.2.0 的数字及 `verification/export-checks.json` 中的 “No workflow configured” 均为 2026-10-05 的历史记录。[文档目录](README.md)
 
 ---
 
