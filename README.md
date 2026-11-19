@@ -537,7 +537,9 @@ LOGGING = {
 
 ## 验证结果 Webhook
 
-Webhook 默认关闭。宿主可配置一个可信的 HTTPS 接收端。独立生成 32 字节随机密钥，编码为 64 个小写十六进制字符，从宿主密钥存储注入。
+Webhook 默认关闭。目的地址由宿主部署管理员配置，支持可信的公网、私网或同机 HTTPS 接收端。组件不按 IP 网段过滤目的地址。宿主应限制配置写入权限，并在网络层限定实际可达的接收端和端口。[Webhook 出站访问控制](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/docs/DEPLOYMENT.md#webhook-出站访问控制)
+
+独立生成 32 字节随机密钥，编码为 64 个小写十六进制字符，从宿主密钥存储注入。
 
 ```python
 import os
@@ -555,7 +557,7 @@ NOVA_SLIDER_WEBHOOK = {
 
 Admin 在校验密码之前消费验证码凭证，因此密码错误时也可能收到 `proof_consumed`。接收方如需确认登录成功或其他业务结果，应以宿主在对应业务成功后发出的事件为准。
 
-接收端收到 HTTPS POST，`Content-Type` 为 `application/json`。正文固定为 ASCII JSON 对象，只含 `event` 和 `notification_id`。通知 ID 为每次随机生成的 UUID4，使用 32 位小写十六进制且无连字符。它只标识这封通知。正文不含挑战、凭证、会话、请求或用户标识，也不含用途、答案和 IP。
+接收端收到 HTTPS POST，`Content-Type` 为 `application/json`。正文固定为 ASCII JSON 对象，只含 `event` 和 `notification_id`。后台投递时为每个通知独立生成 UUID4，编码为 32 个小写十六进制字符。接收方可用它去重。验证和消费接口均不返回通知 ID，仅记录该 ID 无法关联到具体挑战或业务操作。需要业务关联时，由宿主在自己的业务事务中记录业务标识与操作结果。回调正文不含挑战、凭证、会话、请求或用户标识，也不含用途、答案和 IP。
 
 `X-Nova-Webhook-Timestamp` 是十进制 Unix 秒。将该头值的 ASCII 字节、一个 ASCII 点号 `.`、收到的原始正文字节依次拼接。以配置密钥十六进制解码后的 32 字节为密钥计算 HMAC-SHA256。签名头 `X-Nova-Webhook-Signature` 为 `sha256=` 后接小写十六进制摘要。接收方应以恒定时间比较签名，按原始字节验签，再解析正文。建议拒绝与接收方时钟相差超过 300 秒的时间戳，并在同一次原子操作中登记通知 ID 和判定重复，至少保留至签名时间窗结束。两个事件的 ID 无关联。
 

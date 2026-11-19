@@ -1,6 +1,6 @@
 # 可信代理、部署检查与清理监控
 
-组件只使用 Django `request.META['REMOTE_ADDR']`，不会读取客户端传来的 X-Forwarded-For / X-Real-IP。加一个 HTTP 头本身不改变 WSGI environ 或 ASGI scope；必须由有明确信任边界的应用服务器负责转换。本轮未新增任意可信 header 开关或后台线程。
+入站限流只使用 Django `request.META['REMOTE_ADDR']`，不会读取客户端传来的 X-Forwarded-For / X-Real-IP。加一个 HTTP 头本身不改变 WSGI environ 或 ASGI scope；必须由有明确信任边界的应用服务器负责转换。
 
 下面是两种可选部署，均假定 Nginx 是直接面向用户的唯一入口、同机运行应用、应用监听不向公网开放。域名、证书、用户/组、项目模块和路径必须换为宿主实际值；安装与服务管理由宿主完成，组件不捆绑这些服务器。
 
@@ -85,6 +85,16 @@ python -m django check --deploy --fail-level WARNING --settings=myproject.settin
 ```
 
 `--deploy` 启用 Django 自带的部署检查（如安全 Cookie、密钥、HSTS 等），依据 [Django 官方命令说明](https://docs.djangoproject.com/en/6.0/ref/django-admin/#check)。逐项处理适用于真实 HTTPS/代理配置的警告；例如 HSTS 的范围与预加载应由宿主评估，不能为了消除警告盲目启用。静态检查不证明代理链、调度、证书或线上业务真的正确。
+
+## Webhook 出站访问控制
+
+`NOVA_SLIDER_WEBHOOK` 默认关闭。启用时，由宿主部署管理员指定一个可信 HTTPS 接收端，可以是公网、私网或同机服务。应用从 Django settings 读取目的地址。应限制部署配置和 CI 变量的写入权限，避免让客户端请求参数、租户配置或普通后台表单决定目标 URL。
+
+**地址可达范围由宿主网络策略控制。** Django 检查 `nova_slider_captcha.E011` 校验 URL 和密钥格式，组件没有按 IP 网段限制出站连接。HTTPS 会校验接收端证书，回调不会跟随重定向或读取响应正文。若目标配置或其 DNS 被非受信任方控制，仍可能向应用可达的内部服务发起请求。
+
+- 在应用实际出网的边界上，用防火墙或容器网络策略按目的地址和端口放行获准接收端，保留应用所需的其他依赖。私网或回环接收端只放行需要的服务和端口，限制访问其他内网服务、链路本地地址和云元数据服务。发送器直连目标，不使用环境代理。
+- 使用域名时，由宿主管理 DNS，并让出站规则约束实际连接的 IPv4 和 IPv6 目的地址。只在部署时检查一次 A/AAAA 记录无法覆盖后续 DNS 变化或重绑定。使用 IP 字面量时，接收端证书须对该 IP 有效。[OWASP 出站请求防护指引](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html#network-layer)
+- 验收出站策略时，可在预发布环境用两个自有 HTTPS 测试服务核对。一处在允许范围内，应收到签名通知；另一处在允许范围外，应由网络策略阻断。两种情形下都应检查业务验证成功、凭证只消费一次。
 
 ## prune 调度与状态表监控
 
