@@ -12,7 +12,7 @@ function parameters(limit, nowMs) {
 }
 const delay = (row, nowUs, tolerance) => Math.max(0, Math.ceil((Math.max(row?.blocked_until_us || 0, (row?.tat_us || 0) - tolerance) - nowUs) / 1_000_000));
 async function readState(db, key) {
-  return db.prepare('SELECT tat_us,blocked_until_us FROM captcha_rate_state WHERE id=?').bind(key).first();
+  return db.prepare('SELECT tat_us,blocked_until_us FROM captcha_quota_state WHERE id=?').bind(key).first();
 }
 export async function claimRate(db, key, limit, nowMs) {
   const {nowUs, interval, tolerance} = parameters(limit, nowMs);
@@ -20,8 +20,8 @@ export async function claimRate(db, key, limit, nowMs) {
   try {
     // 保留原固定窗口表：首次使用时继承仍有效的旧额度冷却期。
     // schema 升级前必须停写；旧新版并行写入不构成同一限流器。
-    await db.prepare('INSERT INTO captcha_rate_state(id,tat_us,blocked_until_us) SELECT ?,0,COALESCE(MAX(expires)*1000,0) FROM captcha_rates WHERE id>=? AND id<? AND expires>? ON CONFLICT(id) DO NOTHING').bind(key,key+':',key+';',nowMs).run();
-    const claimed = await db.prepare('UPDATE captcha_rate_state SET tat_us=MAX(tat_us,?)+? WHERE id=? AND blocked_until_us<=? AND tat_us<=? RETURNING tat_us,blocked_until_us').bind(nowUs,interval,key,nowUs,nowUs+tolerance).first();
+    await db.prepare('INSERT INTO captcha_quota_state(id,tat_us,blocked_until_us) SELECT ?,0,COALESCE(MAX(expires)*1000,0) FROM captcha_rates WHERE id>=? AND id<? AND expires>? ON CONFLICT(id) DO NOTHING').bind(key,key+':',key+';',nowMs).run();
+    const claimed = await db.prepare('UPDATE captcha_quota_state SET tat_us=MAX(tat_us,?)+? WHERE id=? AND blocked_until_us<=? AND tat_us<=? RETURNING tat_us,blocked_until_us').bind(nowUs,interval,key,nowUs,nowUs+tolerance).first();
     if (claimed) return {allowed:true,retryAfter:0};
     const row = await readState(db,key);
     // 并发清理可能移除已完全补充的行；本次仍拒绝，绝不无状态放行。

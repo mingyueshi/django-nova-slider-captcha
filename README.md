@@ -391,7 +391,7 @@ Django 使用可信部署链路提供的 `REMOTE_ADDR`，不会直接相信 `X-F
 
 Django 迁移明确拒绝自动逆转，避免悄悄删除仍有效的限流债务。要回退旧代码，需要运维安排停写、等待至少原最长状态有效期并确认当前债务/冷却已清空，再采用经审查的人工数据库与代码回退流程。不要用 `--fake` 或直接删表冒充安全回滚。
 
-Worker 示例先应用原 `schema.sql`（仅新建库）及 `migrations-0002-gcra.sql`（旧库只加新迁移）。它在首次访问稳定桶时惰性继承旧桶冷却期，schema 迁移中不塞入业务数据；同样要求停止旧写入、保留旧表，不声明无停机混合版本升级。
+Worker 示例的 IP 限流需要独立的 Worker secret `RATE_LIMIT_IP_KEY`（32 个随机字节编码为 64 个十六进制字符）。新建 D1 库依次应用 `schema.sql`、`migrations-0002-gcra.sql`、`migrations-0003-ip-hmac.sql`。已有库先停止旧版写入，只应用未执行的迁移。旧 IP 桶仍有债务或冷却时，0003 会拒绝切换，待到期后重试。会话额度保留。密钥配置和轮换步骤见 [Worker 接入说明](https://github.com/mingyueshi/django-nova-slider-captcha/blob/main/examples/worker-api/README.md)。
 
 `RateBucket` 仅用于旧版升级与安全清理，不再承载当前限流请求；未来删除必须另做迁移，本轮保留表且不承诺删除日期。
 

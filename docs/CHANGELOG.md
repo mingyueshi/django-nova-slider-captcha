@@ -4,6 +4,11 @@
 
 Python 包与前端开发包版本均为 **0.3.0**，待首次发布至 PyPI。
 
+### 2026-11-21 滑块误提交与 Worker IP 限流
+
+- 滑块仅在主指针用主键开始并结束拖动时提交。右键、中键和辅助触点不会触发验证或扣减尝试次数。
+- Worker 示例按动作使用 HMAC-SHA-256 生成 IP 桶键，需要独立 secret `RATE_LIMIT_IP_KEY` 和 D1 迁移 `0003`。升级前停止旧版写入，迁移确认旧 IP 额度已恢复后清除旧 IP 键，保留会话额度。具体步骤见 [Worker 接入说明](../examples/worker-api/README.md)。
+
 ### 2026-11-19 综合验收的五项升级
 
 - **限流桶命令。** `python manage.py slider_captcha_rate_stats` 按需读取各桶模型的写库，默认输出文本，加 `--json` 可用于监控。当前桶须同时还清债务并结束冷却才可清理；遗留桶的到期时间须严格早于采样时间。实际清理由 `prune_slider_captcha` 执行。

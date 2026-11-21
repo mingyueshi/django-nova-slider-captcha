@@ -1,13 +1,18 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { createHmac, randomBytes } from "node:crypto";
 import { DatabaseSync } from "node:sqlite";
 import { readFileSync } from "node:fs";
 import { handleCaptcha } from "../captcha.mjs";
 import { makePuzzle } from "../puzzle.mjs";
 import {claimRate,claimQuotas} from "../rate-limit.mjs";
 import worker from "../worker.mjs";
+const testSecret = randomBytes(32).toString("hex");
+const workerEnv = db => ({ DB: db, RATE_LIMIT_IP_KEY: testSecret });
+const ipKeyMigration = readFileSync(new URL("../migrations-0003-ip-hmac.sql", import.meta.url), "utf8");
+
 class D1 {
-  constructor() {
+  constructor({ applyIpMigration = true } = {}) {
     this.db = new DatabaseSync(":memory:");
     this.db.exec(
       readFileSync(
@@ -16,6 +21,7 @@ class D1 {
       ),
     );
     this.db.exec(readFileSync(new URL('../migrations-0002-gcra.sql',import.meta.url),'utf8'));
+    if (applyIpMigration) this.db.exec(ipKeyMigration);
   }
   prepare(sql) {
     const statement = this.db.prepare(sql);
@@ -33,10 +39,10 @@ class D1 {
     return Promise.all(items.map((x) => x.run()));
   }
 }
-async function ctx({ db = new D1(), routed = false } = {}) {
+async function ctx({ db = new D1(), routed = false, headers = {} } = {}) {
   const now = Date.now();
-  const req = () => new Request("https://demo.test/captcha/init");
-  const r = await (routed ? worker.fetch(req(), { DB: db }) : handleCaptcha(req(), db, "init", now)),
+  const req = () => new Request("https://demo.test/captcha/init", { headers });
+  const r = await (routed ? worker.fetch(req(), workerEnv(db)) : handleCaptcha(req(), workerEnv(db), "init", now)),
     { csrfToken } = await r.json(),
     cookie = r.headers.get("set-cookie").split(";")[0];
   const post = async (action, body, opts = {}) => {
@@ -47,11 +53,12 @@ async function ctx({ db = new D1(), routed = false } = {}) {
         origin: "https://demo.test",
         cookie,
         "x-csrftoken": csrfToken,
+        ...headers,
         ...opts.headers,
       },
       body: typeof body === "string" ? body : JSON.stringify(body),
     });
-    const response = await (routed ? worker.fetch(request, { DB: db }) : handleCaptcha(request, db, action, opts.now ?? now));
+    const response = await (routed ? worker.fetch(request, workerEnv(db)) : handleCaptcha(request, workerEnv(db), action, opts.now ?? now));
     return { status: response.status, ...(await response.json()) };
   };
   const issue = () => post("challenge", { purpose: "demo" });
@@ -116,10 +123,10 @@ test("Worker fetch routes the complete session, verification and consumption flo
   assert.equal((await c.post("submit", { token: proof.token, purpose: "demo" })).code, "accepted");
   assert.equal((await c.post("submit", { token: proof.token, purpose: "demo" })).status, 409);
   for (const path of ["/", "/captcha/", "/captcha/init/", "/captcha/unknown", "/prefix/captcha/init"]) {
-    assert.equal((await worker.fetch(new Request("https://demo.test" + path), { DB: c.db })).status, 404, path);
+    assert.equal((await worker.fetch(new Request("https://demo.test" + path), workerEnv(c.db))).status, 404, path);
   }
   for (const action of ["challenge", "verify", "submit"]) {
-    const response = await worker.fetch(new Request("https://demo.test/captcha/" + action), { DB: c.db });
+    const response = await worker.fetch(new Request("https://demo.test/captcha/" + action), workerEnv(c.db));
     assert.equal(response.status, 405);
     assert.equal((await response.json()).code, "method_not_allowed");
   }
@@ -127,6 +134,71 @@ test("Worker fetch routes the complete session, verification and consumption flo
   assert.equal(unavailable.status, 503);
   assert.equal((await unavailable.json()).code, "unavailable");
 });
+test("all routed IP buckets use stable action-scoped HMACs from the Worker secret", async () => {
+  const ip = "192.0.2.8";
+  const c = await ctx({ routed: true, headers: { "cf-connecting-ip": ip } });
+  function checkBucket(prefix) {
+    const ids = c.db.db.prepare("SELECT id FROM captcha_quota_state WHERE id LIKE ?").all(prefix + ":%");
+    const digest = createHmac("sha256", Buffer.from(testSecret, "hex"))
+      .update(prefix + "\0" + ip).digest("hex");
+    assert.deepEqual(ids.map(row => row.id), [prefix + ":" + digest]);
+  }
+  checkBucket("init");
+  await ctx({ db: c.db, routed: true, headers: { "cf-connecting-ip": ip } });
+  checkBucket("init");
+  const puzzle = await c.issue();
+  checkBucket("ip");
+  const proof = await c.post("verify", { challengeId: puzzle.challengeId, x: c.answer(puzzle.challengeId) });
+  checkBucket("verify-ip");
+  assert.equal((await c.post("submit", { purpose: "demo", token: proof.token })).code, "accepted");
+  checkBucket("submit-ip");
+});
+
+test("a missing or malformed IP key fails closed before session reuse or any D1 access", async () => {
+  const c = await ctx();
+  const db = { prepare() { assert.fail("unexpected D1 access"); } };
+  for (const secret of [undefined, null, "", "00", "z".repeat(64), 123]) {
+    for (const action of ["init", "challenge", "verify", "submit"]) {
+      const request = new Request("https://demo.test/captcha/" + action, {
+        method: action === "init" ? "GET" : "POST",
+        headers: { cookie: c.cookie },
+      });
+      const result = await worker.fetch(request, { DB: db, RATE_LIMIT_IP_KEY: secret });
+      assert.equal(result.status, 503);
+      assert.deepEqual(await result.json(), { ok: false, code: "rate_limit_unavailable" });
+    }
+  }
+});
+
+test("IP migration waits for GCRA debt, blocks and old windows, then preserves session quotas", async () => {
+  const db = new D1({ applyIpMigration: false });
+  const request = new Request("https://demo.test/captcha/init");
+  assert.equal((await worker.fetch(request, workerEnv(db))).status, 503);
+  let now = Math.floor(Date.now() / 1000);
+  db.db.function("unixepoch", () => now);
+  const insert = db.db.prepare("INSERT INTO captcha_rate_state VALUES (?, ?, ?)");
+  const window = db.db.prepare("INSERT INTO captcha_rates VALUES (?, 1, ?)");
+  const session = quotaKey("issue"), sessionWindow = session + ":1";
+  const sessionExpiry = (now + 120) * 1000;
+  insert.run(session, sessionExpiry * 1000, 0);
+  window.run(sessionWindow, sessionExpiry);
+  const blocked = () => assert.throws(() => db.db.exec(ipKeyMigration), /wait_for_ip_quota_to_drain/);
+
+  insert.run(quotaKey("ip"), (now + 1) * 1000000, 0);
+  blocked();
+  now++;
+  insert.run(quotaKey("verify-ip"), 0, (now + 1) * 1000000);
+  blocked();
+  now++;
+  window.run(quotaKey("init") + ":1", (now + 1) * 1000);
+  blocked();
+  now++;
+  db.db.exec(ipKeyMigration);
+  assert.deepEqual(db.db.prepare("SELECT id,tat_us FROM captcha_quota_state").all().map(Object.values), [[session, sessionExpiry * 1000]]);
+  assert.deepEqual(db.db.prepare("SELECT id,expires FROM captcha_rates").all().map(Object.values), [[sessionWindow, sessionExpiry]]);
+  assert.equal((await worker.fetch(request, workerEnv(db))).status, 200);
+});
+
 test("submit quota limits invalid proofs, preserves a refused valid proof and refills exactly", async () => {
   const c = await ctx();
   const p = await c.issue();
@@ -135,13 +207,13 @@ test("submit quota limits invalid proofs, preserves a refused valid proof and re
     assert.equal((await c.post("submit", { purpose: i % 2 ? "login" : "demo", token: "bad" })).code, "invalid_token");
   }
   const body = { purpose: "demo", token: proof.token };
-  const debt = c.db.db.prepare("SELECT tat_us FROM captcha_rate_state WHERE id LIKE 'submit:%'").get().tat_us;
+  const debt = c.db.db.prepare("SELECT tat_us FROM captcha_quota_state WHERE id LIKE 'submit:%'").get().tat_us;
   const denied = await c.post("submit", body);
   assert.equal(denied.status, 429);
   assert.equal(denied.retryAfter, 1);
   assert.equal(c.db.db.prepare("SELECT used FROM captcha_challenges WHERE id=?").get(p.challengeId).used, 0);
   assert.equal((await c.post("submit", body, { now: c.now + 999 })).status, 429);
-  assert.equal(c.db.db.prepare("SELECT tat_us FROM captcha_rate_state WHERE id LIKE 'submit:%'").get().tat_us, debt);
+  assert.equal(c.db.db.prepare("SELECT tat_us FROM captcha_quota_state WHERE id LIKE 'submit:%'").get().tat_us, debt);
   assert.equal((await c.post("submit", body, { now: c.now + 1000 })).code, "accepted");
 });
 test("submit IP quota spans new sessions and stays separate from challenge and verify", async () => {
@@ -165,7 +237,7 @@ test("submit limiter storage failure refuses consumption", async () => {
   const proof = await c.post("verify", { challengeId: p.challengeId, x: c.answer(p.challengeId) });
   const prepare = c.db.prepare.bind(c.db);
   c.db.prepare = sql => {
-    if (/^(UPDATE|INSERT INTO) captcha_rate_state/.test(sql)) throw new Error("test-only storage failure");
+    if (/^(UPDATE|INSERT INTO) captcha_quota_state/.test(sql)) throw new Error("test-only storage failure");
     return prepare(sql);
   };
   const result = await c.post("submit", { purpose: "demo", token: proof.token });
@@ -221,7 +293,7 @@ test("session and CSRF boundaries", async () => {
     );
   const other = await handleCaptcha(
     new Request("https://demo.test/captcha/init"),
-    c.db,
+    workerEnv(c.db),
     "init",
     c.now,
   );
@@ -291,7 +363,7 @@ test("session creation rate limited by trusted edge IP", async () => {
       new Request("https://demo.test/captcha/init", {
         headers: { "cf-connecting-ip": "192.0.2.1" },
       }),
-      c.db,
+      workerEnv(c.db),
       "init",
       c.now,
     );
@@ -301,7 +373,7 @@ test("session creation rate limited by trusted edge IP", async () => {
     new Request("https://demo.test/captcha/init", {
       headers: { "cf-connecting-ip": "192.0.2.1" },
     }),
-    c.db,
+    workerEnv(c.db),
     "init",
     c.now,
   );
@@ -359,9 +431,9 @@ const quotaKey=(name='issue',char='a')=>name+':'+char.repeat(64);
 test('GCRA blocks minute-boundary double burst and admits exact refill',async()=>{
  const db=new D1(),key=quotaKey(),t=59999.999;
  for(let i=0;i<3;i++)assert.equal((await claimRate(db,key,3,t)).allowed,true);
- const before=db.db.prepare('SELECT * FROM captcha_rate_state WHERE id=?').get(key);
+ const before=db.db.prepare('SELECT * FROM captcha_quota_state WHERE id=?').get(key);
  assert.deepEqual(await claimRate(db,key,3,60000.001),{allowed:false,retryAfter:20});
- assert.deepEqual(db.db.prepare('SELECT * FROM captcha_rate_state WHERE id=?').get(key),before);
+ assert.deepEqual(db.db.prepare('SELECT * FROM captcha_quota_state WHERE id=?').get(key),before);
  assert.equal((await claimRate(db,key,3,79999.998)).allowed,false);
  assert.equal((await claimRate(db,key,3,79999.999)).allowed,true);
  assert.equal((await claimRate(db,key,3,79999.999)).allowed,false);
@@ -370,19 +442,19 @@ test('GCRA concurrency claims at most configured capacity',async()=>{
  const db=new D1(),key=quotaKey();
  const r=await Promise.all(Array.from({length:24},()=>claimRate(db,key,5,1000)));
  assert.equal(r.filter(x=>x.allowed).length,5);
- assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,61000000);
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_quota_state WHERE id=?').get(key).tat_us,61000000);
 });
 test('backwards clock cannot reset debt and rejected requests do not extend it',async()=>{
  const db=new D1(),key=quotaKey();await claimRate(db,key,1,90000);
- const tat=db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us;
+ const tat=db.db.prepare('SELECT tat_us FROM captcha_quota_state WHERE id=?').get(key).tat_us;
  assert.deepEqual(await claimRate(db,key,1,30000),{allowed:false,retryAfter:120});
- assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,tat);
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_quota_state WHERE id=?').get(key).tat_us,tat);
  assert.equal((await claimRate(db,key,1,150000)).allowed,true);
 });
 test('fractional refill rounds toward stricter rate; invalid configs fail closed',async()=>{
  const db=new D1(),key=quotaKey();
  for(let i=0;i<7;i++)assert.equal((await claimRate(db,key,7,0)).allowed,true);
- assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,60000003);
+ assert.equal(db.db.prepare('SELECT tat_us FROM captcha_quota_state WHERE id=?').get(key).tat_us,60000003);
  for(const n of [0,-1,1.5,60001,NaN,Infinity,'3'])await assert.rejects(()=>claimRate(db,key,n,0),TypeError);
  for(const t of [-1,Infinity,NaN,Number.MAX_SAFE_INTEGER])await assert.rejects(()=>claimRate(db,key,3,t),TypeError);
 });
@@ -404,20 +476,20 @@ test('stable IP quota is shared by new sessions; retry accounts for charged IP',
 });
 test('cleanup only removes fully replenished states; pruning never grants while debt remains',async()=>{
  const db=new D1(),key=quotaKey();await claimRate(db,key,2,1000);
- db.db.prepare('DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?').run(1000000,1000000);
- assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_rate_state').get().n,1);
- db.db.prepare('DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?').run(31000000,31000000);
- assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_rate_state').get().n,0);
+ db.db.prepare('DELETE FROM captcha_quota_state WHERE tat_us<=? AND blocked_until_us<=?').run(1000000,1000000);
+ assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_quota_state').get().n,1);
+ db.db.prepare('DELETE FROM captcha_quota_state WHERE tat_us<=? AND blocked_until_us<=?').run(31000000,31000000);
+ assert.equal(db.db.prepare('SELECT count(*) AS n FROM captcha_quota_state').get().n,0);
  assert.equal((await claimRate(db,key,2,31000)).allowed,true);
 });
 test('HTTP rate-limited responses carry computed Retry-After and machine code',async()=>{
  const c=await ctx();for(let i=0;i<15;i++)await c.issue();
- const r=await handleCaptcha(new Request('https://demo.test/captcha/challenge',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://demo.test',Cookie:c.cookie,'X-CSRFToken':c.csrfToken},body:JSON.stringify({purpose:'demo'})}),c.db,'challenge',c.now);
+ const r=await handleCaptcha(new Request('https://demo.test/captcha/challenge',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://demo.test',Cookie:c.cookie,'X-CSRFToken':c.csrfToken},body:JSON.stringify({purpose:'demo'})}),workerEnv(c.db),'challenge',c.now);
  assert.equal(r.status,429);assert.equal(r.headers.get('Retry-After'),'4');
  assert.deepEqual(await r.json(),{ok:false,code:'rate_limited',retryAfter:4});
 });
 test('database limiter failure returns stable unavailable response, never a challenge',async()=>{
- const c=await ctx();c.db.db.exec('DROP TABLE captcha_rate_state');
+ const c=await ctx();c.db.db.exec('DROP TABLE captcha_quota_state');
  assert.equal((await c.issue()).status,503);
 });
 
@@ -426,7 +498,7 @@ test('shared Django/Worker fixture agrees at each microsecond boundary',async()=
  const db=new D1(),key=quotaKey();
  for(const step of fixture.steps){
   assert.deepEqual(await claimRate(db,key,fixture.capacity,step.nowUs/1000),{allowed:step.allowed,retryAfter:step.retryAfter});
-  assert.equal(db.db.prepare('SELECT tat_us FROM captcha_rate_state WHERE id=?').get(key).tat_us,step.tatUs);
+  assert.equal(db.db.prepare('SELECT tat_us FROM captcha_quota_state WHERE id=?').get(key).tat_us,step.tatUs);
  }
 });
 test('changing purpose does not reset the shared issuance quota',async()=>{

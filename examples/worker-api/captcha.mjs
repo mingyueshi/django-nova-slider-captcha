@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { makePuzzle } from "./puzzle.mjs";
 import { claimQuotas, RateLimitStorageError } from "./rate-limit.mjs";
 const SID = "nova_captcha_session",
@@ -76,19 +77,27 @@ async function readJson(req) {
     throw Error("format");
   return data;
 }
-export async function handleCaptcha(req, db, action, now = Date.now()) {
+function ipBucket(req, prefix, secret) {
+  const ip = req.headers.get("cf-connecting-ip") || "unknown";
+  const digest = createHmac("sha256", Buffer.from(secret, "hex"))
+    .update(prefix).update("\0").update(ip).digest("hex");
+  return prefix + ":" + digest;
+}
+export async function handleCaptcha(req, env, action, now = Date.now()) {
+  const { DB: db, RATE_LIMIT_IP_KEY: secret } = env ?? {};
   if (!db) return fail("unavailable", 503);
+  if (typeof secret !== "string" || !/^[a-f0-9]{64}$/i.test(secret))
+    return fail("rate_limit_unavailable", 503);
   try {
     if (action === "init" && req.method === "GET") {
       let sess = await session(req, db, now);
       if (sess) return json({ csrfToken: sess.csrf });
-      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
-      const decision=await claimQuotas(db,[["init:"+await sha(ip),40]],now);
+      const decision = await claimQuotas(db, [[ipBucket(req, "init", secret), 40]], now);
       if(!decision.allowed)return limited(decision);
       await db.batch([
         db.prepare("DELETE FROM captcha_sessions WHERE expires<?").bind(now),
         db.prepare("DELETE FROM captcha_rates WHERE expires<?").bind(now),
-        db.prepare("DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
+        db.prepare("DELETE FROM captcha_quota_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
       ]);
       const sid = random(),
         csrf = random();
@@ -117,14 +126,13 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
         .prepare("DELETE FROM captcha_challenges WHERE expires<?")
         .bind(now - 60000),
       db.prepare("DELETE FROM captcha_rates WHERE expires<?").bind(now),
-        db.prepare("DELETE FROM captcha_rate_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
+      db.prepare("DELETE FROM captcha_quota_state WHERE tat_us<=? AND blocked_until_us<=?").bind(Math.floor(now*1000),Math.floor(now*1000)),
       db.prepare("DELETE FROM captcha_sessions WHERE expires<?").bind(now),
     ]);
     if (action === "challenge") {
       if (!["demo", "login"].includes(body.purpose))
         return fail("invalid_purpose");
-      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
-      const decision=await claimQuotas(db,[["ip:"+await sha(ip),120],["issue:"+sess.id,15]],now);
+      const decision = await claimQuotas(db, [[ipBucket(req, "ip", secret), 120], ["issue:" + sess.id, 15]], now);
       if(!decision.allowed)return limited(decision);
       const p = makePuzzle(),
         id = random();
@@ -143,8 +151,7 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
       });
     }
     if (action === "verify") {
-      const ip = req.headers.get("cf-connecting-ip") || 'unknown';
-      const decision=await claimQuotas(db,[["verify-ip:"+await sha(ip),240],["verify:"+sess.id,60]],now);
+      const decision = await claimQuotas(db, [[ipBucket(req, "verify-ip", secret), 240], ["verify:" + sess.id, 60]], now);
       if(!decision.allowed)return limited(decision);
       if(typeof body.challengeId!=="string"||!/^[a-f0-9]{64}$/.test(body.challengeId)||typeof body.x!=="number"||!Number.isFinite(body.x)||body.x<0||body.x>276)return fail("invalid_input");
       const token = random(),
@@ -173,8 +180,7 @@ export async function handleCaptcha(req, db, action, now = Date.now()) {
       return fail("incorrect", 422, { attemptsRemaining: MAX_ATTEMPTS - row.attempts });
     }
     if (action === "submit") {
-      const ip = req.headers.get("cf-connecting-ip") || "unknown";
-      const decision = await claimQuotas(db, [["submit-ip:" + await sha(ip), 240], ["submit:" + sess.id, 60]], now);
+      const decision = await claimQuotas(db, [[ipBucket(req, "submit-ip", secret), 240], ["submit:" + sess.id, 60]], now);
       if (!decision.allowed) return limited(decision);
       if (
         body.purpose !== "demo" ||

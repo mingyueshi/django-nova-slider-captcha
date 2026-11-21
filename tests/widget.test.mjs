@@ -101,9 +101,9 @@ function imageEvents(w, { cached = false, cachedWidth = 320, synchronous = false
   });
   return { images, finish, listeners, active: () => [...listeners.values()].reduce((n, set) => n + set.size, 0) };
 }
-function pointer(c, type, pointerId = 1) {
-  const event = new c.w.Event(type);
-  Object.defineProperty(event, "pointerId", { value: pointerId });
+function pointer(c, type, pointerId = 1, { button = 0, isPrimary = true } = {}) {
+  const event = new c.w.MouseEvent(type, { button });
+  Object.assign(event, { pointerId, isPrimary });
   c.widget.range.dispatchEvent(event);
 }
 function cleanup(c) {
@@ -484,6 +484,27 @@ test("pointer release verifies, pointercancel does not", async () => {
   pointer(c, "pointerup");
   await flush();
   assert.equal(c.calls.filter((x) => x.url.endsWith("verify")).length, 1);
+  cleanup(c);
+});
+test("only a primary-button drag can capture the pointer and submit", async () => {
+  const c = await setup();
+  const captures = [], releases = [];
+  c.widget.range.setPointerCapture = id => captures.push(id);
+  c.widget.range.releasePointerCapture = id => releases.push(id);
+  for (const input of [{ button: 1 }, { button: 2 }, { isPrimary: false }]) {
+    pointer(c, "pointerdown", 1, input);
+    pointer(c, "pointerup", 1, input);
+  }
+  assert.deepEqual(captures, []);
+  pointer(c, "pointerdown", 1);
+  pointer(c, "pointerup", 1, { button: 2 });
+  assert.deepEqual(releases, [1]);
+  assert.equal(c.widget.activePointerId, null);
+  assert.equal(c.calls.filter(call => call.url.endsWith("verify")).length, 0);
+  pointer(c, "pointerdown", 1);
+  pointer(c, "pointerup", 1);
+  await flush();
+  assert.equal(c.calls.filter(call => call.url.endsWith("verify")).length, 1);
   cleanup(c);
 });
 test("network failure is recoverable through refresh", async () => {

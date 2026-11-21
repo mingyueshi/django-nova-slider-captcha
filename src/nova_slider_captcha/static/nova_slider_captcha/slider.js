@@ -261,6 +261,7 @@
       });
       on(this.range, "pointerdown", (e) => {
         if (this.state !== "ready") { e.preventDefault(); return; }
+        if (e.button !== 0 || !e.isPrimary) return;
         if (this.activePointerId !== null || !Number.isInteger(e.pointerId)) return;
         this.activePointerId = e.pointerId;
         try { this.range.setPointerCapture?.(e.pointerId); } catch (_) { /* Pointer may already be inactive. */ }
@@ -268,7 +269,8 @@
       on(this.range, "pointerup", (e) => {
         if (this.activePointerId !== null && e.pointerId === this.activePointerId) {
           this.resetPointer();
-          this.verify();
+          // With chorded mouse buttons the last release can be a different button.
+          if (e.button === 0 && e.isPrimary) this.verify();
         }
       });
       const cancelPointer = (e) => {
