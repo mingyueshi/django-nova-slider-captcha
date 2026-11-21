@@ -348,6 +348,8 @@ admin_site.login_template = "nova_slider_captcha/admin_login.html"
 - 核心 `GET /captcha/` 是命名 `api-root` 的 JSON 根路径，无演示消费
 - 仅显式启用 demo_urls 后：`GET /captcha-demo/` 为演示页；`POST /captcha-demo/submit` 请求 `{token,purpose:"demo"}`，只消费 demo 凭证，`/captcha-demo/demo` 为别名
 
+组件要求发题和验证成功响应中的 `expiresIn` 为正整数秒，换算成毫秒后须在浏览器定时器范围内。只有 `ok: true`、有效的 `expiresIn` 和非空白字符串 `token` 同时存在时，组件才会写入隐藏字段并发出 `verified`。对 `incorrect` 响应，`attemptsRemaining` 应为非负整数，且不能超过本题声明的整数上限 `maxAttempts`。数值 0 表示次数用尽。缺失、字符串等无效值会显示验证失败并提示换题。
+
 图片为扁平 PNG data URL，不包含数字答案、图片种子或可直接读取缺口位置的向量结构。人和程序仍可以从图像像素推断位置，因此不声称答案能对视觉分析保密。
 
 `x` 是拼图块在原始图像中的左边坐标；默认 320×160、拼图块 44，范围 0–276，容差 ±4 像素。组件根据响应的 `width`、`height`、`pieceWidth` 计算范围、移动比例、ARIA 和图片宽高比，拒绝非数、零值或越界几何。交互手柄的 48px 由 CSS `--nsc-handle-size` 统一控制，与拼图尺寸独立。本轮未开放后端图片尺寸配置。缩放显示时应换算到原始坐标；`pieceY` 是公开值。挑战有效 120 秒，最多 5 次错误猜测；验证成功后凭证从服务端签发时起有效 60 秒。前述挑战 TTL、次数及容差为默认值，可在上方范围内配置，签发后按快照执行。格式错误不扣拼图尝试次数，但计入验证码校验限流。

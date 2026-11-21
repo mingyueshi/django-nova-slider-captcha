@@ -332,6 +332,7 @@ test("wrong answer is retryable and exhausting attempts requires refresh", async
   assert.equal(c.widget.x, 0);
   await c.widget.verify();
   assert.equal(c.widget.state, "error");
+  assert.equal(c.widget.stateText.key, "attempts_exhausted");
   assert.equal(c.widget.range.disabled, true);
   cleanup(c);
 });
@@ -674,6 +675,51 @@ test("initialization, JSON, and network errors never display arbitrary error mes
     assert.match(c.widget.status.textContent, /初始化失败|网络连接中断/);
     cleanup(c);
   }
+});
+
+const invalidLifetimes = [undefined, null, "60", "bad", true, 0, -1, 1.5, Infinity, NaN, 2147484];
+
+test("malformed challenge lifetimes fail before loading images or scheduling expiry", async () => {
+  for (const expiresIn of invalidLifetimes) {
+    const c = await setup(url => response(url.endsWith("init") ? { csrfToken: "csrf" } : { ...puzzle(), expiresIn }), { images: imageEvents });
+    try {
+      assert.equal(c.widget.stateText.key, "generation_failed");
+      assert.equal(c.widget.range.disabled, true);
+      assert.equal(c.images.images.length, 0);
+      assert.equal(c.timers.size, 0);
+    } finally { cleanup(c); }
+  }
+});
+
+test("malformed verification responses keep the form empty and allow recovery by refresh", async () => {
+  const success = { ok: true, token: "opaque-proof", expiresIn: 60 };
+  let result;
+  const c = await setup(url => response(url.endsWith("init") ? { csrfToken: "csrf" } : url.endsWith("challenge") ? puzzle() : result), { demo: true });
+  const verified = [];
+  c.widget.addEventListener("verified", event => verified.push(event.detail.token));
+  const form = c.w.document.querySelector("form");
+  try {
+    for (const invalid of [
+      ...[undefined, null, "", "  ", true, 42, {}].map(token => ({ ...success, token })),
+      ...invalidLifetimes.map(expiresIn => ({ ...success, expiresIn })),
+      { ...success, ok: "true" },
+      ...[undefined, null, "3", true, -1, 1.5, 6].map(attemptsRemaining => ({ ok: false, code: "incorrect", attemptsRemaining })),
+    ]) {
+      result = invalid;
+      await c.widget.verify();
+      assert.equal(c.widget.state, "error");
+      assert.equal(c.widget.stateText.key, "verification_failed");
+      assert.equal(new c.w.FormData(form).get("nova_slider_token"), "");
+      assert.equal(c.w.document.getElementById("demo-submit").disabled, true);
+      assert.equal(c.timers.size, 0);
+      assert.deepEqual(verified, []);
+      await c.widget.refresh();
+    }
+    result = success;
+    await c.widget.verify();
+    assert.deepEqual(verified, [success.token]);
+    assert.equal(new c.w.FormData(form).get("nova_slider_token"), success.token);
+  } finally { cleanup(c); }
 });
 
 test("verification retries, unknown errors, and server expiry are localized", async () => {

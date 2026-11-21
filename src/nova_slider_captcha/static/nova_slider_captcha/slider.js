@@ -98,6 +98,9 @@
   const bounded = (value, max) =>
     typeof value === "number" && Number.isFinite(value)
       ? Math.min(max, Math.max(0, Math.ceil(value))) : 0;
+  // The wire format uses whole seconds; setTimeout accepts signed 32-bit milliseconds.
+  const validLifetime = seconds =>
+    Number.isInteger(seconds) && seconds > 0 && seconds * 1000 <= 2_147_483_647;
   const localError = (key, values = {}) => Object.assign(new Error(key), { key, values });
   function loadImage(image, source, signal) {
     return new Promise((resolve, reject) => {
@@ -365,6 +368,8 @@
           const message = errorText(data, "generation_failed");
           throw localError(message.key, message.values);
         }
+        if (!validLifetime(data.expiresIn)) throw localError("generation_failed");
+        const expiresAt = started + data.expiresIn * 1000;
         // Geometry is public protocol data, but must be valid before arithmetic
         // or enabling input. Dimensions are bounded independently of CSS pixels.
         const dimension = (v) => Number.isInteger(v) && v > 0 && v <= 8192;
@@ -399,7 +404,7 @@
           this.field.value = "";
           this.emit("captcha-reset");
           this.setState("expired", "expired");
-        }, Math.max(0, data.expiresIn * 1000 - (Date.now() - started)));
+        }, Math.max(0, expiresAt - Date.now()));
       } catch (e) {
         if (seq !== this.seq || e.name === "AbortError") return;
         this.request.abort(); // Also clean up a sibling image still loading.
@@ -413,9 +418,13 @@
       try {
         const data = await this.post("verify", { challengeId: this.challenge.challengeId, x: this.x }, this.request.signal);
         if (seq !== this.seq) return;
-        if (data?.ok) {
+        const incorrect = data?.code === "incorrect" && !data.ok;
+        const attempts = data?.attemptsRemaining;
+        if (data?.ok === true && typeof data.token === "string" && data.token.trim()
+            && validLifetime(data.expiresIn)) {
           clearTimeout(this.timer);
-          const remaining = Math.max(0, data.expiresIn * 1000 - (Date.now() - started));
+          const expiresAt = started + data.expiresIn * 1000;
+          const remaining = Math.max(0, expiresAt - Date.now());
           if (!remaining) {
             this.field.value = "";
             this.emit("captcha-reset");
@@ -432,15 +441,16 @@
             this.field.value = "";
             this.emit("captcha-reset");
             this.setState("expired", "token_expired");
-          }, Math.max(0, data.expiresIn * 1000 - (Date.now() - started)));
-        } else if (data?.code === "incorrect" && data.attemptsRemaining > 0) {
+          }, Math.max(0, expiresAt - Date.now()));
+        } else if (incorrect && Number.isSafeInteger(attempts) && attempts > 0
+            && (!Number.isSafeInteger(this.challenge.maxAttempts) || attempts <= this.challenge.maxAttempts)) {
           this.move(0);
-          this.setState("ready", "incorrect", { remaining: data.attemptsRemaining });
+          this.setState("ready", "incorrect", { remaining: attempts });
         } else {
           clearTimeout(this.timer);
           this.field.value = "";
           const message = errorText(data, "verification_failed");
-          this.setState("error", data?.code === "incorrect" ? "attempts_exhausted" : message.key, message.values);
+          this.setState("error", incorrect && attempts === 0 ? "attempts_exhausted" : message.key, message.values);
         }
       } catch (e) {
         if (seq !== this.seq || e.name === "AbortError") return;
