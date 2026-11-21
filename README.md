@@ -69,6 +69,8 @@ path("captcha-demo/", include("nova_slider_captcha.demo_urls")),
 
 演示页位于 `/captcha-demo/`，消费位于 `/captcha-demo/submit`（另保留该可选挂载下的 `demo` 别名）。本仓库开发示例已经显式启用。生产只挂核心 API 即可；demo 消费始终固定 purpose="demo"，不会保护任何真实业务操作。
 
+演示页的 HTML 请求只渲染表单。组件随后调用 `init`，由该接口校验会话后端、为新绑定扣除 IP 额度，并在接受请求后生成 CSRF token。演示表单提交时通过 `await slider.getCsrfToken()` 复用同一接口的初始化结果，支持 `CSRF_COOKIE_HTTPONLY` 和 `CSRF_USE_SESSIONS`。
+
 **接入迁移**：原 `nova_slider_captcha:demo` 改为 `nova_slider_captcha:api-root`，原 `/captcha/submit` 和 `/captcha/demo` 不再由核心 URLConf 提供。引用旧演示名称/路径的模板和脚本须改为上述显式演示挂载；演示脚本从 form.action 获取消费地址，与核心 endpoint 分离。init / challenge / verify 的 URL、JSON、CSRF 和会话协议保持不变，独立 `<nova-slider endpoint="/captcha/">` 继续调用核心 API。
 
 Widget 默认反解 `nova_slider_captcha:api-root`；URL 的挂载路径和 Django script prefix 会保留。多实例或嵌套 namespace 时显式选择完整根名称，避免依赖 Django 对同名实例的默认选择：

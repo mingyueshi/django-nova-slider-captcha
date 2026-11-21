@@ -30,7 +30,7 @@ function response(body, status = 200, type = "application/json") {
   };
 }
 async function setup(handler, options = {}) {
-  const dom = new JSDOM(`<!doctype html><html lang="${options.documentLang || "en"}"><body>${options.demo ? '<form id="captcha-demo" action="/captcha-demo/submit"><input name="csrfmiddlewaretoken" value="csrf"><button id="demo-submit" disabled></button><p id="demo-result"></p></form>' : ""}</body></html>`, {
+  const dom = new JSDOM(`<!doctype html><html lang="${options.documentLang || "en"}"><body>${options.demo ? '<form id="captcha-demo" action="/captcha-demo/submit"><button id="demo-submit" disabled></button><p id="demo-result"></p></form>' : ""}</body></html>`, {
     url: "https://demo.test/",
     runScripts: "outside-only",
   });
@@ -792,6 +792,8 @@ test("demo success ignores server messages and dynamically localizes safe result
   c.w.document.querySelector("form").dispatchEvent(new c.w.Event("submit", { cancelable: true }));
   await flush();
   assert.equal(c.w.document.querySelector("#demo-result").textContent, "Request accepted. The verification token has been used.");
+  assert.equal(c.calls.filter(call => call.url.endsWith("init")).length, 1);
+  assert.equal(c.calls.find(call => call.url.endsWith("submit")).options.headers["X-CSRFToken"], "csrf");
   assert.equal(c.w.document.querySelector("#demo-submit").disabled, true);
   assert.equal(c.w.document.querySelectorAll("[onerror]").length, 0);
   c.widget.setLocale("zh-CN");
@@ -799,6 +801,22 @@ test("demo success ignores server messages and dynamically localizes safe result
   cleanup(c);
 });
 
+test("refresh discards a demo submission still waiting for its CSRF token", async () => {
+  const c = await setup(undefined, { demo: true });
+  try {
+    await c.widget.verify();
+    let resolveCsrf;
+    c.widget.getCsrfToken = () => new Promise(resolve => { resolveCsrf = resolve; });
+    c.w.document.querySelector("form").dispatchEvent(new c.w.Event("submit", { cancelable: true }));
+    delete c.widget.getCsrfToken;
+    await c.widget.refresh();
+    await c.widget.verify();
+    resolveCsrf("old-csrf");
+    await flush();
+    assert.equal(c.calls.some(call => call.url.endsWith("submit")), false);
+    assert.equal(c.w.document.getElementById("demo-submit").disabled, false);
+  } finally { cleanup(c); }
+});
 test("demo rejected and interrupted requests have localized messages", async () => {
   for (const network of [false, true]) {
     const c = await setup((url) => {

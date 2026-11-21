@@ -8,7 +8,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_GET
 
 from . import services
@@ -162,10 +162,8 @@ def submit(request, data):
 
 
 @never_cache
-@ensure_csrf_cookie
 @require_GET
 def demo(request, api_root="nova_slider_captcha:api-root"):
-    services.session_binding(request, create=True)
     namespace = request.resolver_match.namespace
     submit_name = f"{namespace}:submit" if namespace else "submit"
     return render(request, "nova_slider_captcha/demo.html", {

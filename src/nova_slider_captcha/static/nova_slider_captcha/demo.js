@@ -25,7 +25,9 @@
   const submittedToken = token;
   button.disabled = true;
   try {
-   const response = await fetch(form.action, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':form.querySelector('[name=csrfmiddlewaretoken]').value},body:JSON.stringify({token:submittedToken,purpose:'demo'})});
+   const csrfToken = await slider.getCsrfToken();
+   if (requestGeneration !== generation) return;
+   const response = await fetch(form.action, {method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRFToken':csrfToken},body:JSON.stringify({token:submittedToken,purpose:'demo'})});
    const data = await response.json();
    if (requestGeneration !== generation) return;
    showResult(data.ok ? 'demo_accepted' : 'demo_rejected');

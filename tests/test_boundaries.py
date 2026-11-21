@@ -23,6 +23,40 @@ from tests.test_rate_limit import at, request, scope_key
 
 @override_settings(NOVA_SLIDER_RATE_LIMITS={"init_ip": 2})
 class InitBoundaryTests(CaptchaHelpers, TestCase):
+    def test_demo_page_defers_binding_and_csrf_until_init(self):
+        for csrf_sessions in (False, True):
+            with self.subTest(csrf_sessions=csrf_sessions), override_settings(
+                CSRF_USE_SESSIONS=csrf_sessions, CSRF_COOKIE_HTTPONLY=True,
+                NOVA_SLIDER_RATE_LIMITS={"init_ip": 1},
+            ), at(1_000_000):
+                ip = "192.0.2.2" if csrf_sessions else "192.0.2.1"
+                key = scope_key("init", subject=ip)
+                sessions = Session.objects.count()
+                client = Client(enforce_csrf_checks=True, REMOTE_ADDR=ip)
+                with self.assertNumQueries(0):
+                    page = client.get("/captcha-demo/")
+                self.assertContains(page, "<nova-slider")
+                self.assertFalse(page.cookies)
+                self.assertNotContains(page, "csrfmiddlewaretoken")
+                with patch("nova_slider_captcha.views.session_backend", side_effect=ValueError):
+                    denied = client.get("/captcha/init")
+                self.assertEqual((denied.status_code, denied.json()["code"]), (503, "configuration_invalid"))
+                self.assertFalse(denied.cookies)
+                self.assertFalse(RateLimitState.objects.filter(pk=key).exists())
+                self.assertEqual(Session.objects.count(), sessions)
+
+                accepted = client.get("/captcha/init")
+                self.assertEqual(accepted.status_code, 200)
+                client.csrf = accepted.json()["csrfToken"]
+                self.assertEqual(self.post(client, "challenge", {"purpose": "demo"}).status_code, 200)
+                self.assertTrue(RateLimitState.objects.filter(pk=key).exists())
+                other = Client(enforce_csrf_checks=True, REMOTE_ADDR=ip)
+                self.assertFalse(other.get("/captcha-demo/").cookies)
+                denied = other.get("/captcha/init")
+                self.assertEqual((denied.status_code, denied.json()["code"]), (429, "rate_limited"))
+                self.assertFalse(denied.cookies)
+                self.assertEqual(Session.objects.count(), sessions + 1)
+
     def test_rejected_init_does_not_create_session_or_csrf_in_response_middleware(self):
         for csrf_sessions in (False, True):
             with self.subTest(csrf_sessions=csrf_sessions), override_settings(CSRF_USE_SESSIONS=csrf_sessions), at(1_000_000):

@@ -140,23 +140,6 @@
     }
     return { key: data.code, values: {} };
   };
-  async function init(endpoint) {
-    if (!inits.has(endpoint))
-      inits.set(endpoint, fetch(endpoint + "init", {
-        credentials: "same-origin", cache: "no-store",
-      }).then(async (r) => {
-        let data;
-        try { data = await r.json(); } catch (_) { throw localError("init_failed"); }
-        if (!r.ok) {
-          const message = errorText(data, "init_failed");
-          throw localError(message.key, message.values);
-        }
-        if (typeof data?.csrfToken !== "string" || !data.csrfToken)
-          throw localError("init_failed");
-        return data.csrfToken;
-      }).catch((e) => { inits.delete(endpoint); throw e; }));
-    return inits.get(endpoint);
-  }
   class NovaSlider extends HTMLElement {
     static get observedAttributes() { return ["locale", "aria-describedby", "aria-invalid"]; }
     get locale() { return normalizeLocale(this.getAttribute("locale")); }
@@ -336,8 +319,27 @@
       this.querySelector(".nsc-fill").style.width = `calc(${(this.x / this.maxX) * 100}% + var(--nsc-handle-size) * ${1 - this.x / this.maxX})`;
       this.range.setAttribute("aria-valuetext", this.getText("value", { percent: Math.round((this.x / this.maxX) * 100) }));
     }
+    async getCsrfToken() {
+      const endpoint = this.endpoint;
+      if (!this.live || !endpoint) throw localError("init_failed");
+      if (!inits.has(endpoint))
+        inits.set(endpoint, fetch(endpoint + "init", {
+          credentials: "same-origin", cache: "no-store",
+        }).then(async (r) => {
+          let data;
+          try { data = await r.json(); } catch (_) { throw localError("init_failed"); }
+          if (!r.ok) {
+            const message = errorText(data, "init_failed");
+            throw localError(message.key, message.values);
+          }
+          if (typeof data?.csrfToken !== "string" || !data.csrfToken)
+            throw localError("init_failed");
+          return data.csrfToken;
+        }).catch((e) => { inits.delete(endpoint); throw e; }));
+      return inits.get(endpoint);
+    }
     async post(action, body, signal) {
-      const csrfToken = await init(this.endpoint);
+      const csrfToken = await this.getCsrfToken();
       const r = await fetch(this.endpoint + action, {
         method: "POST", credentials: "same-origin",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
